@@ -1,0 +1,313 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- Родительский проект-->
+	<parent>
+		<groupId>sx.config</groupId>
+		<artifactId>main-settings</artifactId>
+		<version>1.2.27</version>
+	</parent>
+	<groupId>org.softshaper</groupId>
+	<artifactId>zorb-mini</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>SoftShaper</name>
+
+
+
+	
+
+
+
+
+
+	<profiles>
+		<profile>
+			<id>mongo-shek</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<mongodbUrl>5.19.254.162:873</mongodbUrl>
+			</properties>
+		</profile>
+		<profile>
+			<id>postgres-localhost</id>
+			<properties>
+				<bdUrl>jdbc:postgresql://localhost:5432/zorb</bdUrl>
+				<bdDriverClassName>org.postgresql.Driver</bdDriverClassName>
+				<bdDatabaseType>POSTGRESQL</bdDatabaseType>
+				<bdLogin>postgres</bdLogin>
+				<bdPass>11111111</bdPass>
+			</properties>
+			<dependencies>
+				<!-- postgres -->
+				<!-- http://mvnrepository.com/artifact/org.postgresql/postgresql -->
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>9.4-1200-jdbc41</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>postgres-shek</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<bdUrl>jdbc:postgresql://5.19.254.162:3306/zorb</bdUrl>
+				<bdDriverClassName>org.postgresql.Driver</bdDriverClassName>
+				<bdDatabaseType>POSTGRESQL</bdDatabaseType>
+				<bdLogin>ashek</bdLogin>
+				<bdPass>11111111</bdPass>
+			</properties>
+			<dependencies>
+				<!-- postgres -->
+				<!-- http://mvnrepository.com/artifact/org.postgresql/postgresql -->
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>9.4-1200-jdbc41</version>
+				</dependency>
+
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		
+
+	</dependencies>
+	<build>
+		<!--Ресурсы -->
+		<resources>
+			<resource>
+				<directory>src/main/resources/</directory>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.bpmn</include>
+					<include>**/*.jrxml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources/</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>exec-maven-plugin</artifactId>
+				<executions> <execution> <id>exec-npm-install</id> <phase>generate-sources</phase>
+				<goals> <goal>exec</goal> </goals> <configuration> <executable>node</executable>
+				<arguments> <argument>build</argument> </arguments> <workingDirectory>web</workingDirectory>
+				</configuration> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/</path>
+				</configuration>
+				<executions>
+					<execution>
+						<id>tomcat-run</id>
+						<goals>
+							<goal>exec-war-only</goal>
+						</goals>
+						<configuration>
+							<path>/</path>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- wildfly -->
+			<plugin>
+				<groupId>org.wildfly.plugins</groupId>
+				<artifactId>wildfly-maven-plugin</artifactId>
+				<version>1.0.2.Final</version>
+				<configuration>
+					<port>19990</port>
+					<filename>${project.build.finalName}.war</filename>
+					<add-user>
+						<users>
+							<user>
+								<username>ashek</username>
+								<password>12345</password>
+								<groups>
+									<group>admin</group>
+									<group>user</group>
+								</groups>
+								<application-user>true</application-user>
+							</user>
+						</users>
+					</add-user>
+				</configuration>
+			</plugin>
+
+			<!-- Docker -->
+			<plugin>
+				<groupId>org.softshaper</groupId>
+				<artifactId>docker-sh-plugin</artifactId>
+				<version>0.0.6-SNAPSHOT</version>
+				<configuration>
+					<imageName>localhost:5000/softshaper</imageName>
+					<forceTags>true</forceTags>
+					<dockerDirectory>docker</dockerDirectory>
+					<dockerHost>http://10.0.2.15:2375</dockerHost>
+					<serverId>softshaper-snapshots</serverId>
+					<registryUrl>http://localhost:5000</registryUrl>
+					<retryPushCount>1</retryPushCount>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.war</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+			<!-- AsciiDoc <plugin> <groupId>org.asciidoctor</groupId> <artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.3</version> <dependencies> <dependency> <groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctorj-pdf</artifactId> <version>1.5.0-alpha.11</version>
+				</dependency> <dependency> <groupId>org.jruby</groupId> <artifactId>jruby-complete</artifactId>
+				<version>1.7.21</version> </dependency> <dependency> <groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctorj</artifactId> <version>1.5.4</version> </dependency>
+				</dependencies> <executions> <execution> <id>output-html</id> <phase>generate-resources</phase>
+				<goals> <goal>process-asciidoc</goal> </goals> <configuration> <sourceDirectory>docs</sourceDirectory>
+				<sourceDocumentName>index.adoc</sourceDocumentName> <outputDirectory>target/docs/${project.version}</outputDirectory>
+				<backend>html5</backend> <sourceHighlighter>coderay</sourceHighlighter> <embedAssets>false</embedAssets>
+				<attributes> <linkcss>true</linkcss> <stylesheet>asciidoc.css</stylesheet>
+				<sectnums>true</sectnums> </attributes> </configuration> </execution> <execution>
+				<id>output-pdf</id> <phase>generate-resources</phase> <goals> <goal>process-asciidoc</goal>
+				</goals> <configuration> <sourceDirectory>docs</sourceDirectory> <sourceDocumentName>index.adoc</sourceDocumentName>
+				<outputDirectory>target/docs/${project.version}</outputDirectory> <backend>pdf</backend>
+				<sourceHighlighter>coderay</sourceHighlighter> <embedAssets>false</embedAssets>
+				<attributes> <linkcss>true</linkcss> <stylesheet>asciidoc.css</stylesheet>
+				<sectnums>true</sectnums> </attributes> </configuration> </execution> </executions>
+				</plugin> -->
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
+					<version>2.2</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.tomcat.embed</groupId>
+							<artifactId>tomcat-embed-core</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-util</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-coyote</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-api</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-jdbc</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-dbcp</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-servlet-api</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-jsp-api</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-jasper</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-jasper-el</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-el-api</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-catalina</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-tribes</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-catalina-ha</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-annotations-api</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat-juli</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+
+						<dependency>
+							<groupId>org.apache.tomcat.embed</groupId>
+							<artifactId>tomcat-embed-logging-juli</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.tomcat.embed</groupId>
+							<artifactId>tomcat-embed-logging-log4j</artifactId>
+							<version>${tomcat.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
