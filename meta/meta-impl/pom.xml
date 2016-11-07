@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.softshaper</groupId>
-			<artifactId>bd</artifactId>
+			<artifactId>db</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>

@@ -6,7 +6,7 @@
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>bd</artifactId>
+    <artifactId>db</artifactId>
 
     <properties>
         <jooq.version>3.8.2</jooq.version>
