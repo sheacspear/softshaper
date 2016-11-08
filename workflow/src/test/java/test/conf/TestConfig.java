@@ -4,7 +4,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages={"ru.zorb.web.rest","test.communda.action"})
+@ComponentScan(basePackages={"ru.softshaper.web.rest","test.communda.action"})
 public class TestConfig {
 
 }

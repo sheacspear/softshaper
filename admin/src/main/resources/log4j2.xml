@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG" package="ru.zorb" name="XMLConfigZorb">
+<Configuration status="DEBUG" package="ru.softshaper" name="XMLConfigsoftshaper">
 	<Appenders>
 		<!-- Async Loggers will auto-flush in batches, so switch off immediateFlush. -->
 		<RandomAccessFile name="RandomAccessFile" fileName="asyncWithLocation.log"
@@ -15,9 +15,9 @@
 	<Loggers>
 		<logger name="org.springframework" level="WARN" />
 		<logger name="org.springframework.security" level="WARN" />
-		<logger name="ru.zorb.security" level="WARN" />
-		<logger name="org.apache.cxf" level="DEBUG" />		
-		<logger name="ru.zorb" level="debug" />
+		<logger name="ru.softshaper.security" level="WARN" />
+		<logger name="org.apache.cxf" level="DEBUG" />
+		<logger name="ru.softshaper" level="debug" />
 		<asyncRoot level="WARN" includeLocation="true">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="RandomAccessFile" />

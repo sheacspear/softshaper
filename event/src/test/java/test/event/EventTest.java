@@ -12,7 +12,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ru.zorb.conf.EventConfig.class })
+@ContextConfiguration(classes = { ru.softshaper.conf.EventConfig.class })
 public class EventTest {
 
   @Autowired

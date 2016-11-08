@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ru.zorb.conf.JooqConfig;
+import ru.softshaper.conf.JooqConfig;
 
 import javax.sql.DataSource;
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ import java.math.BigInteger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JooqConfig.class})
 //@WebAppConfiguration
-@ComponentScan("ru.zorb")
+@ComponentScan("ru.softshaper")
 public class JOOQTest {
 
     @Autowired

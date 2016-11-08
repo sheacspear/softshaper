@@ -102,7 +102,7 @@
                                     <springAnnotations>true</springAnnotations>
                                 </generate>
                                 <target>
-                                    <packageName>ru.zorb.storage.jooq</packageName>
+                                    <packageName>ru.softshaper.storage.jooq</packageName>
                                     <directory>target/generated-sources/jooq</directory>
                                 </target>
                             </generator>

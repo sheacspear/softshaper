@@ -11,7 +11,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 //@WebAppConfiguration("classpath:test-web-resources")
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(classes = {WebConfig.class,WebSecurityConfig.class,test.conf.PersistenceConfig.class})
-//@ComponentScan("ru.zorb")
+//@ComponentScan("ru.softshaper")
 public class WebTest {
 
   //@Test

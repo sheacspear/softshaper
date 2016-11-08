@@ -23,13 +23,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.zorb.conf.EventConfig;
-import ru.zorb.conf.MetaConfig;
-import ru.zorb.services.workflow.action.UserService;
+import ru.softshaper.conf.EventConfig;
+import ru.softshaper.conf.MetaConfig;
+import ru.softshaper.services.workflow.action.UserService;
 import test.conf.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {MetaConfig.class,ru.zorb.conf.CommundaConfig.class, TestConfig.class,EventConfig.class })
+@ContextConfiguration(classes = {MetaConfig.class,ru.softshaper.conf.CommundaConfig.class, TestConfig.class,EventConfig.class })
 @Transactional
 public class CommundaTest {
 
