@@ -49,8 +49,8 @@ public class CommundaTest {
   private FormService formService;
 
 
-  //@Test
-   @Ignore
+  @Test
+  @Ignore
   @Rollback
   public void test() {
     // параметры запуска

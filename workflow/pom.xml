@@ -94,18 +94,29 @@
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>event</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>meta-impl</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>security-impl</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
-
     </dependencies>
+
+    <build>
+        <!--Ресурсы -->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>**/*.bpmn</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

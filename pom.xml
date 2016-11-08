@@ -44,9 +44,7 @@
         <module>notification</module>
         <module>report</module>
         <module>workflow</module>
-        <!--
         <module>admin</module>
-                -->
     </modules>
     <properties>
         <spring>4.2.5.RELEASE</spring>

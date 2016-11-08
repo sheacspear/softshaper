@@ -60,7 +60,18 @@
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>meta-impl</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <!--Ресурсы -->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>**/*.jrxml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

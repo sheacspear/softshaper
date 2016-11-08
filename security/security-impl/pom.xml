@@ -62,22 +62,22 @@
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>db</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>security-api</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>cache</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>meta-impl</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

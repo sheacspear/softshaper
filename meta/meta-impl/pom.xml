@@ -32,22 +32,22 @@
 		<dependency>
 			<groupId>org.softshaper</groupId>
 			<artifactId>db</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.softshaper</groupId>
 			<artifactId>security-api</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.softshaper</groupId>
 			<artifactId>meta-api</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.softshaper</groupId>
 			<artifactId>file-api</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

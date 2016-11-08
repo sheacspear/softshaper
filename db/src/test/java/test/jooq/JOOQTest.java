@@ -23,6 +23,7 @@ public class JOOQTest {
     @Autowired
     DataSource dataSource;
 
+    @org.junit.Ignore
     @org.junit.Test
     public void test() {
         try {

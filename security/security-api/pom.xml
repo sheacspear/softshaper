@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.softshaper</groupId>
             <artifactId>meta-api</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
