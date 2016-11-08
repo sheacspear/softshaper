@@ -14,15 +14,12 @@ import org.jooq.util.Database;
 import org.jooq.util.Databases;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import ru.softshaper.conf.bean.ApplicationBean;
 
 /**
  * JooqConfig for database
@@ -31,11 +28,13 @@ import ru.softshaper.conf.bean.ApplicationBean;
  *
  */
 @Configuration
-@Import({ ApplicationConfig.class })
 @EnableTransactionManagement
 @ComponentScan("ru.softshaper.storage")
+@PropertySource("classpath:application.properties")
 public class JooqConfig {
 
+  @Autowired
+  private Environment env;
   /**
    * max alive database connection
    */
@@ -45,12 +44,6 @@ public class JooqConfig {
    * max database connection
    */
   private static final int MAX_ACTIOVE = 20;
-
-  /**
-   * Bean from file application.properties
-   */
-  @Autowired
-  private ApplicationBean applicationBean;
 
   /**
    * Формирование настроек источника данных
@@ -69,13 +62,10 @@ public class JooqConfig {
     poolProperties.setTestWhileIdle(true);
     poolProperties.setTestOnReturn(true);
     org.apache.tomcat.jdbc.pool.DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource(poolProperties);
-    ds.setDriverClassName(applicationBean.getBdDriverClassName());
-    ds.setUrl(applicationBean.getBdUrl());
-    ds.setUsername(applicationBean.getBdLogin());
-    ds.setPassword(applicationBean.getBdPass());
-    
-    
-    
+    ds.setDriverClassName(env.getProperty("bdDriverClassName"));
+    ds.setUrl(env.getProperty("bdUrl"));
+    ds.setUsername(env.getProperty("bdLogin"));
+    ds.setPassword(env.getProperty("bdPass"));
     return ds;
   }
 
@@ -124,7 +114,7 @@ public class JooqConfig {
   public DefaultConfiguration configuration(DataSourceConnectionProvider dataSourceConnectionProvider) {
     DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
     jooqConfiguration.set(dataSourceConnectionProvider);
-    final String bdDatabaseType = applicationBean.getBdDatabaseType();
+    final String bdDatabaseType =env.getProperty("bdDatabaseType");
     jooqConfiguration
         .set(bdDatabaseType.equals("POSTGRESQL") ? SQLDialect.POSTGRES_9_5 : SQLDialect.valueOf(bdDatabaseType));
     return jooqConfiguration;
@@ -150,7 +140,7 @@ public class JooqConfig {
    */
   @Bean
   public Database database(DefaultConfiguration defaultConfiguration, DataSource dataSource) {
-    final String bdDatabaseType = applicationBean.getBdDatabaseType();
+    final String bdDatabaseType = env.getProperty("bdDatabaseType");
     final Database database = Databases
         .database(bdDatabaseType.equals("POSTGRESQL") ? SQLDialect.POSTGRES_9_5 : SQLDialect.valueOf(bdDatabaseType));
     try {

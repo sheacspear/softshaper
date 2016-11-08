@@ -29,18 +29,21 @@ public class MetaConfig {
    * DataSource by Record
    */
   @Autowired
+  @Qualifier("data")
   private ContentDataSource<Record> dynamicDataSource;
 
   /**
    * DataSource by MetaClass
    */
   @Autowired
+  @Qualifier("metaClass")
   private ContentDataSource<MetaClass> metaClassDataSource;
 
   /**
    * DataSource by MetaField
    */
   @Autowired
+  @Qualifier("metaField")
   private ContentDataSource<MetaField> metaFieldDataSource;
 
   /**

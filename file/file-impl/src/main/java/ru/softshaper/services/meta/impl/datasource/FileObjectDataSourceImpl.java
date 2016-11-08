@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 /**
  * Created by Sunchise on 08.09.2016.
  */
-@Component
-@Qualifier("dbFileObject")
+//@Component
+//@Qualifier("dbFileObject")
 public class FileObjectDataSourceImpl implements FileObjectDataSource {
 
   public static final ru.softshaper.storage.jooq.tables.FileObject FILE_OBJECT_TABLE = ru.softshaper.storage.jooq.tables.FileObject.FILE_OBJECT;

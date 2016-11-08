@@ -30,7 +30,8 @@ import java.util.Map;
  * Хранлилище для файлов в MongoDB GridFS
  */
 @Component
-@Qualifier("mongoDbFileObject")
+//@Qualifier("mongoDbFileObject")
+@Qualifier("fileObjectDataSource")
 public class MangoDBFileObjectDataSourceImpl implements FileObjectDataSource {
 
   private static final Logger log = LoggerFactory.getLogger(MangoDBFileObjectDataSourceImpl.class);
