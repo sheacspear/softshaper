@@ -1,0 +1,1 @@
+mvn wildfly:deploy -Dmaven.test.skip=true

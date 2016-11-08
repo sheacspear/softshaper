@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://cxf.apache.org/jaxrs
+http://cxf.apache.org/schemas/jaxrs.xsd">
+	<jaxrs:server id="customerService" address="/"
+		basePackages="ru.softshaper.web.rest,ru.softshaper.web.rest.query,ru.softshaper.web.rest.command,ru.softshaper.web.rest.report,ru.softshaper.web.rest.workflow,ru.softshaper.web.rest.file,ru.softshaper.web.rest.login,ru.softshaper.web.rest.utils">
+		<jaxrs:providers>
+			<ref bean="jsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server>
+</beans>
