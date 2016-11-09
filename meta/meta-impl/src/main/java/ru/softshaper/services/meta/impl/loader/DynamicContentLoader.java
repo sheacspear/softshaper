@@ -4,9 +4,11 @@ import com.google.common.collect.Maps;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
+
+import ru.softshaper.bean.meta.MetaClassMutableBean;
+import ru.softshaper.bean.meta.MetaFieldMutableBean;
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
-import ru.softshaper.services.meta.bean.MetaClassMutableBean;
-import ru.softshaper.services.meta.bean.MetaFieldMutableBean;
 import ru.softshaper.storage.jooq.tables.DynamicContent;
 
 import java.util.ArrayList;

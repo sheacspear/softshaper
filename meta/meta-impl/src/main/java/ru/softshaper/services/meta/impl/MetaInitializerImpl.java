@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import ru.softshaper.services.meta.ContentDataSource;
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.DataSourceStorage;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;

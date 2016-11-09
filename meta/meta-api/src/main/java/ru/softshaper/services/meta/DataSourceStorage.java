@@ -3,6 +3,8 @@ package ru.softshaper.services.meta;
 import java.util.Collection;
 import java.util.Map;
 
+import ru.softshaper.datasource.meta.ContentDataSource;
+
 /**
  * Хранилище DataSource
  *

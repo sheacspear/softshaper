@@ -1,6 +1,6 @@
 package ru.softshaper.web.bean.objlist;
 
-import ru.softshaper.web.bean.FieldTypeView;
+import ru.softshaper.bean.meta.FieldTypeView;
 
 /**
  *
