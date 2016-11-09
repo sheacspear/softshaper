@@ -47,6 +47,7 @@
 		<module>admin</module>
 	</modules>
 	<properties>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring>4.2.5.RELEASE</spring>
 		<spring.sec>4.0.4.RELEASE</spring.sec>
 		<spring.ses>1.1.1.RELEASE</spring.ses>
