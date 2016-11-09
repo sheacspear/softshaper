@@ -6,10 +6,15 @@
     <groupId>org.softshaper</groupId>
     <artifactId>parent</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <relativePath>./../</relativePath>
   </parent>
   <artifactId>admin</artifactId>
   <packaging>war</packaging>
   <name>Admin-SoftShaper</name>
+
+  <properties>
+  	<tomcat.version>7.0.72</tomcat.version>
+  </properties>
   <profiles>
     <profile>
       <id>mongo-shek</id>

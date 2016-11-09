@@ -3,13 +3,14 @@ package ru.softshaper.web.view.mapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.conditions.impl.ConditionFieldImpl;
-import ru.softshaper.services.meta.staticcontent.meta.FileObjectStaticContent;
-import ru.softshaper.web.bean.FieldTypeView;
+import ru.softshaper.staticcontent.file.FileObjectStaticContent;
 import ru.softshaper.web.bean.obj.FullObjectView;
 import ru.softshaper.web.bean.obj.FullObjectViewBuilder;
 import ru.softshaper.web.bean.obj.ObjectView;

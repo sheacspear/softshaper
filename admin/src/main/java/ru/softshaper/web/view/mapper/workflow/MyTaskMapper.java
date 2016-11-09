@@ -1,11 +1,12 @@
 package ru.softshaper.web.view.mapper.workflow;
 
 import com.google.common.base.Preconditions;
+
+import ru.softshaper.beans.workflow.WFTask;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.workflow.beans.WFTask;
-import ru.softshaper.services.workflow.staticcontent.MyTaskStaticContent;
+import ru.softshaper.staticcontent.workflow.MyTaskStaticContent;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 import ru.softshaper.web.view.mapper.ViewMapperBase;

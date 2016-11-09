@@ -3,7 +3,7 @@ package ru.softshaper.web.view.mapper;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.staticcontent.meta.MetaClassStaticContent;
+import ru.softshaper.staticcontent.meta.meta.MetaClassStaticContent;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 

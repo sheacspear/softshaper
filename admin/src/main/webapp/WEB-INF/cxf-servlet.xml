@@ -7,7 +7,7 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://cxf.apache.org/jaxrs
 http://cxf.apache.org/schemas/jaxrs.xsd">
 	<jaxrs:server id="customerService" address="/"
-		basePackages="ru.softshaper.web.rest,ru.softshaper.web.rest.query,ru.softshaper.web.rest.command,ru.softshaper.web.rest.report,ru.softshaper.web.rest.workflow,ru.softshaper.web.rest.file,ru.softshaper.web.rest.login,ru.softshaper.web.rest.utils">
+		basePackages="ru.softshaper.rest,ru.softshaper.rest.query,ru.softshaper.rest.command,ru.softshaper.rest.report,ru.softshaper.rest.workflow,ru.softshaper.rest.file,ru.softshaper.rest.login,ru.softshaper.rest.utils">
 		<jaxrs:providers>
 			<ref bean="jsonProvider" />
 		</jaxrs:providers>

@@ -5,6 +5,7 @@
         <groupId>org.softshaper</groupId>
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
+        <relativePath>./../</relativePath>
     </parent>
     <artifactId>event</artifactId>
     <dependencies>
@@ -29,6 +30,7 @@
         <dependency>
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 </project>

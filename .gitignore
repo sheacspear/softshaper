@@ -10,3 +10,5 @@ dist
 .settings
 .project
 testdb
+.metadata
+RemoteSystemsTempFiles

@@ -4,7 +4,7 @@ import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.staticcontent.meta.FieldTypeStaticContent;
+import ru.softshaper.staticcontent.meta.meta.FieldTypeStaticContent;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 

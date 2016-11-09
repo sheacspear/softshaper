@@ -5,7 +5,7 @@ import org.camunda.bpm.engine.repository.ProcessDefinition;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.workflow.staticcontent.ProcessDefinitionStaticContent;
+import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 import ru.softshaper.web.view.mapper.ViewMapperBase;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 
-import ru.softshaper.web.msg.websocket.MsgBean;
+import ru.softshaper.websocket.msg.bean.MsgBean;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import ru.softshaper.services.meta.ContentDataSource;
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClassMutable;
 import ru.softshaper.services.meta.MetaFieldMutable;
 import ru.softshaper.services.meta.MetaLoader;
