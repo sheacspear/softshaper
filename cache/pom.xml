@@ -8,9 +8,6 @@
 		<relativePath>./../</relativePath>
 	</parent>
 	<artifactId>cache</artifactId>
-
-	<properties>
-	</properties>
 	<dependencies>
 		<!-- spring -->
 		<dependency>
@@ -26,6 +23,10 @@
 			<artifactId>spring-core</artifactId>
 		</dependency>
 		<!-- spring -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
