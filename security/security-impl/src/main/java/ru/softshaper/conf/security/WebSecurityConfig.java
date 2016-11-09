@@ -62,7 +62,7 @@ import ru.softshaper.storage.jooq.tables.pojos.UsersRoles;
  */
 @Configuration
 @Import({ CacheManagerConfig.class, JooqConfig.class })
-@ComponentScan({"ru.softshaper.services.security","ru.softshaper.staticcontent.security"})
+@ComponentScan({"ru.softshaper.services.security","ru.softshaper.staticcontent.organizations","ru.softshaper.staticcontent.sec"})
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
