@@ -5,7 +5,8 @@
         <groupId>org.softshaper</groupId>
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
-    </parent>	
+        <relativePath>./../</relativePath>
+    </parent>
     <artifactId>security</artifactId>
     <packaging>pom</packaging>
     <modules>
