@@ -2,7 +2,8 @@ package ru.softshaper.services.meta;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import ru.softshaper.web.bean.FieldTypeView;
+
+import ru.softshaper.bean.meta.FieldTypeView;
 
 import java.util.Collection;
 import java.util.Map;

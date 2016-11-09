@@ -1,10 +1,10 @@
 package ru.softshaper.web.view.mapper;
 
+import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.staticcontent.meta.FieldTypeViewStaticContent;
-import ru.softshaper.web.bean.FieldTypeView;
+import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 

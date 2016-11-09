@@ -6,6 +6,8 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.ConvertConditionVisitor;
 import ru.softshaper.services.meta.conditions.impl.*;

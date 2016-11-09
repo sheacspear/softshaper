@@ -1,7 +1,8 @@
 package ru.softshaper.web.view.impl;
 
 import com.google.common.collect.Maps;
-import ru.softshaper.services.meta.ContentDataSource;
+
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.web.bean.obj.FullObjectView;
 import ru.softshaper.web.bean.obj.TitleObjectView;
 import ru.softshaper.web.bean.objlist.ListObjectsView;

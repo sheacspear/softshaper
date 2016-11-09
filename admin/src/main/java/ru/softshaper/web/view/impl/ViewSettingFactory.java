@@ -4,11 +4,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.storage.jooq.tables.daos.FieldViewDao;
-import ru.softshaper.web.bean.FieldTypeView;
 import ru.softshaper.web.view.bean.ViewSetting;
 
 import javax.annotation.PostConstruct;

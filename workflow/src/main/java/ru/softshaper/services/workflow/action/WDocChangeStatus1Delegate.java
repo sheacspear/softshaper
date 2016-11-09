@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import ru.softshaper.services.meta.ContentDataSource;
+import ru.softshaper.datasource.meta.ContentDataSource;
 
 @Component("changeDocReqTask")
 public class WDocChangeStatus1Delegate implements JavaDelegate {

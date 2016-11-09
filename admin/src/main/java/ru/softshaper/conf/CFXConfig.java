@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import ru.softshaper.conf.meta.MetaConfig;
+
 /**
  * CFXConfig for JAX-WS JAX-RS
  *
