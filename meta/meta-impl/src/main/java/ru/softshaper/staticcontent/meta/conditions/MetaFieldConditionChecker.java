@@ -1,4 +1,4 @@
-package ru.softshaper.staticcontent.meta;
+package ru.softshaper.staticcontent.meta.conditions;
 
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;

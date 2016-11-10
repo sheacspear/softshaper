@@ -11,11 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.softshaper.bean.meta.MetaFieldBean;
-import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
-import ru.softshaper.staticcontent.meta.MetaFieldConditionChecker;
+import ru.softshaper.staticcontent.meta.conditions.MetaFieldConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;

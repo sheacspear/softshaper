@@ -29,6 +29,7 @@ public interface ContentDataSource<T> {
    *
    * @param metaInitializer
    */
+  //todo: убрать этот метод от сюда
   void setMetaInitializer(MetaInitializer metaInitializer);
 
   T getObj(final GetObjectsParams params);

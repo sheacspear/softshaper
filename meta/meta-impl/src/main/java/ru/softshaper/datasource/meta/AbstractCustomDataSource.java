@@ -1,19 +1,29 @@
 package ru.softshaper.datasource.meta;
 
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.comparators.ObjectComparator;
+import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
-import ru.softshaper.services.meta.impl.SortOrder;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * �������� ��� ��������� ���������
  */
 public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T> {
+
+  private final ObjectComparator<T> objectComparator;
+
+  private final ObjectExtractor<T> objectExtractor;
+
+  public AbstractCustomDataSource(ObjectComparator<T> objectComparator, ObjectExtractor<T> objectExtractor) {
+    this.objectComparator = objectComparator;
+    this.objectExtractor = objectExtractor;
+  }
 
   @Override
   public T getObj(GetObjectsParams params) {
@@ -24,11 +34,15 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
   @Override
   public Collection<T> getObjects(GetObjectsParams params) {
     Collection<T> objects = getAllObjects();
-    objects = filterByIds(params, objects);
-    objects = filterByConditions(params, objects);
-    objects = order(params, objects);
-    objects = limitOffset(params, objects);
-    return objects;
+    if (objects == null) {
+      return null;
+    }
+    Stream<T> stream = objects.stream();
+    stream = filterByIds(params, stream);
+    stream = filterByConditions(params, stream);
+    stream = order(params, stream);
+    stream = limitOffset(params, stream);
+    return stream.collect(Collectors.toList());
   }
 
   @Override
@@ -38,30 +52,57 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
 
 
 
-  protected Collection<T> limitOffset(GetObjectsParams params, Collection<T> objects) {
+  protected Stream<T> limitOffset(GetObjectsParams params, Stream<T> stream) {
     if (params.getLimit() < Integer.MAX_VALUE || params.getOffset() > 0) {
-      objects = objects.stream()
-          .skip(params.getOffset())
-          .limit(params.getLimit())
-          .collect(Collectors.toList());
+          stream = stream.skip(params.getOffset())
+          .limit(params.getLimit());
     }
-    return objects;
+    return stream;
   }
 
-  protected abstract Collection<T> order(GetObjectsParams params, Collection<T> objects);
+  protected Stream<T> order(GetObjectsParams params, Stream<T> stream) {
+    LinkedHashMap<MetaField, ru.softshaper.services.meta.impl.SortOrder> orderFields = params.getOrderFields();
+    if (orderFields != null) {
+      stream = stream.sorted((o1, o2) -> {
+        int compareResult;
+        if (o1 == null) {
+          compareResult = o2 == null ? 0 : -1;
+        } else if (o2 == null) {
+          compareResult = 1;
+        } else {
+          compareResult = 0;
+          for (Map.Entry<MetaField, ru.softshaper.services.meta.impl.SortOrder> order : orderFields.entrySet()) {
+            compareResult = objectComparator.compareField(order.getKey(), o1, o2);
+            if (compareResult != 0) {
+              compareResult = ru.softshaper.services.meta.impl.SortOrder.DESC.equals(order.getValue())
+                  ? compareResult * -1
+                  : compareResult;
+              break;
+            }
+          }
+        }
+        return compareResult;
+      });
+    }
+    return stream;
+  }
 
-  protected abstract Collection<T> filterByConditions(GetObjectsParams params, Collection<T> objects);
+  protected Stream<T> filterByConditions(GetObjectsParams params, Stream<T> stream) {
+    ru.softshaper.services.meta.conditions.Condition condition = params.getCondition();
+    if (condition != null) {
+      stream = stream.filter(object -> condition.check(newCheckCondition(object)));
+    }
+    return stream;
+  }
 
-  private Collection<T> filterByIds(GetObjectsParams params, Collection<T> objects) {
+  protected Stream<T> filterByIds(GetObjectsParams params, Stream<T> stream) {
     if (params.getIds() != null && !params.getIds().isEmpty()) {
-      objects = objects.stream()
-          .filter(object -> params.getIds().contains(getId(object)))
-          .collect(Collectors.toSet());
+      stream = stream.filter(object -> params.getIds().contains(objectExtractor.getId(object, params.getMetaClass())));
     }
-    return objects;
+    return stream;
   }
+
+  protected abstract CheckConditionVisitor newCheckCondition(T object);
 
   protected abstract Collection<T> getAllObjects();
-
-  protected abstract String getId(T object);
 }

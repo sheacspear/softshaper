@@ -12,12 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import ru.softshaper.bean.meta.MetaClassMutableBean;
-import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.SortOrder;
 import ru.softshaper.services.security.ContentSecurityManager;
-import ru.softshaper.staticcontent.meta.MetaClassConditionChecker;
+import ru.softshaper.staticcontent.meta.conditions.MetaClassConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.MetaClassStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicContentDao;
