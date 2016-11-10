@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ru.softshaper.bean.meta.MetaFieldBean;
 import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.comparators.ObjectComparator;
+import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
 import ru.softshaper.staticcontent.meta.conditions.MetaFieldConditionChecker;
@@ -33,7 +35,7 @@ import java.util.stream.Stream;
 @Component
 @ThreadSafe
 @Qualifier("metaField")
-public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
+public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField> {
 
   /**
    * DSLContext
@@ -63,7 +65,10 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
    * @param metaStorage
    */
   @Autowired
-  public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage) {
+  public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage,
+                                 @Qualifier(MetaFieldStaticContent.META_CLASS) ObjectComparator<MetaField> objectComparator,
+                                 @Qualifier(MetaFieldStaticContent.META_CLASS) ObjectExtractor<MetaField> objectExtractor) {
+    super(objectComparator, objectExtractor);
     this.dslContext = dslContext;
     this.dynamicFieldDao = dynamicFieldDao;
     this.metaStorage = metaStorage;
@@ -241,12 +246,6 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   }
 
   @Override
-  public MetaField getObj(GetObjectsParams params) {
-    Collection<MetaField> objects = getObjects(params);
-    return objects == null || objects.isEmpty() ? null : objects.iterator().next();
-  }
-
-  @Override
   public Integer getCntObjList(String contentCode) {
     return metaStorage.getMetaFields().size();
   }
@@ -257,69 +256,12 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   }
 
   @Override
-  public Collection<MetaField> getObjects(GetObjectsParams params) {
-    Collection<MetaField> metaFields = metaStorage.getMetaFields();
-    if (params.getIds() != null && !params.getIds().isEmpty()) {
-      metaFields = metaFields.stream()
-          .filter(metaField -> params.getIds().contains(metaField.getId()))
-          .collect(Collectors.toSet());
-    }
-    LinkedHashMap<MetaField, ru.softshaper.services.meta.impl.SortOrder> orderFields = params.getOrderFields();
-    Stream<MetaField> stream = metaFields.stream();
-    ru.softshaper.services.meta.conditions.Condition condition = params.getCondition();
-    if (condition != null) {
-      stream = stream.filter(metaField -> condition.check(new MetaFieldConditionChecker(metaField)));
-    }
-    if (orderFields != null) {
-      stream = stream.sorted((o1, o2) -> {
-        int compareResult;
-        if (o1 == null) {
-          compareResult = -1;
-        } else if (o2 == null) {
-          compareResult = 1;
-        } else {
-          compareResult = 0;
-          //todo: something
-          for (Map.Entry<MetaField, ru.softshaper.services.meta.impl.SortOrder> order : orderFields.entrySet()) {
-            switch (order.getKey().getCode()) {
-              case MetaFieldStaticContent.Field.code:
-                compareResult = o1.getCode().compareTo(o2.getCode());
-                break;
-              case MetaFieldStaticContent.Field.name:
-                compareResult = o1.getName().compareTo(o2.getName());
-                break;
-              case MetaFieldStaticContent.Field.column:
-                compareResult = compareStrings(o1.getColumn(), o2.getColumn());
-                break;
-              case MetaFieldStaticContent.Field.type:
-                compareResult = o1.getType().getName().compareTo(o2.getType().getName());
-                break;
-              case MetaFieldStaticContent.Field.owner:
-                compareResult = o1.getOwner().getName().compareTo(o2.getOwner().getName());
-                break;
-              case MetaFieldStaticContent.Field.linkToMetaClass:
-                compareResult = o1.getLinkToMetaClass() == null ? o2.getLinkToMetaClass() == null ? 0 : -1 : o2.getLinkToMetaClass() == null ? 1 : o1.getLinkToMetaClass().getName().compareTo(o2.getLinkToMetaClass().getName());
-                break;
-              case MetaFieldStaticContent.Field.backReferenceField:
-                compareResult = o1.getBackReferenceField() == null ?  o2.getBackReferenceField() == null ? 0 : -1 : o2.getBackReferenceField() == null ? 1 : o1.getBackReferenceField().getName().compareTo(o2.getBackReferenceField().getName());
-                break;
-            }
-
-            if (compareResult != 0) {
-              compareResult = ru.softshaper.services.meta.impl.SortOrder.DESC.equals(order.getValue()) ? compareResult * -1 : compareResult;
-              break;
-            }
-          }
-        }
-        return compareResult;
-      });
-    }
-    return stream.skip(params.getOffset())
-      .limit(params.getLimit())
-      .collect(Collectors.toList());
+  protected CheckConditionVisitor newCheckCondition(MetaField object) {
+    return new MetaFieldConditionChecker(object);
   }
 
-  private int compareStrings(String s1, String s2) {
-    return s1 == null ? s2 == null ? 0 : -1 : s2 == null ? 1 : s1.compareTo(s2);
+  @Override
+  protected Collection<MetaField> getAllObjects() {
+    return metaStorage.getMetaFields();
   }
 }
