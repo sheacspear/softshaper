@@ -261,7 +261,7 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   }
 
   @Override
-  protected Collection<MetaField> getAllObjects() {
+  protected Collection<MetaField> getAllObjects(GetObjectsParams params) {
     return metaStorage.getMetaFields();
   }
 }

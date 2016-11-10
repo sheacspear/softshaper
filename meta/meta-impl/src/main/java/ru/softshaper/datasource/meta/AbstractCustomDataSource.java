@@ -33,7 +33,7 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
 
   @Override
   public Collection<T> getObjects(GetObjectsParams params) {
-    Collection<T> objects = getAllObjects();
+    Collection<T> objects = getAllObjects(params);
     if (objects == null) {
       return null;
     }
@@ -104,5 +104,5 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
 
   protected abstract CheckConditionVisitor newCheckCondition(T object);
 
-  protected abstract Collection<T> getAllObjects();
+  protected abstract Collection<T> getAllObjects(GetObjectsParams params);
 }

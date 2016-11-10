@@ -1,5 +1,6 @@
 package ru.softshaper.datasource.workflow;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.task.TaskQuery;
@@ -7,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import ru.softshaper.datasource.meta.AbstractCustomDataSource;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.comparators.ObjectComparator;
+import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.staticcontent.workflow.TaskStaticContent;
 
 import javax.ws.rs.NotSupportedException;
 import java.util.Collection;
@@ -21,39 +27,23 @@ import java.util.Map;
  */
 @Component
 @Qualifier("task")
-public class TaskDataSource implements ContentDataSource<Task> {
+public class TaskDataSource extends AbstractCustomDataSource<Task> {
+
+  private final TaskService taskService;
+
+  private final MetaStorage metaStorage;
 
   @Autowired
-  private TaskService taskService;
-
-  @Autowired
-  private MetaStorage metaStorage;
-
-  @Override
-  public Collection<Task> getObjects(GetObjectsParams params) {
-    TaskQuery taskQuery = taskService.createTaskQuery();
-    if (params.getIds() != null && !params.getIds().isEmpty()) {
-      params.getIds().forEach(taskQuery::taskId);
-    }
-    return taskQuery.active().list();
+  public TaskDataSource(TaskService taskService, MetaStorage metaStorage,
+                        @Qualifier(TaskStaticContent.META_CLASS) ObjectComparator<Task> objectComparator,
+                        @Qualifier(TaskStaticContent.META_CLASS) ObjectExtractor<Task> objectExtractor) {
+    super(objectComparator, objectExtractor);
+    this.taskService = taskService;
+    this.metaStorage = metaStorage;
   }
 
   @Override
   public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
-    throw new NotSupportedException();
-  }
-
-  @Override
-  public void setMetaInitializer(MetaInitializer metaInitializer) {
-
-  }
-
-  @Override
-  public Task getObj(GetObjectsParams params) {
-    if (params.getIds() != null && params.getIds().size() == 1) {
-      Collection<Task> objects = getObjects(params);
-      return objects.isEmpty() ? null : objects.iterator().next();
-    }
     throw new NotSupportedException();
   }
 
@@ -81,5 +71,19 @@ public class TaskDataSource implements ContentDataSource<Task> {
   @Override
   public Class<?> getIdType(String metaClassCode) {
     return String.class;
+  }
+
+  @Override
+  protected CheckConditionVisitor newCheckCondition(Task object) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected Collection<Task> getAllObjects(GetObjectsParams params) {
+    TaskQuery taskQuery = taskService.createTaskQuery();
+    if (params.getIds() != null && !params.getIds().isEmpty()) {
+      params.getIds().forEach(taskQuery::taskId);
+    }
+    return taskQuery.active().list();
   }
 }
