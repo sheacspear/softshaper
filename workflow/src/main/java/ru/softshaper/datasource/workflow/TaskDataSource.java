@@ -1,22 +1,19 @@
 package ru.softshaper.datasource.workflow;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.task.TaskQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.datasource.meta.AbstractCustomDataSource;
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.services.meta.comparators.ObjectComparator;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
+import ru.softshaper.staticcontent.workflow.comporators.TaskObjectComparator;
 
 import javax.ws.rs.NotSupportedException;
 import java.util.Collection;
@@ -35,9 +32,8 @@ public class TaskDataSource extends AbstractCustomDataSource<Task> {
 
   @Autowired
   public TaskDataSource(TaskService taskService, MetaStorage metaStorage,
-                        @Qualifier(TaskStaticContent.META_CLASS) ObjectComparator<Task> objectComparator,
                         @Qualifier(TaskStaticContent.META_CLASS) ObjectExtractor<Task> objectExtractor) {
-    super(objectComparator, objectExtractor);
+    super(new TaskObjectComparator(objectExtractor), objectExtractor);
     this.taskService = taskService;
     this.metaStorage = metaStorage;
   }
@@ -75,7 +71,7 @@ public class TaskDataSource extends AbstractCustomDataSource<Task> {
 
   @Override
   protected CheckConditionVisitor newCheckCondition(Task object) {
-    throw new NotImplementedException();
+    return new DefaultConditionChecker<>(object, getObjectExtractor());
   }
 
   @Override

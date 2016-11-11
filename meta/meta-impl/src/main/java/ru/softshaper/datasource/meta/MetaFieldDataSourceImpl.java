@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ru.softshaper.bean.meta.MetaFieldBean;
 import ru.softshaper.services.meta.*;
-import ru.softshaper.services.meta.comparators.ObjectComparator;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
@@ -24,10 +23,7 @@ import ru.softshaper.storage.jooq.tables.records.DynamicFieldRecord;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Sunchise on 16.08.2016.
@@ -66,9 +62,8 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
    */
   @Autowired
   public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage,
-                                 @Qualifier(MetaFieldStaticContent.META_CLASS) ObjectComparator<MetaField> objectComparator,
                                  @Qualifier(MetaFieldStaticContent.META_CLASS) ObjectExtractor<MetaField> objectExtractor) {
-    super(objectComparator, objectExtractor);
+    super(objectExtractor);
     this.dslContext = dslContext;
     this.dynamicFieldDao = dynamicFieldDao;
     this.metaStorage = metaStorage;

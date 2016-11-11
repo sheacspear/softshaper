@@ -7,11 +7,11 @@ import ru.softshaper.services.meta.comparators.ObjectComparator;
 /**
  * Created by Sunchise on 11.11.2016.
  */
-public abstract class AbstractObjectComparator<T> implements ObjectComparator<T> {
+public class DefaultObjectComparator<T> implements ObjectComparator<T> {
 
   private final ObjectExtractor<T> objectExtractor;
 
-  public AbstractObjectComparator(ObjectExtractor<T> objectExtractor) {
+  public DefaultObjectComparator(ObjectExtractor<T> objectExtractor) {
     this.objectExtractor = objectExtractor;
   }
 

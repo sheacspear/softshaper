@@ -6,13 +6,14 @@ import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.comparators.ObjectComparator;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.staticcontent.meta.comparators.DefaultObjectComparator;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * �������� ��� ��������� ���������
+ * Болванка для кастомного датасурса
  */
 public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T> {
 
@@ -23,6 +24,14 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
   public AbstractCustomDataSource(ObjectComparator<T> objectComparator, ObjectExtractor<T> objectExtractor) {
     this.objectComparator = objectComparator;
     this.objectExtractor = objectExtractor;
+  }
+
+  protected ObjectExtractor<T> getObjectExtractor() {
+    return objectExtractor;
+  }
+
+  public AbstractCustomDataSource(ObjectExtractor<T> objectExtractor) {
+    this(new DefaultObjectComparator<T>(objectExtractor), objectExtractor);
   }
 
   @Override
