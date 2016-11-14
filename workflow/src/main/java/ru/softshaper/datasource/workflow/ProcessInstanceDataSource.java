@@ -6,31 +6,29 @@ import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.datasource.meta.AbstractCustomDataSource;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.staticcontent.workflow.ProcessInstanceStaticContent;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Created by Sunchise on 09.10.2016.
  */
 @Component
 @Qualifier("processInstance")
-public class ProcessInstanceDataSource implements ContentDataSource<ProcessInstance> {
+public class ProcessInstanceDataSource extends AbstractCustomDataSource<ProcessInstance> {
+
+  private final RuntimeService runtimeService;
 
   @Autowired
-  private RuntimeService runtimeService;
-
-  @Override
-  public Collection<ProcessInstance> getObjects(GetObjectsParams params) {
-    ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery();
-    if (params.getIds() != null && !params.getIds().isEmpty()) {
-      params.getIds().forEach(processInstanceQuery::processInstanceId);
-    }
-    return processInstanceQuery.active().list();
+  public ProcessInstanceDataSource(@Qualifier(ProcessInstanceStaticContent.META_CLASS) ObjectExtractor<ProcessInstance> objectExtractor,
+                                   RuntimeService runtimeService) {
+    super(objectExtractor);
+    this.runtimeService = runtimeService;
   }
 
   @Override
@@ -39,14 +37,18 @@ public class ProcessInstanceDataSource implements ContentDataSource<ProcessInsta
   }
 
   @Override
-  public void setMetaInitializer(MetaInitializer metaInitializer) {
-    throw new RuntimeException("Not supported exception");
+  protected Collection<ProcessInstance> getAllObjects(GetObjectsParams params) {
+    ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery();
+    if (params.getIds() != null && !params.getIds().isEmpty()) {
+      params.getIds().forEach(processInstanceQuery::processInstanceId);
+    }
+    return processInstanceQuery.active().list();
   }
 
   @Override
-  public ProcessInstance getObj(GetObjectsParams params) {
-    Collection<ProcessInstance> objects = getObjects(params);
-    return objects == null || objects.isEmpty() ? null : objects.iterator().next();
+  protected Stream<ProcessInstance> filterByIds(GetObjectsParams params, Stream<ProcessInstance> stream) {
+    //уже отфильтровано в getAllObjects
+    return stream;
   }
 
   @Override

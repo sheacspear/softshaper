@@ -41,11 +41,6 @@ public class FieldTypeDataSourceImpl extends AbstractCustomDataSource<FieldType>
   }
 
   @Override
-  protected CheckConditionVisitor newCheckCondition(FieldType object) {
-    return new DefaultConditionChecker<>(object, getObjectExtractor());
-  }
-
-  @Override
   protected Collection<FieldType> getAllObjects(GetObjectsParams params) {
     return FieldType.getFieldsTypes();
   }

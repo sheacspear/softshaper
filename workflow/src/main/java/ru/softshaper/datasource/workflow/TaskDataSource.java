@@ -9,11 +9,8 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.datasource.meta.AbstractCustomDataSource;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
-import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
-import ru.softshaper.staticcontent.workflow.comporators.TaskObjectComparator;
 
 import javax.ws.rs.NotSupportedException;
 import java.util.Collection;
@@ -33,7 +30,7 @@ public class TaskDataSource extends AbstractCustomDataSource<Task> {
   @Autowired
   public TaskDataSource(TaskService taskService, MetaStorage metaStorage,
                         @Qualifier(TaskStaticContent.META_CLASS) ObjectExtractor<Task> objectExtractor) {
-    super(new TaskObjectComparator(objectExtractor), objectExtractor);
+    super(objectExtractor);
     this.taskService = taskService;
     this.metaStorage = metaStorage;
   }
@@ -67,11 +64,6 @@ public class TaskDataSource extends AbstractCustomDataSource<Task> {
   @Override
   public Class<?> getIdType(String metaClassCode) {
     return String.class;
-  }
-
-  @Override
-  protected CheckConditionVisitor newCheckCondition(Task object) {
-    return new DefaultConditionChecker<>(object, getObjectExtractor());
   }
 
   @Override

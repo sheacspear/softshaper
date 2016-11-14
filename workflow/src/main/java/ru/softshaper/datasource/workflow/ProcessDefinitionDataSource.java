@@ -6,31 +6,35 @@ import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.datasource.meta.AbstractCustomDataSource;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Created by Sunchise on 09.10.2016.
  */
 @Component
 @Qualifier("processDefinition")
-public class ProcessDefinitionDataSource implements ContentDataSource<ProcessDefinition> {
+public class ProcessDefinitionDataSource extends AbstractCustomDataSource<ProcessDefinition> {
+
+  private final RepositoryService repositoryService;
 
   @Autowired
-  private RepositoryService repositoryService;
+  public ProcessDefinitionDataSource(@Qualifier(ProcessDefinitionStaticContent.META_CLASS) ObjectExtractor<ProcessDefinition> objectExtractor,
+                                     RepositoryService repositoryService) {
+    super(objectExtractor);
+    this.repositoryService = repositoryService;
+  }
 
   @Override
-  public Collection<ProcessDefinition> getObjects(GetObjectsParams params) {
-    ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
-    if (params.getIds() != null) {
-      params.getIds().forEach(processDefinitionQuery::processDefinitionId);
-    }
-    return processDefinitionQuery.active().list();
+  protected Stream<ProcessDefinition> filterByIds(GetObjectsParams params, Stream<ProcessDefinition> stream) {
+    //уже отфильтровано в getAllObjects
+    return stream;
   }
 
   @Override
@@ -39,14 +43,12 @@ public class ProcessDefinitionDataSource implements ContentDataSource<ProcessDef
   }
 
   @Override
-  public void setMetaInitializer(MetaInitializer metaInitializer) {
-
-  }
-
-  @Override
-  public ProcessDefinition getObj(GetObjectsParams params) {
-    Collection<ProcessDefinition> objects = getObjects(params);
-    return objects == null || objects.isEmpty() ? null : objects.iterator().next();
+  protected Collection<ProcessDefinition> getAllObjects(GetObjectsParams params) {
+    ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+    if (params.getIds() != null) {
+      params.getIds().forEach(processDefinitionQuery::processDefinitionId);
+    }
+    return processDefinitionQuery.active().list();
   }
 
   @Override

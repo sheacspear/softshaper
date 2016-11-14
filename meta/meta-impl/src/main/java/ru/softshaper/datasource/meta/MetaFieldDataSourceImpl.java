@@ -251,11 +251,6 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   }
 
   @Override
-  protected CheckConditionVisitor newCheckCondition(MetaField object) {
-    return new MetaFieldConditionChecker(object);
-  }
-
-  @Override
   protected Collection<MetaField> getAllObjects(GetObjectsParams params) {
     return metaStorage.getMetaFields();
   }

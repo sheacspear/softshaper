@@ -7,6 +7,7 @@ import ru.softshaper.services.meta.comparators.ObjectComparator;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.meta.comparators.DefaultObjectComparator;
+import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -111,7 +112,9 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
     return stream;
   }
 
-  protected abstract CheckConditionVisitor newCheckCondition(T object);
+  protected CheckConditionVisitor newCheckCondition(T object) {
+    return new DefaultConditionChecker<T>(object, objectExtractor);
+  }
 
   protected abstract Collection<T> getAllObjects(GetObjectsParams params);
 }

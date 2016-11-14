@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import ru.softshaper.beans.workflow.WFTask;
+import ru.softshaper.datasource.meta.AbstractCustomDataSource;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.Condition;
@@ -19,6 +20,7 @@ import ru.softshaper.services.meta.conditions.ConditionManager;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.security.DynamicContentSecurityManager;
 import ru.softshaper.staticcontent.workflow.BusinessProcessRoleStaticContent;
+import ru.softshaper.staticcontent.workflow.MyTaskStaticContent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,29 +33,35 @@ import java.util.stream.Collectors;
  */
 @Component
 @Qualifier("myTask")
-public class MyTaskDataSource implements ContentDataSource<WFTask> {
+public class MyTaskDataSource extends AbstractCustomDataSource<WFTask> {
+
+  private final TaskService taskService;
+
+  private final RuntimeService runtimeService;
+
+  private final ContentDataSource<Record> bpRolesDataSource;
+
+  private final DynamicContentSecurityManager securityManager;
+
+  private final MetaStorage metaStorage;
+
+  private final ConditionManager conditionManager;
 
   @Autowired
-  private DataSourceStorage dataSourceStorage;
-
-  @Autowired
-  private TaskService taskService;
-
-  @Autowired
-  private RuntimeService runtimeService;
-
-  @Autowired
-  @Qualifier("data")
-  private ContentDataSource<Record> bpRolesDataSource;
-
-  @Autowired
-  private DynamicContentSecurityManager securityManager;
-
-  @Autowired
-  private MetaStorage metaStorage;
-
-  @Autowired
-  private ConditionManager conditionManager;
+  public MyTaskDataSource(@Qualifier(MyTaskStaticContent.META_CLASS) ObjectExtractor<WFTask> objectExtractor,
+                          TaskService taskService, RuntimeService runtimeService,
+                          @Qualifier("data") ContentDataSource<Record> bpRolesDataSource,
+                          DynamicContentSecurityManager securityManager,
+                          MetaStorage metaStorage,
+                          ConditionManager conditionManager) {
+    super(objectExtractor);
+    this.taskService = taskService;
+    this.runtimeService = runtimeService;
+    this.bpRolesDataSource = bpRolesDataSource;
+    this.securityManager = securityManager;
+    this.metaStorage = metaStorage;
+    this.conditionManager = conditionManager;
+  }
 
   @Override
   public Collection<WFTask> getObjects(GetObjectsParams params) {
@@ -127,17 +135,8 @@ public class MyTaskDataSource implements ContentDataSource<WFTask> {
   }
 
   @Override
-  public void setMetaInitializer(MetaInitializer metaInitializer) {
-
-  }
-
-  @Override
-  public WFTask getObj(GetObjectsParams params) {
-    if (params.getIds() != null && params.getIds().size() == 1) {
-      Collection<WFTask> objects = getObjects(params);
-      return objects.isEmpty() ? null : objects.iterator().next();
-    }
-    throw new UnsupportedOperationException();
+  protected Collection<WFTask> getAllObjects(GetObjectsParams params) {
+    throw new RuntimeException("Not supported operation");
   }
 
   @Override
