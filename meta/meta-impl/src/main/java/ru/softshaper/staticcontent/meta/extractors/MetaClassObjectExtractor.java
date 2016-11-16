@@ -1,14 +1,10 @@
 package ru.softshaper.staticcontent.meta.extractors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.meta.MetaClassStaticContent;
 
-/**
- * Created by Sunchise on 11.11.2016.
- */
 @Component
 @Qualifier(MetaClassStaticContent.META_CLASS)
 public class MetaClassObjectExtractor extends AbstractObjectExtractor<MetaClass> {

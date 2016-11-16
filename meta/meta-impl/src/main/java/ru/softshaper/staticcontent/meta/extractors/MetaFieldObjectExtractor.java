@@ -6,9 +6,6 @@ import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 
-/**
- * Created by Sunchise on 10.11.2016.
- */
 @Component
 @Qualifier(MetaFieldStaticContent.META_CLASS)
 public class MetaFieldObjectExtractor extends AbstractObjectExtractor<MetaField> {

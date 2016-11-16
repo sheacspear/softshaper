@@ -10,10 +10,22 @@ import ru.softshaper.services.meta.conditions.impl.*;
  */
 public class DefaultConditionChecker<T> implements CheckConditionVisitor {
 
+  /**
+   * Объект
+   */
   private final T object;
 
+  /**
+   * Экстрактор
+   */
   private final ObjectExtractor<T> extractor;
 
+  /**
+   * Конструктор
+   *
+   * @param object объект
+   * @param extractor экстрактор
+   */
   public DefaultConditionChecker(T object, ObjectExtractor<T> extractor) {
     this.object = object;
     this.extractor = extractor;
@@ -79,6 +91,10 @@ public class DefaultConditionChecker<T> implements CheckConditionVisitor {
    * @return -1 - меньше, 0 - равноб 1 - больше
    */
   private int compareNumbers(Number n1, Number n2) {
+    if (n1 instanceof Comparable && n2 instanceof Comparable) {
+      //noinspection unchecked
+      return ((Comparable) n1).compareTo(n2);
+    }
     int result = Long.compare(n1.longValue(), n2.longValue());
     return result == 0 ? Double.compare(n1.doubleValue(), n2.doubleValue()) : result;
   }

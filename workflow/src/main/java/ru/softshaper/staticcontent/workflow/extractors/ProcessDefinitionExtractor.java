@@ -1,16 +1,12 @@
 package ru.softshaper.staticcontent.workflow.extractors;
 
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.extractors.AbstractObjectExtractor;
 import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
 
-/**
- * Created by Sunchise on 14.11.2016.
- */
 @Component
 @Qualifier(ProcessDefinitionStaticContent.META_CLASS)
 public class ProcessDefinitionExtractor extends AbstractObjectExtractor<ProcessDefinition> {

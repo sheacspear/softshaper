@@ -5,26 +5,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-
-import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.services.meta.comparators.ObjectComparator;
-import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
-import ru.softshaper.services.meta.impl.SortOrder;
-import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeStaticContent;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Map;
 
-/**
- * Created by Sunchise on 21.08.2016.
- */
 @Component
 @ThreadSafe
 @Qualifier("fieldType")

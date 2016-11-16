@@ -1,16 +1,24 @@
 package ru.softshaper.staticcontent.meta.comparators;
 
 import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.ObjectComparator;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.services.meta.comparators.ObjectComparator;
 
 /**
- * Created by Sunchise on 11.11.2016.
+ * Стандартный компоратор
  */
 public class DefaultObjectComparator<T> implements ObjectComparator<T> {
 
+  /**
+   * Экстарктор для получения значения объекта по метаклассу
+   */
   private final ObjectExtractor<T> objectExtractor;
 
+  /**
+   * Конструктор
+   *
+   * @param objectExtractor экстрактор
+   */
   public DefaultObjectComparator(ObjectExtractor<T> objectExtractor) {
     this.objectExtractor = objectExtractor;
   }
@@ -26,6 +34,7 @@ public class DefaultObjectComparator<T> implements ObjectComparator<T> {
       return 1;
     }
     if (v1 instanceof Comparable) {
+      //noinspection unchecked
       return ((Comparable)v1).compareTo(v2);
     }
     throw new RuntimeException("Uncomparable values of class " + v1.getClass().getCanonicalName());

@@ -6,9 +6,6 @@ import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeStaticContent;
 
-/**
- * Created by Sunchise on 12.11.2016.
- */
 @Component
 @Qualifier(FieldTypeStaticContent.META_CLASS)
 public class FieldTypeExtractor extends AbstractObjectExtractor<FieldType> {

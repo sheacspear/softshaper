@@ -7,20 +7,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Sunchise on 10.11.2016.
+ * Экстарктор для получения значения объекта по метаклассу
  */
 public abstract class AbstractObjectExtractor<T> implements ObjectExtractor<T> {
 
-  private final Map<String, Extractor<T, ?>> valueExtractorByField = new HashMap<>();
+  /**
+   * Мапа определяющая какой метод объекта вызвать, что бы получить значение поля
+   */
+  private final Map<String, FieldExtractor<T, ?>> valueExtractorByField = new HashMap<>();
 
-  protected void registerFieldExtractor(String metaFieldCode, Extractor<T, ?> extractor) {
-    valueExtractorByField.put(metaFieldCode, extractor);
+  /**
+   * Зарегистрировать экстрактор поля
+   *
+   * @param metaFieldCode код мета-поля
+   * @param fieldExtractor экстрактор поля
+   */
+  protected void registerFieldExtractor(String metaFieldCode, FieldExtractor<T, ?> fieldExtractor) {
+    valueExtractorByField.put(metaFieldCode, fieldExtractor);
   }
 
   @Override
   public Object getValue(T obj, MetaField field) {
-    Extractor<T, ?> metaFieldValueExtractor = valueExtractorByField.get(field.getCode());
-    return metaFieldValueExtractor == null ? null : metaFieldValueExtractor.value(obj);
+    FieldExtractor<T, ?> metaFieldValueFieldExtractor = valueExtractorByField.get(field.getCode());
+    return metaFieldValueFieldExtractor == null ? null : metaFieldValueFieldExtractor.value(obj);
   }
 
 }

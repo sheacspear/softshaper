@@ -7,9 +7,6 @@ import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.extractors.AbstractObjectExtractor;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
 
-/**
- * Created by Sunchise on 11.11.2016.
- */
 @Component
 @Qualifier(TaskStaticContent.META_CLASS)
 public class TaskObjectExtractor extends AbstractObjectExtractor<Task> {

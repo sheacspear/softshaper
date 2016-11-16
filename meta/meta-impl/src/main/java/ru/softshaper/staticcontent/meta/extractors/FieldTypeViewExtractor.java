@@ -6,9 +6,6 @@ import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
 
-/**
- * Created by Sunchise on 12.11.2016.
- */
 @Component
 @Qualifier(FieldTypeViewStaticContent.META_CLASS)
 public class FieldTypeViewExtractor extends AbstractObjectExtractor<FieldTypeView> {

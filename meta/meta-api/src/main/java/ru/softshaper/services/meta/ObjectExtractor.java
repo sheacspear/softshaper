@@ -1,17 +1,43 @@
 package ru.softshaper.services.meta;
 
 /**
- * Created by Sunchise on 10.11.2016.
+ * Служит для возвращения значений объекта по его метоописанию
  */
 public interface ObjectExtractor<T> {
 
+  /**
+   * Возвращает идентификатор объекта
+   *
+   * @param obj объект
+   * @param metaClass мета-класс объекта
+   * @return идентификатор
+   */
   String getId(T obj, MetaClass metaClass);
 
+  /**
+   * Возвращает значение поля объекта
+   *
+   * @param obj объект
+   * @param field поле
+   * @return значение
+   */
   Object getValue(T obj, MetaField field);
 
 
+  /**
+   * Описывает метод возвращающий значение объекта
+   *
+   * @param <T> класс объекта
+   * @param <V> класс возвращаемого значения
+   */
   @FunctionalInterface
-  interface Extractor<T, V> {
+  interface FieldExtractor<T, V> {
+    /**
+     * Возвращает значение объекта
+     *
+     * @param from объект
+     * @return значение
+     */
     V value(T from);
   }
 }
