@@ -54,7 +54,10 @@ public interface ContentSecurityManager {
    */
   Long getCurrentUserId();
 
-  String getCurrentUserLogin();
+  /**
+ * @return current login
+ */
+String getCurrentUserLogin();
 
   /**
    * Дать права

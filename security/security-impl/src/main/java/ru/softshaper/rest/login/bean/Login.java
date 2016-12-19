@@ -1,19 +1,25 @@
 package ru.softshaper.rest.login.bean;
 
+/**
+ * Login bean
+ * 
+ * @author ashek
+ *
+ */
 public class Login {
   /**
-   *
+   * login
    */
   private String login;
   /**
-   *
+   * password
    */
   private String password;
 
   /**
-  *
-  */
- private String token;
+   * token
+   */
+  private String token;
 
   /**
    * @return the login

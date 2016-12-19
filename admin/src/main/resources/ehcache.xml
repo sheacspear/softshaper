@@ -4,8 +4,74 @@
 	<diskStore path="java.io.tmpdir" />
 	<defaultCache eternal="false" maxElementsInMemory="100000"
 		overflowToDisk="false" diskPersistent="false" timeToLiveSeconds="300" />
-
-
-
-
+	<!-- fieldObj -->
+	<cache name="fieldObj" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!-- fieldObjListCond -->
+	<cache name="fieldObjListCond" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!--="fieldObjCnt -->
+	<cache name="fieldObjCnt" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!-- userRole -->
+	<cache name="userRole" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!-- token -->
+	<cache name="token" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!--metaObjList -->
+	<cache name="metaObjList" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!-- metaObj -->
+	<cache name="metaObj" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!--metaObjListCond -->
+	<cache name="metaObjListCond" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!-- metaObjCnt -->
+	<cache name="metaObjCnt" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
+	<!--fieldObjList -->
+	<cache name="fieldObjList" maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="1000" eternal="false" timeToIdleSeconds="3600"
+		timeToLiveSeconds="3600" memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="none" />
+	</cache>
 </ehcache>
