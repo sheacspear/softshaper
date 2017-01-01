@@ -1,6 +1,6 @@
 package ru.softshaper.web.bean.obj.attr;
 
-import ru.softshaper.web.bean.obj.TitleObjectView;
+import ru.softshaper.web.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.bean.objlist.ListObjectsView;
 
 import java.util.ArrayList;

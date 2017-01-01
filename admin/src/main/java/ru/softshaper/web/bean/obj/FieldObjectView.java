@@ -53,7 +53,7 @@ public class FieldObjectView<T> {
    */
   private final T value;
 
-  FieldObjectView(String title, boolean required, boolean readOnly, int number, boolean titleField, String code, T value, SettingFieldView settings, FieldTypeView type) {
+  public FieldObjectView(String title, boolean required, boolean readOnly, int number, boolean titleField, String code, T value, SettingFieldView settings, FieldTypeView type) {
     super();
     this.title = title;
     this.required = required;

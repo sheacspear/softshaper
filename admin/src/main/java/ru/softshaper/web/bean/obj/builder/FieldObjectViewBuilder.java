@@ -1,6 +1,8 @@
-package ru.softshaper.web.bean.obj;
+package ru.softshaper.web.bean.obj.builder;
 
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.web.bean.obj.FieldObjectView;
+import ru.softshaper.web.bean.obj.SettingFieldView;
 import ru.softshaper.web.view.bean.ViewSetting;
 
 public class FieldObjectViewBuilder<T> {

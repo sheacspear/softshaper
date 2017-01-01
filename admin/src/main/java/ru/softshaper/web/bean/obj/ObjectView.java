@@ -5,8 +5,14 @@ package ru.softshaper.web.bean.obj;
  */
 public interface ObjectView {
 
+  /**
+   * @return
+   */
   String getId();
 
+  /**
+   * @return
+   */
   String getTitle();
 
 }

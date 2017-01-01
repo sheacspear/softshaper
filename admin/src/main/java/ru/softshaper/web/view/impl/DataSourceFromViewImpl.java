@@ -3,8 +3,8 @@ package ru.softshaper.web.view.impl;
 import com.google.common.collect.Maps;
 
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.web.bean.obj.FullObjectView;
-import ru.softshaper.web.bean.obj.TitleObjectView;
+import ru.softshaper.web.bean.obj.impl.FullObjectView;
+import ru.softshaper.web.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.bean.objlist.ListObjectsView;
 import ru.softshaper.web.bean.objlist.TableObjectsView;
 import ru.softshaper.web.view.DataSourceFromView;

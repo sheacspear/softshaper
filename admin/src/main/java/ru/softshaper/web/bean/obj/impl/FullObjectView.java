@@ -1,6 +1,10 @@
-package ru.softshaper.web.bean.obj;
+package ru.softshaper.web.bean.obj.impl;
 
 import java.util.List;
+
+import ru.softshaper.web.bean.obj.FieldObjectView;
+import ru.softshaper.web.bean.obj.ObjectView;
+import ru.softshaper.web.bean.obj.builder.FullObjectViewBuilder;
 
 /**
  * View for bissness object</br>
@@ -8,14 +12,13 @@ import java.util.List;
  */
 public class FullObjectView implements ObjectView {
   /**
-   * contentCode bissness object
-   */
-  private final String contentCode;
-
-  /**
    * key bissness object
    */
   private final String id;
+  /**
+   * contentCode bissness object
+   */
+  private final String contentCode;
 
   /**
    * title bissness object
@@ -32,7 +35,7 @@ public class FullObjectView implements ObjectView {
    * @param title bissness object
    * @param fields bissness object
    */
-  FullObjectView(String contentCode, String id, String title, List<FieldObjectView<?>> fields) {
+  public FullObjectView(String contentCode, String id, String title, List<FieldObjectView<?>> fields) {
     this.contentCode = contentCode;
     this.id = id;
     this.title = title;
@@ -81,6 +84,6 @@ public class FullObjectView implements ObjectView {
    * @return FullObjectViewBuilder
    */
   public static FullObjectViewBuilder newBuilder(String contentCode, String key) {
-    return new FullObjectViewBuilder(contentCode,key);
+    return new FullObjectViewBuilder(contentCode, key);
   }
 }

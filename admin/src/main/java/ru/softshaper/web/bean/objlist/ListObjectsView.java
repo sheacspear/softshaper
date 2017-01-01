@@ -1,8 +1,8 @@
 package ru.softshaper.web.bean.objlist;
 
-import ru.softshaper.web.bean.obj.TitleObjectView;
-
 import java.util.Collection;
+
+import ru.softshaper.web.bean.obj.impl.TitleObjectView;
 
 /**
  * Created by Sunchise on 29.09.2016.

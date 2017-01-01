@@ -1,7 +1,7 @@
 package ru.softshaper.web.view;
 
-import ru.softshaper.web.bean.obj.FullObjectView;
-import ru.softshaper.web.bean.obj.TitleObjectView;
+import ru.softshaper.web.bean.obj.impl.FullObjectView;
+import ru.softshaper.web.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.bean.objlist.ListObjectsView;
 import ru.softshaper.web.bean.objlist.TableObjectsView;
 import ru.softshaper.web.view.utils.ViewObjectsParams;

@@ -1,9 +1,12 @@
-package ru.softshaper.web.bean.obj;
+package ru.softshaper.web.bean.obj.builder;
 
 import com.google.common.collect.Lists;
+
+import ru.softshaper.web.bean.obj.FieldObjectView;
 import ru.softshaper.web.bean.obj.attr.BackLinkClassSettingFieldView;
 import ru.softshaper.web.bean.obj.attr.LinkClassSettingFieldView;
 import ru.softshaper.web.bean.obj.attr.VariantSettingFieldView;
+import ru.softshaper.web.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.bean.objlist.ListObjectsView;
 import ru.softshaper.web.view.bean.ViewSetting;
 
@@ -35,7 +38,7 @@ public class FullObjectViewBuilder {
 	 * @param key
 	 *          bissness object
 	 */
-	FullObjectViewBuilder(String contentCode, String key) {
+	public FullObjectViewBuilder(String contentCode, String key) {
 		this.contentCode = contentCode;
 		this.key = key;
 	}

@@ -1,19 +1,20 @@
-package ru.softshaper.web.bean.obj;
+package ru.softshaper.web.bean.obj.impl;
+
+import ru.softshaper.web.bean.obj.ObjectView;
 
 /**
  * Created by Sunchise on 29.09.2016.
  */
 public class TitleObjectView implements ObjectView {
+  /**
+   * key bissness object
+   */
+  private final String id;
 
   /**
    * contentCode bissness object
    */
   private final String contentCode;
-
-  /**
-   * key bissness object
-   */
-  private final String id;
 
   /**
    * title bissness object
