@@ -4,11 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.bean.meta.FieldTypeView;
-import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.storage.jooq.tables.daos.FieldViewDao;
 import ru.softshaper.web.view.bean.ViewSetting;
 
@@ -28,30 +25,21 @@ public class ViewSettingFactory {
   @Autowired
   private FieldViewDao fieldViewDao;
 
-  @Autowired
-  private MetaStorage metaStorage;
-
   /**
    *
    */
-  private Map<ContentCodeFieldPare, ViewSetting> map = new HashMap<>();
+  private Map<String, ViewSetting> map = new HashMap<>();
 
   /**
-   * @param contentCode
-   * @param fieldCode
    * @return
    */
-  public ViewSetting getView(String contentCode, String fieldCode) {
-    ViewSetting viewSetting = map.get(new ContentCodeFieldPare(contentCode, fieldCode));
+  public ViewSetting getView(MetaField field) {
+    ViewSetting viewSetting = map.get(field.getId());
     if (viewSetting == null) {
       synchronized (this) {
-        viewSetting = map.get(new ContentCodeFieldPare(contentCode, fieldCode));
+        viewSetting = map.get(field.getId());
         if (viewSetting == null) {
-          MetaClass metaClass = metaStorage.getMetaClass(contentCode);
-          Preconditions.checkNotNull(metaClass);
-          MetaField field = metaClass.getField(fieldCode);
-          Preconditions.checkNotNull(field);
-          viewSetting = createDefault(contentCode, fieldCode, field.getName(), 0, field.getType().getDefaultView());
+          viewSetting = createDefault(field, 0, field.getType().getDefaultView());
         }
       }
     }
@@ -63,9 +51,9 @@ public class ViewSettingFactory {
    */
   @PostConstruct
   public synchronized void init() {
-    Map<ContentCodeFieldPare, ViewSetting> map2 = Maps.newHashMap();
+    Map<String, ViewSetting> map2 = Maps.newHashMap();
     Iterable<ru.softshaper.storage.jooq.tables.pojos.FieldView> fieldsViews = fieldViewDao.findAll();
-    fieldsViews.forEach(fieldViewBean -> map2.put(new ContentCodeFieldPare(fieldViewBean.getTableContent(), fieldViewBean.getColumnContent()), convert(fieldViewBean)));
+    fieldsViews.forEach(fieldViewBean -> map2.put(fieldViewBean.getFieldId().toString(), convert(fieldViewBean)));
     map = map2;
   }
 
@@ -80,22 +68,21 @@ public class ViewSettingFactory {
         FieldTypeView.byCode(fieldViewBean.getTypeviewcode()));
   }
 
-  private ViewSetting createDefault(String metaClassCode, String fieldCode, String title, Integer number, FieldTypeView stringSingle) {
-    ViewSetting fieldView2 = map.get(new ContentCodeFieldPare(metaClassCode, fieldCode));
+  private ViewSetting createDefault(MetaField field, Integer number, FieldTypeView fieldTypeView) {
+    ViewSetting fieldView2 = map.get(field.getId());
     if (fieldView2 == null) {
       ru.softshaper.storage.jooq.tables.pojos.FieldView fieldView = new ru.softshaper.storage.jooq.tables.pojos.FieldView();
-      fieldView.setColumnContent(fieldCode);
-      fieldView.setTableContent(metaClassCode);
-      fieldView.setTypeviewcode(stringSingle.getCode());
+      fieldView.setTypeviewcode(fieldTypeView.getCode());
       fieldView.setTitlefield(false);
       fieldView.setReadonly(false);
       fieldView.setRequired(false);
       fieldView.setNumber(number);
-      fieldView.setTitle(title);
+      fieldView.setTitle(field.getName());
+      fieldView.setFieldId(Long.valueOf(field.getId()));
       fieldViewDao.insert(fieldView);
       map = null;
       init();
-      return getView(metaClassCode, fieldCode);
+      return getView(field);
     } else {
       return fieldView2;
     }

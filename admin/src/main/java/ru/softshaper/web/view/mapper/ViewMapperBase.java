@@ -3,7 +3,6 @@ package ru.softshaper.web.view.mapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
@@ -66,7 +65,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     FullObjectViewBuilder view = FullObjectView.newBuilder(metaClass.getCode(), getId(obj, metaClass));
     for (MetaField metaField : metaClass.getFields()) {
       ListObjectsView variants = null;
-      ViewSetting fieldView = viewSetting.getView(metaClass.getCode(), metaField.getCode());
+      ViewSetting fieldView = viewSetting.getView(metaField);
       FieldType fieldType = metaField.getType();
       Object value;
       if (FieldType.UNIVERSAL_LINK.equals(fieldType)) {
@@ -194,7 +193,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
           || metaField.getType().equals(FieldType.FILE)) {
         continue;
       }
-      ViewSetting fieldView = viewSetting.getView(metaClass.getCode(), metaField.getCode());
+      ViewSetting fieldView = viewSetting.getView(metaField);
       if (fieldView.isTitleField()) {
         FieldType fieldType = metaField.getType();
         if (FieldType.LINK.equals(fieldType)) {
@@ -237,7 +236,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       data.add(getId(obj, metaClass));
       Map<MetaField, String> linkedValuesOfObject = new HashMap<>();
       metaClass.getFields().forEach(metaField -> {
-        ViewSetting fieldView = viewSetting.getView(metaClass.getCode(), metaField.getCode());
+        ViewSetting fieldView = viewSetting.getView(metaField);
         if (fieldView.isTableField()) {
           FieldType fieldType = metaField.getType();
           if (!fieldType.equals(FieldType.MULTILINK)
@@ -342,7 +341,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     columnsView.add(new ColumnView("Идентификатор", "id", FieldTypeView.STRING_SINGLE, false));
 
     metaClass.getFields().forEach(dynamicField -> {
-      ViewSetting typeView = viewSetting.getView(metaClass.getCode(), dynamicField.getCode());
+      ViewSetting typeView = viewSetting.getView(dynamicField);
       if (typeView.isTableField()) {
         columnsView.add(new ColumnView(dynamicField.getName(), dynamicField.getCode(), typeView.getTypeView()));
       }
@@ -432,7 +431,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     FullObjectViewBuilder view = FullObjectView.newBuilder(contentCode, null);
     Preconditions.checkNotNull(content.getFields());
     for (MetaField metaField : content.getFields()) {
-      ViewSetting fieldView = viewSetting.getView(content.getCode(), metaField.getCode());
+      ViewSetting fieldView = viewSetting.getView(metaField);
       if (fieldView.getTypeView().equals(FieldTypeView.LINK_SELECTBOX)) {
         view.addFieldVariantLinkClass(fieldView, defValue.get(metaField.getCode()), metaField.getLinkToMetaClass().getCode(), getVariants(metaField.getLinkToMetaClass()));
       } else {
