@@ -4,7 +4,6 @@ import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.staticcontent.meta.StaticContentBase;
@@ -20,6 +19,7 @@ public class FieldViewStaticContent extends StaticContentBase {
   public static final String META_CLASS = "fieldView";
 
   public interface Field {
+    String field = "field";
     String tableField = "tableField";
   }
 
@@ -27,8 +27,7 @@ public class FieldViewStaticContent extends StaticContentBase {
   private FieldViewStaticContent(@Qualifier("data") ContentDataSource<Record> dataSource) {
     super(META_CLASS, "Представление поля", FieldView.FIELD_VIEW.getName(), dataSource);
     FieldView fvTable = FieldView.FIELD_VIEW;
-    this.registerField(fvTable.COLUMN_CONTENT,FieldType.STRING).setName("Поле");
-    this.registerField(fvTable.TABLE_CONTENT,FieldType.STRING).setName("Класс");
+    this.registerField(fvTable.FIELD_ID,FieldType.LINK).setCode(Field.field).setName("Поле").setLinkToMetaClass(MetaFieldStaticContent.META_CLASS);
     this.registerField(fvTable.NUMBER,FieldType.NUMERIC_INTEGER).setName("Порядковый номер");
     this.registerField(fvTable.READONLY,FieldType.LOGICAL).setName("Только для чтения");
     this.registerField(fvTable.REQUIRED,FieldType.LOGICAL).setName("Обязательный");

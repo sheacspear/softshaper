@@ -9,13 +9,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.softshaper.bean.meta.MetaFieldBean;
 import ru.softshaper.services.meta.*;
-import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
-import ru.softshaper.staticcontent.meta.conditions.MetaFieldConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;
@@ -230,7 +227,7 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
     // todo: тут проблемка в том, что представление не совсем является частью
     // меты,
     // todo: т.ч. и удаление должно вызываться событием, а никак не напрямую
-    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.COLUMN_CONTENT.eq(field.getCode())).and(FieldView.FIELD_VIEW.TABLE_CONTENT.eq(dc.getCode()))
+    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId())))
         .execute();
   }
 

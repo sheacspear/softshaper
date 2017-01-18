@@ -6,9 +6,11 @@ import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.DataSourceStorage;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.conditions.Condition;
 import ru.softshaper.services.meta.conditions.impl.CompareOperation;
 import ru.softshaper.services.meta.conditions.impl.CompareValueCondition;
@@ -343,7 +345,7 @@ public class QueryServiceRest {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
 		Preconditions.checkNotNull(metaClass);
 		Condition condition = metaClass.getFields().stream()
-				.filter(field -> viewSetting.getView(metaClass.getCode(), field.getCode()).isTitleField())
+				.filter(field -> viewSetting.getView(field).isTitleField())
 				.map(field -> (Condition) new CompareValueCondition<>(field, value, CompareOperation.LIKE))
 				.reduce(Condition::or).get();
 		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());

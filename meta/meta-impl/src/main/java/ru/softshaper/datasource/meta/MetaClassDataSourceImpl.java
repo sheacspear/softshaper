@@ -10,9 +10,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.softshaper.bean.meta.MetaClassMutableBean;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.SortOrder;
 import ru.softshaper.services.security.ContentSecurityManager;
@@ -284,7 +286,7 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     // todo: тут проблемка в том, что представление не совсем является частью
     // меты,
     // todo: т.ч. и удаление должно вызываться событием, а никак не напрямую
-    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.COLUMN_CONTENT.eq(field.getCode())).and(FieldView.FIELD_VIEW.TABLE_CONTENT.eq(content.getCode()))
+    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId())))
         .execute();
   }
 
