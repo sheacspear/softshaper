@@ -40,7 +40,7 @@ public interface DataViewMapper<T> {
    * @param contentCode
    * @return FormListBean
    */
-  TableObjectsView convertTableObjects(Collection<T> objList, String contentCode, Integer cnt, String backLinkAttr);
+  TableObjectsView convertTableObjects(Collection<T> objList, String contentCode, Integer cnt);
 
   /**
    * @param objList
@@ -49,7 +49,7 @@ public interface DataViewMapper<T> {
    * @param backLinkAttr
    * @return
    */
-  ListObjectsView convertListObjects(Collection<T> objList, String contentCode, Integer total, String backLinkAttr);
+  ListObjectsView convertListObjects(Collection<T> objList, String contentCode, Integer total);
 
   /**
    * Создаёт болванку с описанием полей класса

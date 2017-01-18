@@ -3,16 +3,20 @@ package ru.softshaper.web.bean.obj;
 /**
  * Created by Sunchise on 29.09.2016.
  */
-public interface ObjectView {
+public interface IObjectView {
 
   /**
-   * @return
+   * @return key bissness object
    */
   String getId();
 
   /**
-   * @return
+   * @return title bissness object
    */
   String getTitle();
+  /**
+   * @return
+   */
+  String getContentCode();
 
 }

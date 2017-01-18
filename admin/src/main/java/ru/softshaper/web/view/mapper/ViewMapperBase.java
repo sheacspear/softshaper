@@ -10,7 +10,7 @@ import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.conditions.impl.ConditionFieldImpl;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
-import ru.softshaper.web.bean.obj.ObjectView;
+import ru.softshaper.web.bean.obj.IObjectView;
 import ru.softshaper.web.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.web.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.bean.obj.impl.TitleObjectView;
@@ -21,6 +21,7 @@ import ru.softshaper.web.bean.objlist.TableObjectsView;
 import ru.softshaper.web.view.DataSourceFromView;
 import ru.softshaper.web.view.DataSourceFromViewStore;
 import ru.softshaper.web.view.DataViewMapper;
+import ru.softshaper.web.view.IViewSetting;
 import ru.softshaper.web.view.bean.ViewSetting;
 import ru.softshaper.web.view.impl.ViewSettingFactory;
 import ru.softshaper.web.view.utils.FieldCollection;
@@ -67,7 +68,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       ListObjectsView variants = null;
       ViewSetting fieldView = viewSetting.getView(metaField);
       FieldType fieldType = metaField.getType();
-      Object value;
+      Object value = null;
       if (FieldType.UNIVERSAL_LINK.equals(fieldType)) {
         value = getValue(obj, metaField);
         if (value != null) {
@@ -98,7 +99,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
         }
       } else if (FieldType.LINK.equals(fieldType)) {
-        ObjectView valueLink = getLinkedValue(obj, metaField, FieldCollection.TITLE);
+        IObjectView valueLink = getLinkedValue(obj, metaField, FieldCollection.TITLE);
         if (FieldTypeView.LINK_SELECTBOX.equals(fieldView.getTypeView()) && metaField.getLinkToMetaClass() != null) {
           DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
           variants = dataSourceFromView.getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).setFieldCollection(FieldCollection.TITLE).build());
@@ -118,25 +119,26 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
             if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
               ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TITLE).build();
               ListObjectsView listObjectsView = objectsIds != null ? dataSourceFrom.getListObjects(params) : null;
-              if (listObjectsView != null) {
-                listObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
-              }
+              //if (listObjectsView != null) {
+              //  listObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+              //}
               value = listObjectsView;
             } else {
               ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
               TableObjectsView tableObjectsView = objectsIds != null ? dataSourceFrom.getTableObjects(params) : null;
-              if (tableObjectsView != null) {
-                tableObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
-              }
+              //if (tableObjectsView != null) {
+               /// tableObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+             // }
               value = tableObjectsView;
             }
           } else {
             if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
-              value = new ListObjectsView(metaField.getLinkToMetaClass().getCode(), 0, Collections.emptyList(),
-                  metaField.getBackReferenceField().getCode());
-            }else {
-              value = emptyTableObjectsView(metaField.getLinkToMetaClass(), metaField.getBackReferenceField());
+              value = new ListObjectsView(metaField.getLinkToMetaClass().getCode(), 0, Collections.emptyList()
+                 );
             }
+            //else {
+             // value = emptyTableObjectsView(metaField.getLinkToMetaClass(), metaField.getBackReferenceField());
+           // }
           }
         } else {
           DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
@@ -144,7 +146,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
               .setCondition(new ConditionFieldImpl(metaField.getBackReferenceField()).equal(getId(obj, metaClass)));
           if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
             ListObjectsView listObjects = dataSourceFromView.getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
-            listObjects.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+            //listObjects.setBackLinkAttr(metaField.getBackReferenceField().getCode());
             value = listObjects;
           } else {
             value = dataSourceFromView.getTableObjects(paramsBuilder.setFieldCollection(FieldCollection.TABLE).build());
@@ -162,7 +164,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
           value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getListObjects(params) : null;
         } else {
           ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
-          value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getTableObjects(params) : emptyTableObjectsView(metaField.getLinkToMetaClass(), null);
+          value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getTableObjects(params) : emptyTableObjectsView(metaField.getLinkToMetaClass());
         }
       } else if (FieldType.FILE.equals(fieldType)) {
         value = getLinkedValue(obj, metaField, FieldCollection.TITLE);
@@ -172,16 +174,16 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       if (fieldView.isTitleField()) {
         titleFields.put(fieldView, value == null ? "" : value.toString());
       }
-      view.addFieldVariant(fieldView, value, variants);
+      view.addField(metaField, fieldView, value, variants);
     }
     String title = constructTitle(titleFields);
     view.setTitle(title);
     return view.build();
   }
 
-  private TableObjectsView emptyTableObjectsView(MetaClass metaClass, MetaField backReferenceField) {
+  private TableObjectsView emptyTableObjectsView(MetaClass metaClass) {
     return new TableObjectsView(metaClass.getCode(), 0, constructColumnsView(metaClass),
-        Collections.emptyList(), backReferenceField == null ? null : backReferenceField.getCode());
+        Collections.emptyList());
   }
 
 
@@ -197,7 +199,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       if (fieldView.isTitleField()) {
         FieldType fieldType = metaField.getType();
         if (FieldType.LINK.equals(fieldType)) {
-          ObjectView valueLink = getLinkedValue(obj, metaField, FieldCollection.TITLE);
+          IObjectView valueLink = getLinkedValue(obj, metaField, FieldCollection.TITLE);
           if (valueLink != null) {
             titleFields.put(fieldView, valueLink.getTitle());
           }
@@ -219,7 +221,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
 
 
-  private TableObjectsView convertTableObjectsView(Collection<T> objects, String metaClassCode, Integer total, String backLinkAttr) {
+  private TableObjectsView convertTableObjectsView(Collection<T> objects, String metaClassCode, Integer total) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -333,7 +335,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
         }
       }
     }
-    return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columnsView, objectsView, backLinkAttr);
+    return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columnsView, objectsView);
   }
 
   private List<ColumnView> constructColumnsView(MetaClass metaClass) {
@@ -350,7 +352,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   }
 
 
-  private ObjectView getLinkedValue(T obj, MetaField metaField, FieldCollection fieldCollection) {
+  private IObjectView getLinkedValue(T obj, MetaField metaField, FieldCollection fieldCollection) {
     Object linkedObjId = getValue(obj, metaField);
     if (linkedObjId == null) {
       return null;
@@ -408,19 +410,19 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   }
 
   @Override
-  public TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total, String backLinkAttr) {
-    return convertTableObjectsView(objList, metaClassCode, total, backLinkAttr);
+  public TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total) {
+    return convertTableObjectsView(objList, metaClassCode, total);
   }
 
   @Override
-  public ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total, String backLinkAttr) {
+  public ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
     List<TitleObjectView> titleObjects = objects.stream()
         .map(record -> convertTitleObject(record, metaClass))
         .collect(Collectors.toList());
-    return new ListObjectsView(metaClassCode, total, titleObjects, backLinkAttr);
+    return new ListObjectsView(metaClassCode, total, titleObjects);
   }
 
   @Override
@@ -431,11 +433,11 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     FullObjectViewBuilder view = FullObjectView.newBuilder(contentCode, null);
     Preconditions.checkNotNull(content.getFields());
     for (MetaField metaField : content.getFields()) {
-      ViewSetting fieldView = viewSetting.getView(metaField);
+      IViewSetting fieldView = viewSetting.getView(metaField);
       if (fieldView.getTypeView().equals(FieldTypeView.LINK_SELECTBOX)) {
-        view.addFieldVariantLinkClass(fieldView, defValue.get(metaField.getCode()), metaField.getLinkToMetaClass().getCode(), getVariants(metaField.getLinkToMetaClass()));
+        view.addField(metaField, fieldView, defValue.get(metaField.getCode()), getVariants(metaField.getLinkToMetaClass()));
       } else {
-        view.addField(fieldView, defValue.get(metaField.getCode()));
+        view.addField(metaField, fieldView, defValue.get(metaField.getCode()));
       }
     }
     return view.build();

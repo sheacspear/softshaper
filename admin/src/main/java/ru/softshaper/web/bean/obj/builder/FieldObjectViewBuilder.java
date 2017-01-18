@@ -1,67 +1,78 @@
 package ru.softshaper.web.bean.obj.builder;
 
 import ru.softshaper.bean.meta.FieldTypeView;
-import ru.softshaper.web.bean.obj.FieldObjectView;
-import ru.softshaper.web.bean.obj.SettingFieldView;
-import ru.softshaper.web.view.bean.ViewSetting;
+import ru.softshaper.web.bean.obj.IFieldView;
+import ru.softshaper.web.bean.obj.impl.FieldView;
 
+/**
+ * @author ashek
+ *
+ * @param <T>
+ */
 public class FieldObjectViewBuilder<T> {
-  private final String title;
-  private boolean required;
-  private boolean readOnly;
-  private int number;
-  private boolean titleField;
-  private final String code;
-  private final T value;
-  private SettingFieldView settings;
-  private FieldTypeView type;
 
-  public FieldObjectViewBuilder(String code, String title, T value) {
-    this.value = value;
+  /**
+   * Field title
+   */
+  private String title;
+  /**
+   * Field code
+   */
+  private String code;
+  /**
+   * Field type
+   */
+  private FieldTypeView type;
+  /**
+   * Field link Class
+   */
+  private String linkMetaClass;
+  /**
+   * Field backink Class
+   */
+  private String backLinkAttr;
+
+  /**
+   * @param Field code
+   * @param Field title
+   * @param Field value
+   */
+  public FieldObjectViewBuilder(String code, String title) {
     this.title = title;
     this.code = code;
   }
 
-  public FieldObjectViewBuilder<T> setRequired(boolean required) {
-    this.required = required;
-    return this;
-  }
-
-  public FieldObjectViewBuilder<T> setReadOnly(boolean readOnly) {
-    this.readOnly = readOnly;
-    return this;
-  }
-
-  public FieldObjectViewBuilder<T> setNumber(int number) {
-    this.number = number;
-    return this;
-  }
-
-  public FieldObjectViewBuilder<T> setTitleField(boolean titleField) {
-    this.titleField = titleField;
-    return this;
-  }
-
-  public FieldObjectViewBuilder<T> setSettings(SettingFieldView settings) {
-    this.settings = settings;
-    return this;
-  }
-
+  /**
+   * @param Field type
+   * @return
+   */
   public FieldObjectViewBuilder<T> setType(FieldTypeView type) {
     this.type = type;
     return this;
   }
 
-  public FieldObjectViewBuilder<T> map(ViewSetting fieldView) {
-    this.setNumber(fieldView.getNumber());
-    this.setReadOnly(fieldView.getReadonly());
-    this.setRequired(fieldView.getRequired());
-    this.setType(fieldView.getTypeView());
-    this.setTitleField(fieldView.isTitleField());
+  /**
+   * @param linkMetaClass
+   * @return
+   */
+  public FieldObjectViewBuilder<T> setLinkMetaClass(String linkMetaClass) {
+    this.linkMetaClass = linkMetaClass;
     return this;
   }
 
-  public FieldObjectView<T> build() {
-    return new FieldObjectView<T>(title, required, readOnly, number, titleField, code, value, settings, type);
+  /**
+   * @param backLinkAttr
+   * @return
+   */
+  public FieldObjectViewBuilder<T> setBackLinkAttr(String backLinkAttr) {
+    this.backLinkAttr = backLinkAttr;
+    return this;
+  }
+
+  /**
+   * @return
+   */
+  public IFieldView build() {
+    return new FieldView(title, code, type, linkMetaClass, backLinkAttr);
   }
 }

@@ -1,80 +1,97 @@
 package ru.softshaper.web.bean.obj.impl;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import ru.softshaper.web.bean.obj.FieldObjectView;
-import ru.softshaper.web.bean.obj.ObjectView;
+import ru.softshaper.web.bean.obj.IFieldView;
+import ru.softshaper.web.bean.obj.IFullObjectView;
+import ru.softshaper.web.bean.obj.IObjectView;
 import ru.softshaper.web.bean.obj.builder.FullObjectViewBuilder;
+import ru.softshaper.web.view.IViewSetting;
 
 /**
  * View for bissness object</br>
  * Created by Sunchise on 23.05.2016.
  */
-public class FullObjectView implements ObjectView {
-  /**
-   * key bissness object
-   */
-  private final String id;
-  /**
-   * contentCode bissness object
-   */
-  private final String contentCode;
+public class FullObjectView extends TitleObjectView implements IFullObjectView {
 
   /**
-   * title bissness object
+   * 
    */
-  private final String title;
+  private final List<IFieldView> fields;
 
   /**
-   * fields by bissness object
+   * 
    */
-  private final List<FieldObjectView<?>> fields;
+  private final Map<String, IViewSetting> viewSettig;
 
   /**
-   * @param key bissness object
-   * @param title bissness object
-   * @param fields bissness object
+   * 
    */
-  public FullObjectView(String contentCode, String id, String title, List<FieldObjectView<?>> fields) {
-    this.contentCode = contentCode;
-    this.id = id;
-    this.title = title;
+  private final Map<String, ?> values;
+
+  /**
+   * 
+   */
+  private final Map<String, Collection<IObjectView>> variants;
+
+  /**
+   * @param contentCode
+   * @param id
+   * @param title
+   * @param fields
+   * @param viewSettig
+   * @param values
+   * @param variants
+   */
+  public FullObjectView(String contentCode, String id, String title, List<IFieldView> fields,
+      Map<String, IViewSetting> viewSettig, Map<String, ?> values, Map<String, Collection<IObjectView>> variants) {
+    super(contentCode, id, title);
     this.fields = fields;
+    this.viewSettig = viewSettig;
+    this.values = values;
+    this.variants = variants;
   }
 
-  public String getContentCode() {
-    return contentCode;
-  }
-
-  /**
-   * @return key bissness object
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.bean.obj.IFullObjectView#getFields()
    */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * @return title bissness object
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * @return fields by bissness object
-   */
-  public List<FieldObjectView<?>> getFields() {
+  @Override
+  public List<IFieldView> getFields() {
     return fields;
   }
 
   /*
    * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
+   * 
+   * @see ru.softshaper.web.bean.obj.IFullObjectView#getViewSettig()
    */
   @Override
-  public String toString() {
-    return "FullObjectView [id=" + id + ", title=" + title + ", fields=" + fields + "]";
+  public Map<String, IViewSetting> getViewSettig() {
+    return viewSettig;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.bean.obj.IFullObjectView#getValues()
+   */
+  @Override
+  public Map<String, ?> getValues() {
+    return values;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.bean.obj.IFullObjectView#getVariants()
+   */
+  @Override
+  public Map<String, Collection<IObjectView>> getVariants() {
+    return variants;
   }
 
   /**
