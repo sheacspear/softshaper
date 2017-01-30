@@ -25,7 +25,7 @@ import ru.softshaper.staticcontent.sec.SecRoleStaticContent;
 import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
 import ru.softshaper.web.bean.nav.folder.FolderView;
-import ru.softshaper.web.bean.obj.FullObjectView;
+import ru.softshaper.web.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.bean.objlist.TableObjectsView;
 import ru.softshaper.web.view.DataSourceFromView;
 import ru.softshaper.web.view.DataSourceFromViewStore;

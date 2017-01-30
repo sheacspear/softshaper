@@ -12,16 +12,29 @@ import ru.softshaper.web.view.impl.ViewSettingFactory;
  */
 public class ObjectViewMapper extends ViewMapperBase<Record> {
 
-
-  public ObjectViewMapper(ViewSettingFactory viewSetting, MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore) {
+  public ObjectViewMapper(ViewSettingFactory viewSetting, MetaStorage metaStorage,
+      DataSourceFromViewStore dataSourceFromViewStore) {
     super(viewSetting, metaStorage, dataSourceFromViewStore);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.view.mapper.ViewMapperBase#getId(java.lang.Object,
+   * ru.softshaper.services.meta.MetaClass)
+   */
   @Override
   protected String getId(Record obj, MetaClass metaClass) {
     return obj.get(metaClass.getIdColumn(), Long.class).toString();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.mapper.ViewMapperBase#getValue(java.lang.Object,
+   * ru.softshaper.services.meta.MetaField)
+   */
   @Override
   protected Object getValue(Record obj, MetaField field) {
     return obj.get(field.getColumn());

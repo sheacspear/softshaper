@@ -1,8 +1,9 @@
 package ru.softshaper.web.view.bean;
 
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.web.view.IViewSetting;
 
-public class ViewSetting {
+public class ViewSetting implements IViewSetting {
 
   private final String columnContent;
   private final Integer number;
@@ -24,55 +25,66 @@ public class ViewSetting {
     this.typeView = typeView;
   }
 
-  /**
-   * @return the columnContent
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getColumnContent()
    */
+  @Override
   public String getColumnContent() {
     return columnContent;
   }
 
-  /**
-   * @return the number
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getNumber()
    */
+  @Override
   public Integer getNumber() {
     return number;
   }
 
-  /**
-   * @return the readonly
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getReadonly()
    */
+  @Override
   public Boolean getReadonly() {
     return readonly;
   }
 
-  /**
-   * @return the required
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getRequired()
    */
+  @Override
   public Boolean getRequired() {
     return required;
   }
 
-  /**
-   * @return the title
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getTitle()
    */
+  @Override
   public String getTitle() {
     return title;
   }
 
-  /**
-   * @return the titlefield
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#isTitleField()
    */
+  @Override
   public Boolean isTitleField() {
     return titleField;
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#isTableField()
+   */
+  @Override
   public Boolean isTableField() {
     return tableField;
   }
 
-  /**
-   * @return the typeView
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.view.bean.IViewSetting#getTypeView()
    */
+  @Override
   public FieldTypeView getTypeView() {
     return typeView;
   }

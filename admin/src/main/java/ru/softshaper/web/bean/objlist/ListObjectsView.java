@@ -1,8 +1,8 @@
 package ru.softshaper.web.bean.objlist;
 
-import ru.softshaper.web.bean.obj.TitleObjectView;
-
 import java.util.Collection;
+
+import ru.softshaper.web.bean.obj.impl.TitleObjectView;
 
 /**
  * Created by Sunchise on 29.09.2016.
@@ -15,14 +15,11 @@ public class ListObjectsView implements ObjectCollectionView {
 
   private final Collection<TitleObjectView> objects;
 
-  private String backLinkAttr;
-
-  public ListObjectsView(String classCode, int total, Collection<TitleObjectView> objects, String backLinkAttr) {
+  public ListObjectsView(String classCode, int total, Collection<TitleObjectView> objects) {
     super();
     this.classCode = classCode;
     this.total = total;
     this.objects = objects;
-    this.backLinkAttr = backLinkAttr;
   }
 
   public String getClassCode() {
@@ -35,16 +32,5 @@ public class ListObjectsView implements ObjectCollectionView {
 
   public Collection<TitleObjectView> getObjects() {
     return objects;
-  }
-
-  /**
-   * @return the backLinkAttr
-   */
-  public String getBackLinkAttr() {
-    return backLinkAttr;
-  }
-
-  public void setBackLinkAttr(String backLinkAttr) {
-    this.backLinkAttr = backLinkAttr;
   }
 }

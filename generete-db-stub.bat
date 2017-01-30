@@ -1,0 +1,1 @@
+mvn clean package -Pgenerate-db-stub

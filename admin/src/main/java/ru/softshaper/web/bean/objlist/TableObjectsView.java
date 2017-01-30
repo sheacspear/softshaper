@@ -15,11 +15,6 @@ public class TableObjectsView implements ObjectCollectionView {
   /**
   *
   */
- private String backLinkAttr;
-
-  /**
-  *
-  */
   private final int cnt;
 
   /**
@@ -32,13 +27,12 @@ public class TableObjectsView implements ObjectCollectionView {
    */
   private final List<ObjectRowView> objectsView;
 
-  public TableObjectsView(String clazz, int cnt, List<ColumnView> columnsView, List<ObjectRowView> objectsView, String backLinkAttr) {
+  public TableObjectsView(String clazz, int cnt, List<ColumnView> columnsView, List<ObjectRowView> objectsView) {
     super();
     this.clazz = clazz;
     this.cnt = cnt;
     this.columnsView = columnsView;
     this.objectsView = objectsView;
-    this.backLinkAttr = backLinkAttr;
   }
 
   /**
@@ -78,13 +72,5 @@ public class TableObjectsView implements ObjectCollectionView {
   public String toString() {
     return "ListObjectBean \n[clazz=" + clazz + ", \ncnt=" + cnt + ", \ncolumnsView=" + columnsView + ", \nobjectsView="
         + objectsView + "]";
-  }
-
-	public String getBackLinkAttr() {
-		return backLinkAttr;
-	}
-
-  public void setBackLinkAttr(String backLinkAttr) {
-    this.backLinkAttr = backLinkAttr;
   }
 }
