@@ -37,7 +37,8 @@ import java.util.stream.Collectors;
 public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /**
-   * Хранилище, которое возвращает представление поля по его параметрам (табица и колонка)
+   * Хранилище, которое возвращает представление поля по его параметрам (табица
+   * и колонка)
    */
   private final ViewSettingFactory viewSetting;
 
@@ -51,7 +52,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
    */
   private final DataSourceFromViewStore dataSourceFromViewStore;
 
-  public ViewMapperBase(ViewSettingFactory viewSetting, MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore) {
+  public ViewMapperBase(ViewSettingFactory viewSetting, MetaStorage metaStorage,
+      DataSourceFromViewStore dataSourceFromViewStore) {
     this.viewSetting = viewSetting;
     this.metaStorage = metaStorage;
     this.dataSourceFromViewStore = dataSourceFromViewStore;
@@ -74,27 +76,23 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
         if (value != null) {
           String stringValue = value.toString();
           int delimiterPosition = stringValue.lastIndexOf("@");
-          if(delimiterPosition>0){
+          if (delimiterPosition > 0) {
 
-          String identifier = stringValue.substring(0, delimiterPosition);
-          String linkedClassCode = stringValue.substring(delimiterPosition + 1);
-          MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
-          if (linkedClass != null) {
-            DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(linkedClass.getCode());
-            if (FieldTypeView.LINK_INNER_OBJECT.equals(fieldView.getTypeView())) {
-              ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass)
-                  .ids().add(identifier)
-                  .setFieldCollection(FieldCollection.ALL)
-                  .build();
-              value = dataSourceFromView.getFullObject(params);
-            } else if (FieldTypeView.LINK_BROWSE.equals(fieldView.getTypeView())) {
-              ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass)
-                  .ids().add(identifier)
-                  .setFieldCollection(FieldCollection.TITLE)
-                  .build();
-              value = dataSourceFromView.getTitleObject(params);
+            String identifier = stringValue.substring(0, delimiterPosition);
+            String linkedClassCode = stringValue.substring(delimiterPosition + 1);
+            MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
+            if (linkedClass != null) {
+              DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(linkedClass.getCode());
+              if (FieldTypeView.LINK_INNER_OBJECT.equals(fieldView.getTypeView())) {
+                ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier)
+                    .setFieldCollection(FieldCollection.ALL).build();
+                value = dataSourceFromView.getFullObject(params);
+              } else if (FieldTypeView.LINK_BROWSE.equals(fieldView.getTypeView())) {
+                ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier)
+                    .setFieldCollection(FieldCollection.TITLE).build();
+                value = dataSourceFromView.getTitleObject(params);
+              }
             }
-          }
           }
 
         }
@@ -102,7 +100,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
         IObjectView valueLink = getLinkedValue(obj, metaField, FieldCollection.TITLE);
         if (FieldTypeView.LINK_SELECTBOX.equals(fieldView.getTypeView()) && metaField.getLinkToMetaClass() != null) {
           DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
-          variants = dataSourceFromView.getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).setFieldCollection(FieldCollection.TITLE).build());
+          variants = dataSourceFromView.getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
+              .setFieldCollection(FieldCollection.TITLE).build());
           value = valueLink == null ? null : valueLink.getId();
         } else {
           value = valueLink;
@@ -111,42 +110,43 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
         if (metaField.getBackReferenceField().getType().equals(FieldType.MULTILINK)) {
           DataSourceFromView dataSourceFrom = dataSourceFromViewStore.get(metaField.getOwner().getCode());
           DataSourceFromView dataSourceTo = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
-          Collection<String> objectsIds = dataSourceTo.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getBackReferenceField().getCode(),
-              getId(obj, metaClass), true);
+          Collection<String> objectsIds = dataSourceTo.getObjectsIdsByMultifield(metaClass.getCode(),
+              metaField.getBackReferenceField().getCode(), getId(obj, metaClass), true);
           if (objectsIds != null && !objectsIds.isEmpty()) {
             ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
                 .addIds(objectsIds);
             if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
               ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TITLE).build();
               ListObjectsView listObjectsView = objectsIds != null ? dataSourceFrom.getListObjects(params) : null;
-              //if (listObjectsView != null) {
-              //  listObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
-              //}
+              // if (listObjectsView != null) {
+              // listObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+              // }
               value = listObjectsView;
             } else {
               ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
               TableObjectsView tableObjectsView = objectsIds != null ? dataSourceFrom.getTableObjects(params) : null;
-              //if (tableObjectsView != null) {
-               /// tableObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
-             // }
+              // if (tableObjectsView != null) {
+              /// tableObjectsView.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+              // }
               value = tableObjectsView;
             }
           } else {
             if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
-              value = new ListObjectsView(metaField.getLinkToMetaClass().getCode(), 0, Collections.emptyList()
-                 );
+              value = new ListObjectsView(metaField.getLinkToMetaClass().getCode(), 0, Collections.emptyList());
             }
-            //else {
-             // value = emptyTableObjectsView(metaField.getLinkToMetaClass(), metaField.getBackReferenceField());
-           // }
+            // else {
+            // value = emptyTableObjectsView(metaField.getLinkToMetaClass(),
+            // metaField.getBackReferenceField());
+            // }
           }
         } else {
           DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
           ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
               .setCondition(new ConditionFieldImpl(metaField.getBackReferenceField()).equal(getId(obj, metaClass)));
           if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
-            ListObjectsView listObjects = dataSourceFromView.getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
-            //listObjects.setBackLinkAttr(metaField.getBackReferenceField().getCode());
+            ListObjectsView listObjects = dataSourceFromView
+                .getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
+            // listObjects.setBackLinkAttr(metaField.getBackReferenceField().getCode());
             value = listObjects;
           } else {
             value = dataSourceFromView.getTableObjects(paramsBuilder.setFieldCollection(FieldCollection.TABLE).build());
@@ -164,7 +164,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
           value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getListObjects(params) : null;
         } else {
           ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
-          value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getTableObjects(params) : emptyTableObjectsView(metaField.getLinkToMetaClass());
+          value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getTableObjects(params)
+              : emptyTableObjectsView(metaField.getLinkToMetaClass());
         }
       } else if (FieldType.FILE.equals(fieldType)) {
         value = getLinkedValue(obj, metaField, FieldCollection.TITLE);
@@ -182,16 +183,13 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   }
 
   private TableObjectsView emptyTableObjectsView(MetaClass metaClass) {
-    return new TableObjectsView(metaClass.getCode(), 0, constructColumnsView(metaClass),
-        Collections.emptyList());
+    return new TableObjectsView(metaClass.getCode(), 0, constructColumnsView(metaClass), Collections.emptyList());
   }
-
 
   private TitleObjectView convertTitleObject(T obj, MetaClass metaClass) {
     Map<ViewSetting, String> titleFields = Maps.newHashMap();
     for (MetaField metaField : metaClass.getFields()) {
-      if (metaField.getType().equals(FieldType.MULTILINK)
-          || metaField.getType().equals(FieldType.BACK_REFERENCE)
+      if (metaField.getType().equals(FieldType.MULTILINK) || metaField.getType().equals(FieldType.BACK_REFERENCE)
           || metaField.getType().equals(FieldType.FILE)) {
         continue;
       }
@@ -218,9 +216,6 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     return new TitleObjectView(metaClass.getCode(), getId(obj, metaClass), title);
   }
 
-
-
-
   private TableObjectsView convertTableObjectsView(Collection<T> objects, String metaClassCode, Integer total) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
@@ -228,10 +223,9 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     List<ColumnView> columnsView = constructColumnsView(metaClass);
     List<ObjectRowView> objectsView = Lists.newArrayList();
 
+    // todo: за такое порно, не грех и посадить
 
-    //todo: за такое порно, не грех и посадить
-
-    //todo: кого сажать тебя или меня?
+    // todo: кого сажать тебя или меня?
     Map<MetaField, Map<ObjectRowView, String>> linkedValues = new HashMap<>();
     objects.forEach(obj -> {
       List<Object> data = Lists.newArrayList();
@@ -241,8 +235,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
         ViewSetting fieldView = viewSetting.getView(metaField);
         if (fieldView.isTableField()) {
           FieldType fieldType = metaField.getType();
-          if (!fieldType.equals(FieldType.MULTILINK)
-              && !fieldType.equals(FieldType.BACK_REFERENCE)) {
+          if (!fieldType.equals(FieldType.MULTILINK) && !fieldType.equals(FieldType.BACK_REFERENCE)) {
             Object value = getValue(obj, metaField);
             if (fieldType == FieldType.LINK && value != null) {
               linkedValuesOfObject.put(metaField, value.toString());
@@ -250,22 +243,20 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
               if (value != null) {
                 String stringValue = value.toString();
                 int delimiterPosition = stringValue.lastIndexOf("@");
-                if(delimiterPosition>0) {
-                String identifier = stringValue.substring(0, delimiterPosition);
-                String linkedClassCode = stringValue.substring(delimiterPosition + 1);
-                MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
-                if (linkedClass != null) {
-                  DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(linkedClass.getCode());
+                if (delimiterPosition > 0) {
+                  String identifier = stringValue.substring(0, delimiterPosition);
+                  String linkedClassCode = stringValue.substring(delimiterPosition + 1);
+                  MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
+                  if (linkedClass != null) {
+                    DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(linkedClass.getCode());
 
-                    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass)
-                        .ids().add(identifier)
-                        .setFieldCollection(FieldCollection.TITLE)
-                        .build();
-                  TitleObjectView titleObject = dataSourceFromView.getTitleObject(params);
-                  value = titleObject == null ? value : titleObject.getTitle();
+                    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier)
+                        .setFieldCollection(FieldCollection.TITLE).build();
+                    TitleObjectView titleObject = dataSourceFromView.getTitleObject(params);
+                    value = titleObject == null ? value : titleObject.getTitle();
+                  }
                 }
               }
-            }
             }
             data.add(value);
           } else {
@@ -273,27 +264,35 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
             if (fieldType == FieldType.BACK_REFERENCE) {
               if (metaField.getBackReferenceField().getType() == FieldType.MULTILINK) {
                 DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClassCode);
-                Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaField.getLinkToMetaClass().getCode(),
-                    metaField.getBackReferenceField().getCode(), getId(obj, metaClass), true);
+                Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(
+                    metaField.getLinkToMetaClass().getCode(), metaField.getBackReferenceField().getCode(),
+                    getId(obj, metaClass), true);
                 if (linkIds != null) {
-                  DataSourceFromView linkedStore = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
-                  value = linkedStore.getTitleObject(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
+                  DataSourceFromView linkedStore = dataSourceFromViewStore
+                      .get(metaField.getLinkToMetaClass().getCode());
+                  value = linkedStore.getTitleObject(
+                      ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
                 }
               } else {
-                DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
+                DataSourceFromView dataSourceFromView = dataSourceFromViewStore
+                    .get(metaField.getLinkToMetaClass().getCode());
                 ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
-                                                                                            //todo: вот тут идентификатор надо приводить к реальному типу
-                    .setCondition(new ConditionFieldImpl(metaField.getBackReferenceField()).equal(getId(obj, metaClass)));
-                value = dataSourceFromView.getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
+                    // todo: вот тут идентификатор надо приводить к реальному
+                    // типу
+                    .setCondition(
+                        new ConditionFieldImpl(metaField.getBackReferenceField()).equal(getId(obj, metaClass)));
+                value = dataSourceFromView
+                    .getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
               }
             }
             if (fieldType == FieldType.MULTILINK) {
               DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClassCode);
-              Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClassCode, metaField.getCode(),
-                  getId(obj, metaClass), false);
+              Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClassCode,
+                  metaField.getCode(), getId(obj, metaClass), false);
               if (linkIds != null) {
                 DataSourceFromView linkedStore = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
-                value = linkedStore.getTitleObject(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
+                value = linkedStore.getTitleObject(
+                    ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
               }
             }
             data.add(value);
@@ -315,9 +314,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       Map<ObjectRowView, String> objectRowViewStringMap = linkedValues.get(field);
       DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(field.getLinkToMetaClass().getCode());
       ViewObjectsParams params = ViewObjectsParams.newBuilder(field.getLinkToMetaClass())
-          .addIds(objectRowViewStringMap.values())
-          .setFieldCollection(FieldCollection.TITLE)
-          .build();
+          .addIds(objectRowViewStringMap.values()).setFieldCollection(FieldCollection.TITLE).build();
       int columnIndex = 0;
       for (ColumnView columnView : columnsView) {
         if (columnView.getKey().equals(field.getCode())) {
@@ -329,7 +326,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       for (Map.Entry<ObjectRowView, String> rowLink : objectRowViewStringMap.entrySet()) {
         ObjectRowView row = rowLink.getKey();
         for (TitleObjectView objectView : ListObjectView.getObjects()) {
-          if (row.getData().get(columnIndex) != null && objectView.getId().equals(row.getData().get(columnIndex).toString())) {
+          if (row.getData().get(columnIndex) != null
+              && objectView.getId().equals(row.getData().get(columnIndex).toString())) {
             row.getData().set(columnIndex, objectView.getTitle());
           }
         }
@@ -351,7 +349,6 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     return columnsView;
   }
 
-
   private IObjectView getLinkedValue(T obj, MetaField metaField, FieldCollection fieldCollection) {
     Object linkedObjId = getValue(obj, metaField);
     if (linkedObjId == null) {
@@ -361,10 +358,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     if (metaField.getType().equals(FieldType.FILE)) {
       linkedMetaClass = metaStorage.getMetaClass(FileObjectStaticContent.META_CLASS);
     }
-    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedMetaClass)
-        .ids().add(linkedObjId.toString())
-        .setFieldCollection(fieldCollection)
-        .build();
+    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedMetaClass).ids().add(linkedObjId.toString())
+        .setFieldCollection(fieldCollection).build();
     if (FieldCollection.TITLE.equals(fieldCollection)) {
       return dataSourceFromViewStore.get(linkedMetaClass.getCode()).getTitleObject(params);
     } else {
@@ -373,13 +368,9 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   }
 
   private String constructTitle(Map<ViewSetting, String> titleFields) {
-    return titleFields.keySet().stream()
-        .sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber()))
-        .map(titleFields::get)
-        .reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2))
-        .orElse("");
+    return titleFields.keySet().stream().sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber()))
+        .map(titleFields::get).reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2)).orElse("");
   }
-
 
   protected ViewSettingFactory getViewSetting() {
     return viewSetting;
@@ -393,6 +384,13 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     return dataSourceFromViewStore;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataViewMapper#convertFullObject(java.lang.Object,
+   * java.lang.String)
+   */
   @Override
   public FullObjectView convertFullObject(T obj, String metaClassCode) {
     Preconditions.checkNotNull(metaClassCode);
@@ -401,6 +399,13 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     return convertFullObject(obj, metaClass);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataViewMapper#convertTitleObject(java.lang.Object,
+   * java.lang.String)
+   */
   @Override
   public TitleObjectView convertTitleObject(T obj, String metaClassCode) {
     Preconditions.checkNotNull(metaClassCode);
@@ -409,22 +414,39 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     return convertTitleObject(obj, metaClass);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.view.DataViewMapper#convertTableObjects(java.util.
+   * Collection, java.lang.String, java.lang.Integer)
+   */
   @Override
   public TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total) {
     return convertTableObjectsView(objList, metaClassCode, total);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.view.DataViewMapper#convertListObjects(java.util.
+   * Collection, java.lang.String, java.lang.Integer)
+   */
   @Override
   public ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
-    List<TitleObjectView> titleObjects = objects.stream()
-        .map(record -> convertTitleObject(record, metaClass))
+    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass))
         .collect(Collectors.toList());
     return new ListObjectsView(metaClassCode, total, titleObjects);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.web.view.DataViewMapper#getEmptyObj(java.lang.String,
+   * java.util.Map)
+   */
   @Override
   public FullObjectView getEmptyObj(String contentCode, Map<String, Object> defValue) {
     Preconditions.checkNotNull(contentCode);
@@ -435,7 +457,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     for (MetaField metaField : content.getFields()) {
       IViewSetting fieldView = viewSetting.getView(metaField);
       if (fieldView.getTypeView().equals(FieldTypeView.LINK_SELECTBOX)) {
-        view.addField(metaField, fieldView, defValue.get(metaField.getCode()), getVariants(metaField.getLinkToMetaClass()));
+        view.addField(metaField, fieldView, defValue.get(metaField.getCode()),
+            getVariants(metaField.getLinkToMetaClass()));
       } else {
         view.addField(metaField, fieldView, defValue.get(metaField.getCode()));
       }
@@ -445,7 +468,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   private ListObjectsView getVariants(MetaClass metaClass) {
     DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());
-    return dataSourceFromView.getListObjects(ViewObjectsParams.newBuilder(metaClass).setFieldCollection(FieldCollection.TITLE).build());
+    return dataSourceFromView
+        .getListObjects(ViewObjectsParams.newBuilder(metaClass).setFieldCollection(FieldCollection.TITLE).build());
   }
 
   @FunctionalInterface

@@ -32,7 +32,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.softshaper</groupId>
-			<artifactId>db</artifactId>
+			<artifactId>db-stub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
