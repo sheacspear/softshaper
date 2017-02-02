@@ -72,7 +72,7 @@
 						<configuration>
 							<imageName>localhost:5000/softshaper</imageName>
 							<forceTags>true</forceTags>
-							<dockerDirectory>./docker</dockerDirectory>
+							<dockerDirectory>./admin/docker</dockerDirectory>
 							<dockerHost>http://10.0.2.15:2375</dockerHost>
 							<serverId>softshaper-snapshots</serverId>
 							<registryUrl>http://localhost:5000</registryUrl>
