@@ -6,7 +6,7 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.TableImpl;
-import org.jooq.util.Database;
+//import org.jooq.util.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +54,8 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Autowired
   private DSLContext dsl;
 
-  @Autowired
-  private Database database;
+  //@Autowired
+  //private Database database;
 
   /**
    * Менеджер безопасности
@@ -387,6 +387,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   private Object castValue(Object value, Class<?> castToClass) {
+    if (value == null) {
+      return null;
+    }
     Object realValue;
     if (value.getClass().isAssignableFrom(castToClass)) {
       realValue = value;

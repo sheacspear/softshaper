@@ -1,15 +1,16 @@
 package ru.softshaper.services.meta.impl;
 
-import com.google.common.collect.Maps;
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * MetaStorage Created by Sunchise on 10.08.2016.

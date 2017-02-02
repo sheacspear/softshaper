@@ -1,18 +1,13 @@
 package ru.softshaper.datasource.meta;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
-import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
-import ru.softshaper.staticcontent.meta.meta.MetaClassStaticContent;
-
 import java.util.*;
 
 /**

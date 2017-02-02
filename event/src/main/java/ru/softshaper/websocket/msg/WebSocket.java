@@ -2,7 +2,6 @@ package ru.softshaper.websocket.msg;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.OnClose;
