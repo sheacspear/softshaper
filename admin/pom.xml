@@ -48,6 +48,51 @@
 				<bdPass>11111111</bdPass>
 			</properties>
 		</profile>
+
+		<profile>
+			<id>deploy-docker</id>
+			<build>
+				<plugins>
+					<!-- Docker -->
+					<plugin>
+						<groupId>org.softshaper</groupId>
+						<artifactId>docker-sh-plugin</artifactId>
+						<version>0.0.6-SNAPSHOT</version>
+						<executions>
+							<execution>
+								<phase>deploy</phase>
+								<goals>
+									<goal>stop</goal>
+									<goal>build</goal>
+									<goal>push </goal>
+									<goal>start</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<imageName>localhost:5000/softshaper</imageName>
+							<forceTags>true</forceTags>
+							<dockerDirectory>docker</dockerDirectory>
+							<dockerHost>http://10.0.2.15:2375</dockerHost>
+							<serverId>softshaper-snapshots</serverId>
+							<registryUrl>http://localhost:5000</registryUrl>
+							<retryPushCount>1</retryPushCount>
+							<imageTags>
+								<imageTag>${project.version}</imageTag>
+								<imageTag>latest</imageTag>
+							</imageTags>
+							<resources>
+								<resource>
+									<targetPath>/</targetPath>
+									<directory>${project.build.directory}</directory>
+									<include>${project.build.finalName}.war</include>
+								</resource>
+							</resources>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<dependencies>
@@ -210,32 +255,6 @@
 				</configuration>
 			</plugin>
 
-			<!-- Docker -->
-			<plugin>
-				<groupId>org.softshaper</groupId>
-				<artifactId>docker-sh-plugin</artifactId>
-				<version>0.0.6-SNAPSHOT</version>
-				<configuration>
-					<imageName>localhost:5000/softshaper</imageName>
-					<forceTags>true</forceTags>
-					<dockerDirectory>docker</dockerDirectory>
-					<dockerHost>http://10.0.2.15:2375</dockerHost>
-					<serverId>softshaper-snapshots</serverId>
-					<registryUrl>http://localhost:5000</registryUrl>
-					<retryPushCount>1</retryPushCount>
-					<imageTags>
-						<imageTag>${project.version}</imageTag>
-						<imageTag>latest</imageTag>
-					</imageTags>
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.war</include>
-						</resource>
-					</resources>
-				</configuration>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
