@@ -26,6 +26,7 @@ import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
 import ru.softshaper.web.admin.bean.nav.folder.FolderView;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
+import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
@@ -338,8 +339,8 @@ public class QueryServiceRest {
 	@GET
 	@Path("/quickinput/{contentCode}")
 	@Produces("application/json")
-	public TableObjectsView getQuickInput(@PathParam("contentCode") String contentCode,
-			@QueryParam("value") String value) {
+	public ListObjectsView getQuickInput(@PathParam("contentCode") String contentCode,
+                                       @QueryParam("value") String value) {
 		Preconditions.checkNotNull(contentCode);
 		Preconditions.checkArgument(!StringUtils.isEmpty(value));
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
@@ -350,8 +351,8 @@ public class QueryServiceRest {
 				.reduce(Condition::or).get();
 		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());
 		ViewObjectsParams params = ViewObjectsParams.newBuilder(metaClass).setCondition(condition)
-				.setFieldCollection(FieldCollection.TABLE).build();
-		return dataSourceFromView.getTableObjects(params);
+				.setFieldCollection(FieldCollection.TITLE).build();
+		return dataSourceFromView.getListObjects(params);
 	}
 
 	@POST
