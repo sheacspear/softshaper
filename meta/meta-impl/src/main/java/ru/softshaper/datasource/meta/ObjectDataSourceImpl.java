@@ -54,8 +54,8 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Autowired
   private DSLContext dsl;
 
-  //@Autowired
-  //private Database database;
+  // @Autowired
+  // private Database database;
 
   /**
    * Менеджер безопасности
@@ -74,22 +74,25 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Qualifier("jooq")
   private ConvertConditionVisitor<Condition> conditionConverter;
 
-  @Autowired DataSourceStorage dataSourceStorage;
+  @Autowired
+  DataSourceStorage dataSourceStorage;
+
   // @Override
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.impl.datasource.Test#getObjects(org.jooq.impl.TableImpl, java.lang.Class, java.util.Collection)
+   * @see
+   * ru.softshaper.services.meta.impl.datasource.Test#getObjects(org.jooq.impl.
+   * TableImpl, java.lang.Class, java.util.Collection)
    */
   @Override
   @SuppressWarnings("unchecked")
-  public <R extends Record, E> Collection<E> getObjects(TableImpl<R> table, Class<? extends E> type, Collection<String> ids) {
+  public <R extends Record, E> Collection<E> getObjects(TableImpl<R> table, Class<? extends E> type,
+      Collection<String> ids) {
     RecordMapperProvider recordMapperProvider = defaultConfiguration.recordMapperProvider();
     RecordMapper<R, E> recordMapper = recordMapperProvider.provide(table.recordType(), type);
     MetaClass metaClass = metaStorage.getMetaClassByTable(table.getName());
-    GetObjectsParams params = GetObjectsParams.newBuilder(metaClass)
-        .addIds(ids)
-        .build();
+    GetObjectsParams params = GetObjectsParams.newBuilder(metaClass).addIds(ids).build();
     Collection<Record> ress = getObjects(params);
     Collection<E> result = new ArrayList<E>();
     for (Record res : ress) {
@@ -101,7 +104,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.services.meta.MetaInitializer)
+   * @see
+   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+   * services.meta.MetaInitializer)
    */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
@@ -164,7 +169,6 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     return queryBuilder;
   }
 
-
   @Override
   public Collection<Record> getObjects(final GetObjectsParams params) {
     Preconditions.checkNotNull(params);
@@ -211,12 +215,10 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       queryBuilder.where(where);
     }
     if (params.getOrderFields() != null) {
-      List<SortField<Object>> sortFields = params.getOrderFields().entrySet().stream()
-          .map(orderField -> {
-            Field<Object> field = DSL.field(orderField.getKey().getColumn());
-            return orderField.getValue().equals(SortOrder.ASC) ? field.asc() : field.desc();
-          })
-          .collect(Collectors.toList());
+      List<SortField<Object>> sortFields = params.getOrderFields().entrySet().stream().map(orderField -> {
+        Field<Object> field = DSL.field(orderField.getKey().getColumn());
+        return orderField.getValue().equals(SortOrder.ASC) ? field.asc() : field.desc();
+      }).collect(Collectors.toList());
       queryBuilder.orderBy(sortFields);
     }
     queryBuilder.offset(params.getOffset());
@@ -225,7 +227,8 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   @Override
-  public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
+  public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id,
+      boolean reverse) {
     MetaClass metaClass = getMetaClass(contentCode);
     MetaField mxNField = metaClass.getField(multyfieldCode);
     Field<Long> fromIdField;
@@ -238,7 +241,8 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       toIdField = DSL.field("to_id", Long.class);
 
     }
-    List<Long> fetch = dsl.select(toIdField).from(mxNField.getNxMTableName()).where(fromIdField.equal(Long.valueOf(id))).fetch(toIdField);
+    List<Long> fetch = dsl.select(toIdField).from(mxNField.getNxMTableName()).where(fromIdField.equal(Long.valueOf(id)))
+        .fetch(toIdField);
     return fetch == null ? null : fetch.stream().map(Object::toString).collect(Collectors.toList());
   }
 
@@ -249,10 +253,12 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   /*
-     * (non-Javadoc)
-     *
-     * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#createObject(java .util.Map)
-     */
+   * (non-Javadoc)
+   *
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#createObject(
+   * java .util.Map)
+   */
   @Transactional
   @Override
   public String createObject(String contentCode, Map<String, Object> values) {
@@ -272,14 +278,14 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       if (value != null) {
         MetaField field = content.getField(fieldCode);
         FieldType type = field.getType();
-        //todo: type == null???? what???
+        // todo: type == null???? what???
         Object realValue;
         if (FieldType.LINK.equals(type)) {
           MetaClass linkedClass = field.getLinkToMetaClass();
           realValue = castLinkedClassId(value, linkedClass);
         } else if (FieldType.FILE.equals(type)) {
           if (value instanceof Map) {
-            realValue = fileDataSource.createObject("fileObject", (Map<String, Object>) value);//FileObjectStaticContent.META_CLASS
+            realValue = fileDataSource.createObject("fileObject", (Map<String, Object>) value);// FileObjectStaticContent.META_CLASS
           } else {
             log.error("Undefined file data " + value);
             realValue = value;
@@ -304,7 +310,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#updateObject(java .lang.String, java.util.Map)
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#updateObject(
+   * java .lang.String, java.util.Map)
    */
   @Transactional
   @Override
@@ -330,30 +338,32 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       if (value != null) {
         MetaField field = metaClass.getField(fieldCode);
         FieldType type = field.getType();
+        Object realValue = null;
         if (FieldType.DATE.equals(type)) {
           try {
-            value = new Timestamp(new SimpleDateFormat("dd.MM.yyy HH:mm:ss").parse(value.toString()).getTime());
+            if (value != null) {
+              realValue = new java.sql.Date(
+                  new SimpleDateFormat("dd.MM.yyy HH:mm:ss").parse(value.toString()).getTime());
+            }
           } catch (ParseException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
           }
-        }
-        Object realValue;
-        if (FieldType.LINK.equals(type)) {
+        } else if (FieldType.LINK.equals(type)) {
           MetaClass linkToMetaClass = fieldsByCode.get(fieldCode).getLinkToMetaClass();
           realValue = castLinkedClassId(value, linkToMetaClass);
         } else if (FieldType.FILE.equals(type)) {
           if (value instanceof Map) {
             realValue = ((Map<String, Object>) value).get("id");
-            //todo: Подумать, стоит ли удалять сарый файл?
+            // todo: Подумать, стоит ли удалять сарый файл?
           } else {
             log.error("Undefined file data " + value);
             realValue = value;
           }
-        } if (FieldType.NUMERIC_INTEGER.equals(type)) {
+        } else if (FieldType.NUMERIC_INTEGER.equals(type)) {
           realValue = Integer.valueOf(value.toString());
         } else if (FieldType.BACK_REFERENCE.equals(type) || FieldType.MULTILINK.equals(type)) {
-          //todo:
+          // todo:
           if (value instanceof Collection) {
             MetaClass linkToMetaClass = field.getLinkToMetaClass();
             Collection linkedValues = (Collection) value;
@@ -361,18 +371,21 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
           } else {
             throw new RuntimeException("Атрибут ожидает список, но пришло что то другое " + value.getClass());
           }
-        } else  {
+        } else {
           realValue = value;
         }
-        Table<?> jooqTable = dsl.meta().getTables().stream().filter(table1 -> table1.getName().equals(metaClass.getTable())).findFirst().get();
+        Table<?> jooqTable = dsl.meta().getTables().stream()
+            .filter(table1 -> table1.getName().equals(metaClass.getTable())).findFirst().get();
         Field<?> jooqField = jooqTable.field(field.getColumn());
         Class<?> columnType = jooqField.getType();
         realValue = castValue(realValue, columnType);
         fieldValues.put(DSL.field(fieldsByCode.get(fieldCode).getColumn()), realValue);
       } else {
         MetaField metaField = fieldsByCode.get(fieldCode);
-        //TableDefinition dbTable = database.getTable(database.getSchema("public"), metaField.getOwner().getTable());
-        //todo: вообщем то работает, но какой то лайвхак
+        // TableDefinition dbTable =
+        // database.getTable(database.getSchema("public"),
+        // metaField.getOwner().getTable());
+        // todo: вообщем то работает, но какой то лайвхак
         fieldValues.put(DSL.field(metaField.getColumn()), DSL.castNull(Long.class));
       }
     }
@@ -404,7 +417,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#deleteObject(java .lang.String)
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#deleteObject(
+   * java .lang.String)
    */
   @Transactional
   @Override
@@ -420,10 +435,5 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     Preconditions.checkNotNull(content);
     return content;
   }
-
-
-
-
-
 
 }
