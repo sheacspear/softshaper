@@ -30,7 +30,7 @@ public class OrCondition extends AbstractCondition {
 
   @Override
   public <T> T convert(ConvertConditionVisitor<T> converter) {
-    return null;
+    return converter.convert(this);
   }
 
   @Override
