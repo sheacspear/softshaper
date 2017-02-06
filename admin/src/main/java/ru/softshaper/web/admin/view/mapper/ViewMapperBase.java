@@ -289,9 +289,9 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
               DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClassCode);
               Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClassCode,
                   metaField.getCode(), getId(obj, metaClass), false);
-              if (linkIds != null) {
+              if (linkIds != null && !linkIds.isEmpty()) {
                 DataSourceFromView linkedStore = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
-                value = linkedStore.getTitleObject(
+                value = linkedStore.getListObjects(
                     ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
               }
             }
@@ -386,7 +386,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataViewMapper#convertFullObject(java.lang.Object,
    * java.lang.String)
@@ -401,7 +401,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataViewMapper#convertTitleObject(java.lang.Object,
    * java.lang.String)
@@ -416,7 +416,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.view.DataViewMapper#convertTableObjects(java.util.
    * Collection, java.lang.String, java.lang.Integer)
    */
@@ -427,7 +427,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.view.DataViewMapper#convertListObjects(java.util.
    * Collection, java.lang.String, java.lang.Integer)
    */
@@ -443,7 +443,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.view.DataViewMapper#getEmptyObj(java.lang.String,
    * java.util.Map)
    */
