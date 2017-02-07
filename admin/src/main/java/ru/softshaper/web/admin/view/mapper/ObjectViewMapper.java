@@ -24,7 +24,7 @@ public class ObjectViewMapper extends ViewMapperBase<Record> {
    * ru.softshaper.services.meta.MetaClass)
    */
   @Override
-  protected String getId(Record obj, MetaClass metaClass) {
+  public String getId(Record obj, MetaClass metaClass) {
     return obj.get(metaClass.getIdColumn(), Long.class).toString();
   }
 
@@ -36,7 +36,7 @@ public class ObjectViewMapper extends ViewMapperBase<Record> {
    * ru.softshaper.services.meta.MetaField)
    */
   @Override
-  protected Object getValue(Record obj, MetaField field) {
+  public Object getValue(Record obj, MetaField field) {
     return obj.get(field.getColumn());
   }
 }

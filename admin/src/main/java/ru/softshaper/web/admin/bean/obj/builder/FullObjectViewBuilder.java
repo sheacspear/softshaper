@@ -81,7 +81,7 @@ public class FullObjectViewBuilder {
     return this;
   }
 
-  public  FullObjectViewBuilder addField(MetaField metaField, IViewSetting fieldView, Object value) {
+  public FullObjectViewBuilder addField(MetaField metaField, IViewSetting fieldView, Object value) {
     MetaField backReferenceField = metaField.getBackReferenceField();
     MetaClass linkToMetaClass = metaField.getLinkToMetaClass();
     fields.add(new FieldView(metaField.getName(), metaField.getCode(), metaField.getType().getDefaultView(),
@@ -99,10 +99,10 @@ public class FullObjectViewBuilder {
     if (variants != null) {
       variantsLocal.add(new TitleObjectView("null", null, "---"));
       variantsLocal.addAll(variants.getObjects());
+      Collections.sort(variantsLocal,
+          (o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
+      this.variants.put(metaField.getCode(), variantsLocal);
     }
-    Collections.sort(variantsLocal,
-        (o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
-    this.variants.put(metaField.getCode(), variantsLocal);
     return this;
   }
 

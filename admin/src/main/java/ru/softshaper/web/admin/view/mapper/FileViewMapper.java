@@ -32,12 +32,12 @@ public class FileViewMapper extends ViewMapperBase<FileObject> {
   }
 
   @Override
-  protected String getId(FileObject obj, MetaClass metaClass) {
+  public String getId(FileObject obj, MetaClass metaClass) {
     return obj.getId();
   }
 
   @Override
-  protected Object getValue(FileObject obj, MetaField field) {
+  public Object getValue(FileObject obj, MetaField field) {
     Extractor<FileObject, ?> metaClassExtractor = valueExtractorByField.get(field.getCode());
     return metaClassExtractor == null ? null : metaClassExtractor.value(obj);
   }

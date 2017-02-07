@@ -19,11 +19,11 @@ public class DefaultViewMapper<T> extends ViewMapperBase<T> {
     this.objectExtractor = objectExtractor;
   }
 
-  protected String getId(T obj, MetaClass metaClass) {
+  public String getId(T obj, MetaClass metaClass) {
     return objectExtractor.getId(obj, metaClass);
   }
 
-  protected Object getValue(T obj, MetaField field) {
+  public Object getValue(T obj, MetaField field) {
     return objectExtractor.getValue(obj, field);
   }
 }
