@@ -48,7 +48,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   /**
    * Хранилище Источник данных для формы
    */
-  private final DataSourceFromViewStore dataSourceFromViewStore;
+  //private final DataSourceFromViewStore dataSourceFromViewStore;
 
   /**
    * 
@@ -64,7 +64,6 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
       DataSourceFromViewStore dataSourceFromViewStore) {
     this.viewSetting = viewSetting;
     this.metaStorage = metaStorage;
-    this.dataSourceFromViewStore = dataSourceFromViewStore;
     attrmapper.put(FieldType.UNIVERSAL_LINK,
         new UniversalLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
     attrmapper.put(FieldType.LINK, new LinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));

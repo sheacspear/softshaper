@@ -41,8 +41,8 @@ import ru.softshaper.web.admin.view.mapper.ObjectViewMapper;
  * @author ashek
  */
 @Configuration
-@Import({JooqConfig.class, MetaConfig.class})
-@ComponentScan(basePackages = {"ru.softshaper.web"})
+@Import({ JooqConfig.class, MetaConfig.class })
+@ComponentScan(basePackages = { "ru.softshaper.web" })
 public class WebConfig {
 
   /**
@@ -144,29 +144,28 @@ public class WebConfig {
   public DataSourceFromViewStore dataSourceFromViewStore() {
     DataSourceFromViewStoreImpl dataSourceFromViewStore = new DataSourceFromViewStoreImpl();
 
-    //мапперы на основе стандартного
-    DataViewMapper<MetaClass> metaClassViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, metaClassObjectExtractor);
-    DataViewMapper<MetaField> metaFieldViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, metaFieldObjectExtractor);
-    DataViewMapper<FieldType> fieldTypeViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, fieldTypeObjectExtractor);
-    DataViewMapper<FieldTypeView> fieldTypeViewViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, fieldTypeViewObjectExtractor);
-    DataViewMapper<WFTask> myTaskViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, myTaskObjectExtractor);
-    DataViewMapper<Task> taskViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, taskObjectExtractor);
-    DataViewMapper<ProcessDefinition> processDefinitionViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, processDefinitionObjectExtractor);
-    DataViewMapper<ProcessInstance> processInstanceViewMapper
-        = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, processInstanceObjectExtractor);
-    //специальные мапперы
+    // мапперы на основе стандартного
+    DataViewMapper<MetaClass> metaClassViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, metaClassObjectExtractor);
+    DataViewMapper<MetaField> metaFieldViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, metaFieldObjectExtractor);
+    DataViewMapper<FieldType> fieldTypeViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, fieldTypeObjectExtractor);
+    DataViewMapper<FieldTypeView> fieldTypeViewViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, fieldTypeViewObjectExtractor);
+    DataViewMapper<WFTask> myTaskViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore,
+        myTaskObjectExtractor);
+    DataViewMapper<Task> taskViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore,
+        taskObjectExtractor);
+    DataViewMapper<ProcessDefinition> processDefinitionViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, processDefinitionObjectExtractor);
+    DataViewMapper<ProcessInstance> processInstanceViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
+        dataSourceFromViewStore, processInstanceObjectExtractor);
+    // специальные мапперы
     FileViewMapper fileViewMapper = new FileViewMapper(viewSetting, metaStorage, dataSourceFromViewStore);
     ObjectViewMapper dataViewMapperBase = new ObjectViewMapper(viewSetting, metaStorage, dataSourceFromViewStore);
-    //линкуем мапперы к хранилищам
-    dataSourceFromViewStore
-        .setDefaultViewMapper(new DataSourceFromViewImpl<>(dataViewMapperBase, dynamicDataSource));
+    // линкуем мапперы к хранилищам
+    dataSourceFromViewStore.setDefaultViewMapper(new DataSourceFromViewImpl<>(dataViewMapperBase, dynamicDataSource));
     dataSourceFromViewStore.registerMapper(MetaClassStaticContent.META_CLASS,
         new DataSourceFromViewImpl<>(metaClassViewMapper, metaClassDataSource));
     dataSourceFromViewStore.registerMapper(MetaFieldStaticContent.META_CLASS,

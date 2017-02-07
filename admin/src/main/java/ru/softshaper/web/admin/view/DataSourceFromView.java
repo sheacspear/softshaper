@@ -26,13 +26,35 @@ public interface DataSourceFromView {
    */
   Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse);
 
+  /**
+   * @param contentCode
+   * @param backLinkAttr
+   * @param objId
+   * @return
+   */
   FullObjectView getNewObject(String contentCode, String backLinkAttr, String objId);
 
+  /**
+   * @param params
+   * @return
+   */
   TableObjectsView getTableObjects(final ViewObjectsParams params);
 
+  /**
+   * @param params
+   * @return
+   */
   ListObjectsView getListObjects(final ViewObjectsParams params);
 
+  /**
+   * @param params
+   * @return
+   */
   FullObjectView getFullObject(final ViewObjectsParams params);
 
+  /**
+   * @param params
+   * @return
+   */
   TitleObjectView getTitleObject(final ViewObjectsParams params);
 }

@@ -64,7 +64,6 @@ public class ViewObjectParamsBuilder {
     return new ViewObjectsParams(getParamsBuilder.build(), fieldCollection);
   }
 
-
   public interface OrderFields {
     ViewObjectParamsBuilder add(MetaField field, SortOrder order);
   }
@@ -72,6 +71,5 @@ public class ViewObjectParamsBuilder {
   public interface IDs {
     ViewObjectParamsBuilder add(String id);
   }
-
 
 }
