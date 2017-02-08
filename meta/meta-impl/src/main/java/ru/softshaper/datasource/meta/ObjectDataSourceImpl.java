@@ -318,11 +318,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   private Map<MetaField, Object> constructValuesMap(Map<String, Object> values, MetaClass metaClass) {
-    Map<String, MetaField> fieldsByCode = Maps.newHashMap();
-    metaClass.getFields().forEach(dynamicField -> fieldsByCode.put(dynamicField.getCode(), dynamicField));
     final Map<MetaField, Object> valuesMap = new HashMap<>();
     values.forEach((fieldCode, value) -> {
-      MetaField metaField = fieldsByCode.get(fieldCode);
+      MetaField metaField = metaClass.getField(fieldCode);
       valuesMap.put(metaField, fieldConverter.convert(metaField, value == null ? null : value.toString()));
     });
     return valuesMap;
