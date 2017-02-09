@@ -80,11 +80,11 @@ public class ConvertConditionToJooqVisitor implements ConvertConditionVisitor<Co
         case IN:
           return jooqField.in(value);
         case LIKE:
-          return jooqField.like("%" + value + "%");
+          return jooqField.likeIgnoreCase("%" + value + "%");
         case END_WITH:
-          return jooqField.like("%" + value);
+          return jooqField.likeIgnoreCase("%" + value);
         case START_WITH:
-          return jooqField.like(value + "%");
+          return jooqField.likeIgnoreCase(value + "%");
       }
     }
     throw new RuntimeException("Undefined compare operation " + compareOperation);
