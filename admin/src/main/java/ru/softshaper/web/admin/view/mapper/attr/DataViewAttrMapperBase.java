@@ -9,7 +9,7 @@ import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.DataViewAttrMapper;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
-import ru.softshaper.web.admin.view.mapper.ViewMapperBase;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 import ru.softshaper.web.admin.view.utils.FieldCollection;
 import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
 
@@ -27,10 +27,10 @@ public abstract class DataViewAttrMapperBase implements DataViewAttrMapper {
   
   protected final ViewSettingFactory viewSetting;
   
-  protected final ViewMapperBase viewMapperBase;
+  protected final DefaultViewMapper viewMapperBase;
   
 
-  public DataViewAttrMapperBase(MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,ViewSettingFactory viewSetting,ViewMapperBase viewMapperBase) {
+  public DataViewAttrMapperBase(MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,ViewSettingFactory viewSetting,DefaultViewMapper viewMapperBase) {
     super();
     this.metaStorage = metaStorage;
     this.dataSourceFromViewStore = dataSourceFromViewStore;

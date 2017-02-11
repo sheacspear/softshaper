@@ -1,4 +1,4 @@
-package ru.softshaper.web.admin.view.mapper;
+package ru.softshaper.web.admin.view.mapper.extractors.obj;
 
 import javax.annotation.PostConstruct;
 
@@ -11,15 +11,15 @@ import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 
-/**
- * Mapper Data to FormBean
- */
 @Component
-public class ObjectViewMapper extends ViewMapperBase<Record> {
+@Qualifier("ObjectMetaExtractor")
+public class ObjectMetaExtractor implements ObjectExtractor<Record> {
 
   @Autowired
   private DataSourceFromViewStore store;
@@ -28,20 +28,28 @@ public class ObjectViewMapper extends ViewMapperBase<Record> {
   @Qualifier("data")
   private ContentDataSource<Record> dynamicDataSource;
 
+  /**
+   * Хранилище, которое возвращает представление поля по его параметрам (табица
+   * и колонка)
+   */
   @Autowired
-  public ObjectViewMapper(ViewSettingFactory viewSetting, MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore) {
-    super(viewSetting, metaStorage, dataSourceFromViewStore);
-  }
+  private ViewSettingFactory viewSetting;
+
+  /**
+   * MetaStorage
+   */
+  @Autowired
+  private MetaStorage metaStorage;
 
   @PostConstruct
   private void init() {
-    store.setDefault(new DataSourceFromViewImpl<>(this, dynamicDataSource));
+    store.setDefault(new DataSourceFromViewImpl<>(new DefaultViewMapper<>(viewSetting, metaStorage, store, this), dynamicDataSource));
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see ru.softshaper.web.view.mapper.ViewMapperBase#getId(java.lang.Object,
+   * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
    * ru.softshaper.services.meta.MetaClass)
    */
   @Override
@@ -52,8 +60,7 @@ public class ObjectViewMapper extends ViewMapperBase<Record> {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * ru.softshaper.web.view.mapper.ViewMapperBase#getValue(java.lang.Object,
+   * @see ru.softshaper.services.meta.ObjectExtractor#getValue(java.lang.Object,
    * ru.softshaper.services.meta.MetaField)
    */
   @Override

@@ -39,7 +39,6 @@ import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewStoreImpl;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
 import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
-import ru.softshaper.web.admin.view.mapper.ObjectViewMapper;
 
 /**
  * CommandConfig for register web component
@@ -166,14 +165,16 @@ public class WebConfig {
     return store;
   }
 
-  private <T> DataSourceFromView getDataSourceFromView(DataViewMapper<T> mapper, ContentDataSource<T> dataSource) {
-    return new DataSourceFromViewImpl<T>(mapper, dataSource);
-  }
-
   private <T> DataSourceFromView getDataSourceFromViewByExtractor(DataSourceFromViewStoreImpl dataSourceFromViewStore, ObjectExtractor<T> objectExtractor,
       ContentDataSource<T> dataSource) {
     return getDataSourceFromView(getDefaultMapper(dataSourceFromViewStore, objectExtractor), dataSource);
   }
+
+  
+  private <T> DataSourceFromView getDataSourceFromView(DataViewMapper<T> mapper, ContentDataSource<T> dataSource) {
+    return new DataSourceFromViewImpl<T>(mapper, dataSource);
+  }
+
 
   private <T> DataViewMapper<T> getDefaultMapper(DataSourceFromViewStoreImpl dataSourceFromViewStore, ObjectExtractor<T> objectExtractor) {
     return new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, objectExtractor);

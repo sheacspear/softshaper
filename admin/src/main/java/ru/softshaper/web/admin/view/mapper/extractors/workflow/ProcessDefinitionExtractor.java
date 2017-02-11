@@ -1,11 +1,11 @@
-package ru.softshaper.staticcontent.workflow.extractors;
+package ru.softshaper.web.admin.view.mapper.extractors.workflow;
 
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.staticcontent.meta.extractors.AbstractObjectExtractor;
 import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
+import ru.softshaper.web.admin.view.mapper.extractors.AbstractObjectExtractor;
 
 @Component
 @Qualifier(ProcessDefinitionStaticContent.META_CLASS)

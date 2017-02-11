@@ -1,4 +1,4 @@
-package ru.softshaper.staticcontent.file.extractors;
+package ru.softshaper.web.admin.view.mapper.extractors.file;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.bean.file.FileObject;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
-import ru.softshaper.staticcontent.meta.extractors.AbstractObjectExtractor;
+import ru.softshaper.web.admin.view.mapper.extractors.AbstractObjectExtractor;
 
 @Component
 @Qualifier(FileObjectStaticContent.META_CLASS)

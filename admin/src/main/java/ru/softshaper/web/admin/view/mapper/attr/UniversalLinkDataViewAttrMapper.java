@@ -10,7 +10,7 @@ import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.bean.ViewSetting;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
-import ru.softshaper.web.admin.view.mapper.ViewMapperBase;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 import ru.softshaper.web.admin.view.utils.FieldCollection;
 import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
 
@@ -18,7 +18,7 @@ public class UniversalLinkDataViewAttrMapper extends DataViewAttrMapperBase {
 
 
   public UniversalLinkDataViewAttrMapper(MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,
-      ViewSettingFactory viewSetting, ViewMapperBase viewMapperBase) {
+      ViewSettingFactory viewSetting, DefaultViewMapper viewMapperBase) {
     super(metaStorage, dataSourceFromViewStore, viewSetting, viewMapperBase);
     // TODO Auto-generated constructor stub
   }

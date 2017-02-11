@@ -1,10 +1,11 @@
-package ru.softshaper.staticcontent.meta.extractors;
+package ru.softshaper.web.admin.view.mapper.extractors.meta;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
+import ru.softshaper.web.admin.view.mapper.extractors.AbstractObjectExtractor;
 
 @Component
 @Qualifier(MetaFieldStaticContent.META_CLASS)

@@ -6,12 +6,12 @@ import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.bean.ViewSetting;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
-import ru.softshaper.web.admin.view.mapper.ViewMapperBase;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 
 public class DefaultDataViewAttrMapper extends DataViewAttrMapperBase {
 
   public DefaultDataViewAttrMapper(MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,
-      ViewSettingFactory viewSetting, ViewMapperBase viewMapperBase) {
+      ViewSettingFactory viewSetting, DefaultViewMapper viewMapperBase) {
     super(metaStorage, dataSourceFromViewStore, viewSetting, viewMapperBase);
   }
 

@@ -1,4 +1,4 @@
-package ru.softshaper.staticcontent.meta.extractors;
+package ru.softshaper.web.admin.view.mapper.extractors;
 
 import java.util.HashMap;
 import java.util.Map;
