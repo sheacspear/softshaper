@@ -1,16 +1,36 @@
 package ru.softshaper.web.admin.view.mapper.extractors.workflow;
 
+import javax.annotation.PostConstruct;
+
 import org.camunda.bpm.engine.task.Task;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.staticcontent.meta.meta.MetaClassStaticContent;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
+import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 import ru.softshaper.web.admin.view.mapper.extractors.AbstractObjectExtractor;
 
 @Component
 @Qualifier(TaskStaticContent.META_CLASS)
 public class TaskObjectExtractor extends AbstractObjectExtractor<Task> {
 
+  @Autowired
+  @Qualifier("task")
+  private ContentDataSource<Task> taskDataSource;
+
+  
+  @PostConstruct
+  private void init() {
+    store.register(TaskStaticContent.META_CLASS,
+        new DataSourceFromViewImpl<>(new DefaultViewMapper<>(viewSetting, metaStorage, store, this), taskDataSource));
+  }
+  
+  
   public TaskObjectExtractor() {
     registerFieldExtractor(TaskStaticContent.Field.name, Task::getName);
     registerFieldExtractor(TaskStaticContent.Field.description, Task::getDescription);

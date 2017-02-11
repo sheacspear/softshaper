@@ -1,17 +1,19 @@
 package ru.softshaper.web.admin.view.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.storage.jooq.tables.daos.FieldViewDao;
 import ru.softshaper.web.admin.view.bean.ViewSetting;
-
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Хранилище, которое возвращает представление поля по его параметрам (табица и колонка)
@@ -87,61 +89,4 @@ public class ViewSettingFactory {
       return fieldView2;
     }
   }
-
-  /**
-   * @author ashek
-   *
-   */
-  private class ContentCodeFieldPare {
-    /**
-     *
-     */
-    private final String contentCode;
-    /**
-     *
-     */
-    private final String filedCode;
-
-    /**
-     * @param contentCode
-     * @param filedCode
-     */
-    private ContentCodeFieldPare(String contentCode, String filedCode) {
-      Preconditions.checkNotNull(contentCode, "Код мета-класса должен быть указан");
-      Preconditions.checkNotNull(filedCode, "Код мета-поля должен быть указан");
-      this.contentCode = contentCode;
-      this.filedCode = filedCode;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-
-      ContentCodeFieldPare that = (ContentCodeFieldPare) o;
-
-      return contentCode.equals(that.contentCode) && filedCode.equals(that.filedCode);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-      int result = contentCode.hashCode();
-      result = 31 * result + filedCode.hashCode();
-      return result;
-    }
-  }
-
 }

@@ -24,9 +24,7 @@ public class ObjectMetaExtractor implements ObjectExtractor<Record> {
   @Autowired
   private DataSourceFromViewStore store;
 
-  @Autowired
-  @Qualifier("data")
-  private ContentDataSource<Record> dynamicDataSource;
+
 
   /**
    * Хранилище, которое возвращает представление поля по его параметрам (табица
@@ -41,6 +39,10 @@ public class ObjectMetaExtractor implements ObjectExtractor<Record> {
   @Autowired
   private MetaStorage metaStorage;
 
+  @Autowired
+  @Qualifier("data")
+  private ContentDataSource<Record> dynamicDataSource;
+  
   @PostConstruct
   private void init() {
     store.setDefault(new DataSourceFromViewImpl<>(new DefaultViewMapper<>(viewSetting, metaStorage, store, this), dynamicDataSource));

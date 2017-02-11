@@ -1,16 +1,34 @@
 package ru.softshaper.web.admin.view.mapper.extractors.workflow;
 
+import javax.annotation.PostConstruct;
+
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
+import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
+import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
 import ru.softshaper.web.admin.view.mapper.extractors.AbstractObjectExtractor;
 
 @Component
 @Qualifier(ProcessDefinitionStaticContent.META_CLASS)
 public class ProcessDefinitionExtractor extends AbstractObjectExtractor<ProcessDefinition> {
 
+  
+  @Autowired
+  @Qualifier("processDefinition")
+  private ContentDataSource<ProcessDefinition> processDefinitionContentDataSource;
+  
+  @PostConstruct
+  private void init() {
+    store.register(ProcessDefinitionStaticContent.META_CLASS,
+        new DataSourceFromViewImpl<>(new DefaultViewMapper<>(viewSetting, metaStorage, store, this), processDefinitionContentDataSource));
+  }
+  
   public ProcessDefinitionExtractor() {
     registerFieldExtractor(ProcessDefinitionStaticContent.Field.suspended, ProcessDefinition::isSuspended);
     registerFieldExtractor(ProcessDefinitionStaticContent.Field.description, ProcessDefinition::getDescription);
