@@ -18,5 +18,10 @@ public interface DataSourceFromViewStore {
 	 * @param contentCode
 	 * @param dataViewMapper
 	 */
-	void registerMapper(String contentCode, DataSourceFromView dataViewMapper);
+	void register(String contentCode, DataSourceFromView dataViewMapper);
+	
+	/**
+	 * @param defaultViewMapper
+	 */
+	void setDefault(DataSourceFromView defaultViewMapper);
 }

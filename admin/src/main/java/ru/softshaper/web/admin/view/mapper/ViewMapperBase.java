@@ -48,7 +48,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
   /**
    * Хранилище Источник данных для формы
    */
-  //private final DataSourceFromViewStore dataSourceFromViewStore;
+  // private final DataSourceFromViewStore dataSourceFromViewStore;
 
   /**
    * 
@@ -60,17 +60,13 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
    */
   private final DataViewAttrMapper defaultDataViewAttrMapper;
 
-  public ViewMapperBase(ViewSettingFactory viewSetting, MetaStorage metaStorage,
-      DataSourceFromViewStore dataSourceFromViewStore) {
+  public ViewMapperBase(ViewSettingFactory viewSetting, MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore) {
     this.viewSetting = viewSetting;
     this.metaStorage = metaStorage;
-    attrmapper.put(FieldType.UNIVERSAL_LINK,
-        new UniversalLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
+    attrmapper.put(FieldType.UNIVERSAL_LINK, new UniversalLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
     attrmapper.put(FieldType.LINK, new LinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
-    attrmapper.put(FieldType.BACK_REFERENCE,
-        new BackLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
-    attrmapper.put(FieldType.MULTILINK,
-        new MultyLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
+    attrmapper.put(FieldType.BACK_REFERENCE, new BackLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
+    attrmapper.put(FieldType.MULTILINK, new MultyLinkDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
     attrmapper.put(FieldType.FILE, new FileDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this));
     defaultDataViewAttrMapper = new DefaultDataViewAttrMapper(metaStorage, dataSourceFromViewStore, viewSetting, this);
   }
@@ -96,8 +92,8 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
    * @return
    */
   private String constructTitle(Map<ViewSetting, String> titleFields) {
-    return titleFields.keySet().stream().sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber()))
-        .map(titleFields::get).reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2)).orElse("");
+    return titleFields.keySet().stream().sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber())).map(titleFields::get)
+        .reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2)).orElse("");
   }
 
   /*
@@ -254,8 +250,7 @@ public abstract class ViewMapperBase<T> implements DataViewMapper<T> {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
-    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass.getCode()))
-        .collect(Collectors.toList());
+    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass.getCode())).collect(Collectors.toList());
     return new ListObjectsView(metaClassCode, total, titleObjects);
   }
 

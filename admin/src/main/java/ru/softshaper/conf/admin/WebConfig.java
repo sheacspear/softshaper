@@ -10,13 +10,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import ru.softshaper.bean.file.FileObject;
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.beans.workflow.WFTask;
 import ru.softshaper.conf.db.JooqConfig;
 import ru.softshaper.conf.meta.MetaConfig;
 import ru.softshaper.datasource.file.FileObjectDataSource;
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.FieldType;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeStaticContent;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
@@ -26,13 +32,13 @@ import ru.softshaper.staticcontent.workflow.MyTaskStaticContent;
 import ru.softshaper.staticcontent.workflow.ProcessDefinitionStaticContent;
 import ru.softshaper.staticcontent.workflow.ProcessInstanceStaticContent;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
+import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.DataViewMapper;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewStoreImpl;
 import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
 import ru.softshaper.web.admin.view.mapper.DefaultViewMapper;
-import ru.softshaper.web.admin.view.mapper.FileViewMapper;
 import ru.softshaper.web.admin.view.mapper.ObjectViewMapper;
 
 /**
@@ -135,6 +141,10 @@ public class WebConfig {
   private ObjectExtractor<ProcessInstance> processInstanceObjectExtractor;
 
   @Autowired
+  @Qualifier(FileObjectStaticContent.META_CLASS)
+  private ObjectExtractor<FileObject> fileObjectExtractor;
+
+  @Autowired
   private FileObjectDataSource fileObjectDataSource;
 
   /**
@@ -142,50 +152,30 @@ public class WebConfig {
    */
   @Bean
   public DataSourceFromViewStore dataSourceFromViewStore() {
-    DataSourceFromViewStoreImpl dataSourceFromViewStore = new DataSourceFromViewStoreImpl();
-
+    DataSourceFromViewStoreImpl store = new DataSourceFromViewStoreImpl();
     // мапперы на основе стандартного
-    DataViewMapper<MetaClass> metaClassViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, metaClassObjectExtractor);
-    DataViewMapper<MetaField> metaFieldViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, metaFieldObjectExtractor);
-    DataViewMapper<FieldType> fieldTypeViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, fieldTypeObjectExtractor);
-    DataViewMapper<FieldTypeView> fieldTypeViewViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, fieldTypeViewObjectExtractor);
-    DataViewMapper<WFTask> myTaskViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore,
-        myTaskObjectExtractor);
-    DataViewMapper<Task> taskViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore,
-        taskObjectExtractor);
-    DataViewMapper<ProcessDefinition> processDefinitionViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, processDefinitionObjectExtractor);
-    DataViewMapper<ProcessInstance> processInstanceViewMapper = new DefaultViewMapper<>(viewSetting, metaStorage,
-        dataSourceFromViewStore, processInstanceObjectExtractor);
-    // специальные мапперы
-    FileViewMapper fileViewMapper = new FileViewMapper(viewSetting, metaStorage, dataSourceFromViewStore);
-    ObjectViewMapper dataViewMapperBase = new ObjectViewMapper(viewSetting, metaStorage, dataSourceFromViewStore);
-    // линкуем мапперы к хранилищам
-    dataSourceFromViewStore.setDefaultViewMapper(new DataSourceFromViewImpl<>(dataViewMapperBase, dynamicDataSource));
-    dataSourceFromViewStore.registerMapper(MetaClassStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(metaClassViewMapper, metaClassDataSource));
-    dataSourceFromViewStore.registerMapper(MetaFieldStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(metaFieldViewMapper, metaFieldDataSource));
-    dataSourceFromViewStore.registerMapper(FieldTypeStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(fieldTypeViewMapper, fieldTypeDataSource));
-    dataSourceFromViewStore.registerMapper(FieldTypeViewStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(fieldTypeViewViewMapper, fieldTypeViewDataSource));
-    dataSourceFromViewStore.registerMapper(FileObjectStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(fileViewMapper, fileObjectDataSource));
-    dataSourceFromViewStore.registerMapper(MyTaskStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(myTaskViewMapper, myTaskDataSource));
-    dataSourceFromViewStore.registerMapper(TaskStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(taskViewMapper, taskDataSource));
-    dataSourceFromViewStore.registerMapper(ProcessDefinitionStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(processDefinitionViewMapper, processDefinitionContentDataSource));
-    dataSourceFromViewStore.registerMapper(ProcessInstanceStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(processInstanceViewMapper, processInstanceContentDataSource));
-
-    return dataSourceFromViewStore;
+    store.register(MetaClassStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, metaClassObjectExtractor, metaClassDataSource));
+    store.register(MetaFieldStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, metaFieldObjectExtractor, metaFieldDataSource));
+    store.register(FieldTypeStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, fieldTypeObjectExtractor, fieldTypeDataSource));
+    store.register(FieldTypeViewStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, fieldTypeViewObjectExtractor, fieldTypeViewDataSource));
+    store.register(FileObjectStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, fileObjectExtractor, fileObjectDataSource));
+    store.register(MyTaskStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, myTaskObjectExtractor, myTaskDataSource));
+    store.register(TaskStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, taskObjectExtractor, taskDataSource));
+    store.register(ProcessDefinitionStaticContent.META_CLASS,getDataSourceFromViewByExtractor(store, processDefinitionObjectExtractor, processDefinitionContentDataSource));
+    store.register(ProcessInstanceStaticContent.META_CLASS, getDataSourceFromViewByExtractor(store, processInstanceObjectExtractor, processInstanceContentDataSource));
+    return store;
   }
 
+  private <T> DataSourceFromView getDataSourceFromView(DataViewMapper<T> mapper, ContentDataSource<T> dataSource) {
+    return new DataSourceFromViewImpl<T>(mapper, dataSource);
+  }
+
+  private <T> DataSourceFromView getDataSourceFromViewByExtractor(DataSourceFromViewStoreImpl dataSourceFromViewStore, ObjectExtractor<T> objectExtractor,
+      ContentDataSource<T> dataSource) {
+    return getDataSourceFromView(getDefaultMapper(dataSourceFromViewStore, objectExtractor), dataSource);
+  }
+
+  private <T> DataViewMapper<T> getDefaultMapper(DataSourceFromViewStoreImpl dataSourceFromViewStore, ObjectExtractor<T> objectExtractor) {
+    return new DefaultViewMapper<>(viewSetting, metaStorage, dataSourceFromViewStore, objectExtractor);
+  }
 }
