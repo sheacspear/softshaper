@@ -17,71 +17,74 @@ import ru.softshaper.web.admin.bean.objlist.ColumnView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.ObjectRowView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromViewStore;
 import ru.softshaper.web.admin.view.IViewAttrController;
 import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.controller.attr.BackLinkAttrController;
-import ru.softshaper.web.admin.view.controller.attr.DefaultAttrController;
-import ru.softshaper.web.admin.view.controller.attr.FileAttrController;
-import ru.softshaper.web.admin.view.controller.attr.LinkAttrController;
-import ru.softshaper.web.admin.view.controller.attr.MultyLinkAttrController;
-import ru.softshaper.web.admin.view.controller.attr.UniversalLinkAttrController;
 import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 /**
  * Базовый маппер
  */
-public class ViewObjectController<T> implements IViewObjectController<T> {
+@Service
+public class ViewObjectController implements IViewObjectController {
 
   /**
    * Хранилище, которое возвращает представление поля по его параметрам (табица
    * и колонка)
    */
-  private final ViewSettingStore viewSetting;
+  
+  @Autowired
+  private  ViewSettingStore viewSetting;
 
   /**
    * MetaStorage
    */
-  private final MetaStorage metaStorage;
+  @Autowired
+  private  MetaStorage metaStorage;
 
   /**
    * 
    */
-  private final ObjectExtractor<T> objectExtractor;
+  //private final ObjectExtractor<T> objectExtractor;
 
   /**
    * 
    */
-  private final IViewAttrController defaultDataViewAttrMapper;
+  private IViewAttrController defaultViewAttrController;
 
   /**
    * 
    */
-  Map<FieldType, IViewAttrController> attrmapper = Maps.newHashMap();
+  private final Map<FieldType, IViewAttrController> attrmapper = Maps.newHashMap();
 
-  /**
-   * 
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.view.IViewObjectController#registerAttrController(ru.softshaper.services.meta.FieldType, ru.softshaper.web.admin.view.IViewAttrController)
    */
-  public ViewObjectController(ViewSettingStore viewSetting, MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,
-      ObjectExtractor<T> objectExtractor) {
-    this.viewSetting = viewSetting;
-    this.metaStorage = metaStorage;
-    attrmapper.put(FieldType.UNIVERSAL_LINK, new UniversalLinkAttrController(metaStorage, dataSourceFromViewStore, viewSetting,(ViewObjectController<Object>) this));
-    attrmapper.put(FieldType.LINK, new LinkAttrController(metaStorage, dataSourceFromViewStore, viewSetting, (ViewObjectController<Object>) this));
-    attrmapper.put(FieldType.BACK_REFERENCE, new BackLinkAttrController(metaStorage, dataSourceFromViewStore, viewSetting, (ViewObjectController<Object>) this));
-    attrmapper.put(FieldType.MULTILINK, new MultyLinkAttrController(metaStorage, dataSourceFromViewStore, viewSetting, (ViewObjectController<Object>) this));
-    attrmapper.put(FieldType.FILE, new FileAttrController(metaStorage, dataSourceFromViewStore, viewSetting, (ViewObjectController<Object>) this));
-    defaultDataViewAttrMapper = new DefaultAttrController(metaStorage, dataSourceFromViewStore, viewSetting, (ViewObjectController<Object>) this);
-    this.objectExtractor = objectExtractor;
+  @Override
+  public void registerAttrController(FieldType fieldType, IViewAttrController viewAttrController) {
+    attrmapper.put(fieldType, viewAttrController);
   }
+
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.view.IViewObjectController#setDefaultAttrController(ru.softshaper.web.admin.view.IViewAttrController)
+   */
+  @Override
+  public void setDefaultAttrController(IViewAttrController viewAttrController) {
+    defaultViewAttrController = viewAttrController;
+  }
+
+
 
   /**
    * @param metaClass
    * @return
    */
+  @Override
   public List<ColumnView> constructColumnsView(MetaClass metaClass) {
     List<ColumnView> columnsView = Lists.newArrayList();
     columnsView.add(new ColumnView("Идентификатор", "id", FieldTypeView.STRING_SINGLE, false));
@@ -111,12 +114,12 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
    * java.lang.String)
    */
   @Override
-  public FullObjectView convertFullObject(T obj, String metaClassCode) {
+  public <T> FullObjectView convertFullObject(T obj, String metaClassCode,ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
     Map<ViewSetting, String> titleFields = Maps.newHashMap();
-    FullObjectViewBuilder view = FullObjectView.newBuilder(metaClass.getCode(), getId(obj, metaClass));
+    FullObjectViewBuilder view = FullObjectView.newBuilder(metaClass.getCode(), objectExtractor.getId(obj, metaClass));
     for (MetaField metaField : metaClass.getFields()) {
       ListObjectsView variants = null;
       ViewSetting fieldView = viewSetting.getView(metaField);
@@ -124,16 +127,16 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
       // get values
       IViewAttrController attrMapper = attrmapper.get(fieldType);
       if (attrMapper == null) {
-        attrMapper = defaultDataViewAttrMapper;
+        attrMapper = defaultViewAttrController;
       }
-      Object value = attrMapper.getValueByObject(obj, metaField, fieldView);
+      Object value = attrMapper.getValueByObject(obj, metaField, fieldView, objectExtractor);
       // get Title values
       if (fieldView.isTitleField()) {
         titleFields.put(fieldView, value == null ? "" : value.toString());
       }
       // find variant values
       if (attrMapper != null) {
-        variants = attrMapper.getVariants(metaField);
+        variants = attrMapper.getVariants(metaField, objectExtractor);
       }
       // add field
       view.addField(metaField, fieldView, value, variants);
@@ -151,7 +154,7 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
    * java.lang.String)
    */
   @Override
-  public TitleObjectView convertTitleObject(T obj, String metaClassCode) {
+  public <T> TitleObjectView convertTitleObject(T obj, String metaClassCode,ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -162,9 +165,9 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
         FieldType fieldType = metaField.getType();
         IViewAttrController attrMapper = attrmapper.get(fieldType);
         if (attrMapper == null) {
-          attrMapper = defaultDataViewAttrMapper;
+          attrMapper = defaultViewAttrController;
         }
-        Object value = attrMapper.getTitle(obj, metaField, fieldView);
+        Object value = attrMapper.getTitle(obj, metaField, fieldView, objectExtractor);
         if (value != null) {
           titleFields.put(fieldView, value.toString());
         }
@@ -172,9 +175,9 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
     }
     String title = constructTitle(titleFields);
     if (title == null || title.isEmpty()) {
-      title = getId(obj, metaClass);
+      title = objectExtractor.getId(obj, metaClass);
     }
-    return new TitleObjectView(metaClass.getCode(), getId(obj, metaClass), title);
+    return new TitleObjectView(metaClass.getCode(), objectExtractor.getId(obj, metaClass), title);
   }
 
   /*
@@ -184,7 +187,7 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total) {
+  public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -192,7 +195,7 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
     List<ObjectRowView> objectsView = Lists.newArrayList();
     objList.forEach(obj -> {
       List<Object> data = Lists.newArrayList();
-      data.add(getId(obj, metaClass));
+      data.add(objectExtractor.getId(obj, metaClass));
       metaClass.getFields().forEach(metaField -> {
         ViewSetting fieldView = viewSetting.getView(metaField);
         if (fieldView.isTableField()) {
@@ -200,14 +203,14 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
           // get values
           IViewAttrController attrMapper = attrmapper.get(fieldType);
           if (attrMapper == null) {
-            attrMapper = defaultDataViewAttrMapper;
+            attrMapper = defaultViewAttrController;
           }
-          Object value = attrMapper.getValueByTable(obj, metaField, fieldView);
+          Object value = attrMapper.getValueByTable(obj, metaField, fieldView, objectExtractor);
           data.add(value);
         }
       });
       //
-      ObjectRowView objectRowView = new ObjectRowView(getId(obj, metaClass), data, null);
+      ObjectRowView objectRowView = new ObjectRowView(objectExtractor.getId(obj, metaClass), data, null);
       objectsView.add(objectRowView);
 
       // хз что это такое
@@ -253,11 +256,11 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total) {
+  public <T> ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total,ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
-    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass.getCode())).collect(Collectors.toList());
+    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass.getCode(),objectExtractor)).collect(Collectors.toList());
     return new ListObjectsView(metaClassCode, total, titleObjects);
   }
 
@@ -268,7 +271,7 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
    * java.util.Map)
    */
   @Override
-  public FullObjectView getEmptyObj(String contentCode, Map<String, Object> defValue) {
+  public <T> FullObjectView getEmptyObj(String contentCode, Map<String, Object> defValue,ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(contentCode);
     MetaClass content = metaStorage.getMetaClass(contentCode);
     Preconditions.checkNotNull(content);
@@ -277,21 +280,13 @@ public class ViewObjectController<T> implements IViewObjectController<T> {
     for (MetaField metaField : content.getFields()) {
       IViewAttrController attrMapper = attrmapper.get(metaField.getType());
       if (attrMapper == null) {
-        attrMapper = defaultDataViewAttrMapper;
+        attrMapper = defaultViewAttrController;
       }
-      ListObjectsView variants = attrMapper.getVariants(metaField);
+      ListObjectsView variants = attrMapper.getVariants(metaField, objectExtractor);
       ViewSetting fieldView = viewSetting.getView(metaField);
       view.addField(metaField, fieldView, defValue.get(metaField.getCode()), variants);
     }
     return view.build();
-  }
-
-  public String getId(T obj, MetaClass metaClass) {
-    return objectExtractor.getId(obj, metaClass);
-  }
-
-  public Object getValue(T obj, MetaField field) {
-    return objectExtractor.getValue(obj, field);
   }
 
   @FunctionalInterface

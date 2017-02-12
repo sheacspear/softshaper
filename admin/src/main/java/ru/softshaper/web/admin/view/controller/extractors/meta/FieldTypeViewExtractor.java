@@ -10,7 +10,6 @@ import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
-import ru.softshaper.web.admin.view.controller.ViewObjectController;
 import ru.softshaper.web.admin.view.controller.extractors.AbstractObjectExtractor;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 
@@ -24,15 +23,17 @@ public class FieldTypeViewExtractor extends AbstractObjectExtractor<FieldTypeVie
 
   @PostConstruct
   private void init() {
-    store.register(FieldTypeViewStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(new ViewObjectController<>(viewSetting, metaStorage, store, this), fieldTypeViewDataSource));
-  }
-
-  public FieldTypeViewExtractor() {
     registerFieldExtractor(FieldTypeViewStaticContent.Field.code, FieldTypeView::getCode);
     registerFieldExtractor(FieldTypeViewStaticContent.Field.name, FieldTypeView::getName);
+    store.register(FieldTypeViewStaticContent.META_CLASS, new DataSourceFromViewImpl<>(viewObjectController, fieldTypeViewDataSource, this));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+   * ru.softshaper.services.meta.MetaClass)
+   */
   @Override
   public String getId(FieldTypeView obj, MetaClass metaClass) {
     return obj.getCode();

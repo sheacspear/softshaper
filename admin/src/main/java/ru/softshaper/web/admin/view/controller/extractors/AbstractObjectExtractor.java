@@ -9,6 +9,7 @@ import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
+import ru.softshaper.web.admin.view.IViewObjectController;
 import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 /**
@@ -38,6 +39,13 @@ public abstract class AbstractObjectExtractor<T> implements ObjectExtractor<T> {
   @Autowired
   protected MetaStorage metaStorage;
 
+  
+  /**
+   * Mapper Data to FormBean
+   */
+  @Autowired
+  protected  IViewObjectController viewObjectController;
+  
   /**
    * Зарегистрировать экстрактор поля
    *

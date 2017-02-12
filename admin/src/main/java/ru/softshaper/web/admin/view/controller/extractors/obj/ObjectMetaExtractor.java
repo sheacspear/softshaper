@@ -10,12 +10,10 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
-import ru.softshaper.web.admin.view.controller.ViewObjectController;
+import ru.softshaper.web.admin.view.IViewObjectController;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 @Component
 @Qualifier("ObjectMetaExtractor")
@@ -24,28 +22,16 @@ public class ObjectMetaExtractor implements ObjectExtractor<Record> {
   @Autowired
   private DataSourceFromViewStore store;
 
-
-
-  /**
-   * Хранилище, которое возвращает представление поля по его параметрам (табица
-   * и колонка)
-   */
-  @Autowired
-  private ViewSettingStore viewSetting;
-
-  /**
-   * MetaStorage
-   */
-  @Autowired
-  private MetaStorage metaStorage;
-
   @Autowired
   @Qualifier("data")
   private ContentDataSource<Record> dynamicDataSource;
-  
+
+  @Autowired
+  private IViewObjectController viewObjectController;
+
   @PostConstruct
   private void init() {
-    store.setDefault(new DataSourceFromViewImpl<>(new ViewObjectController<>(viewSetting, metaStorage, store, this), dynamicDataSource));
+    store.setDefault(new DataSourceFromViewImpl<>(viewObjectController, dynamicDataSource, this));
   }
 
   /*

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.staticcontent.workflow.TaskStaticContent;
-import ru.softshaper.web.admin.view.controller.ViewObjectController;
 import ru.softshaper.web.admin.view.controller.extractors.AbstractObjectExtractor;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 
@@ -22,15 +21,8 @@ public class TaskObjectExtractor extends AbstractObjectExtractor<Task> {
   @Qualifier("task")
   private ContentDataSource<Task> taskDataSource;
 
-  
   @PostConstruct
   private void init() {
-    store.register(TaskStaticContent.META_CLASS,
-        new DataSourceFromViewImpl<>(new ViewObjectController<>(viewSetting, metaStorage, store, this), taskDataSource));
-  }
-  
-  
-  public TaskObjectExtractor() {
     registerFieldExtractor(TaskStaticContent.Field.name, Task::getName);
     registerFieldExtractor(TaskStaticContent.Field.description, Task::getDescription);
     registerFieldExtractor(TaskStaticContent.Field.assignee, Task::getAssignee);
@@ -49,8 +41,15 @@ public class TaskObjectExtractor extends AbstractObjectExtractor<Task> {
     registerFieldExtractor(TaskStaticContent.Field.processDefinition, Task::getProcessDefinitionId);
     registerFieldExtractor(TaskStaticContent.Field.suspended, Task::isSuspended);
     registerFieldExtractor(TaskStaticContent.Field.tenantId, Task::getTenantId);
+    store.register(TaskStaticContent.META_CLASS, new DataSourceFromViewImpl<>(viewObjectController, taskDataSource, this));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+   * ru.softshaper.services.meta.MetaClass)
+   */
   @Override
   public String getId(Task obj, MetaClass metaClass) {
     return obj.getId();

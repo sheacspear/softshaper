@@ -3,49 +3,47 @@ package ru.softshaper.web.admin.view.controller.attr;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
+
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.DataSourceFromViewStore;
-import ru.softshaper.web.admin.view.controller.ViewObjectController;
 import ru.softshaper.web.admin.view.params.FieldCollection;
 import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 /**
  *
  */
+@Component
 public class MultyLinkAttrController extends AttrControllerBase {
 
 
-  /**
-   * @param metaStorage
-   * @param dataSourceFromViewStore
-   * @param viewSetting
-   * @param viewMapperBase
-   */
-  public MultyLinkAttrController(MetaStorage metaStorage, DataSourceFromViewStore dataSourceFromViewStore,
-      ViewSettingStore viewSetting, ViewObjectController<Object> viewMapperBase) {
-    super(metaStorage, dataSourceFromViewStore, viewSetting, viewMapperBase);
+  @PostConstruct
+  void init(){
+    viewObjectController.registerAttrController(FieldType.MULTILINK, this);    
   }
+
 
   /* (non-Javadoc)
    * @see ru.softshaper.web.admin.view.IViewAttrController#getValueByObject(java.lang.Object, ru.softshaper.services.meta.MetaField, ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
    */
   @Override
-  public Object getValueByObject(Object obj, MetaField metaField, ViewSetting fieldView) {
+  public <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView,ObjectExtractor<T> objectExtractor) {
     MetaClass metaClass = metaField.getOwner();
     Object value;
     DataSourceFromView dataSourceFrom = dataSourceFromViewStore.get(metaField.getOwner().getCode());
     DataSourceFromView dataSourceTo = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
     Collection<String> objectsIds = dataSourceFrom.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(),
-        viewMapperBase.getId(obj, metaClass), false);
+        objectExtractor.getId(obj, metaClass), false);
     ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
         .addIds(objectsIds);
     if (FieldTypeView.MULTILINK_CHECKBOX.equals(fieldView.getTypeView())) {
@@ -54,7 +52,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
     } else {
       ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
       value = objectsIds != null && !objectsIds.isEmpty() ? dataSourceTo.getTableObjects(params)
-          : emptyTableObjectsView(metaField.getLinkToMetaClass());
+          : emptyTableObjectsView(metaField.getLinkToMetaClass(),objectExtractor);
     }
     return value;
   }
@@ -63,12 +61,12 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @see ru.softshaper.web.admin.view.IViewAttrController#getValueByTable(java.lang.Object, ru.softshaper.services.meta.MetaField, ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
    */
   @Override
-  public Object getValueByTable(Object obj, MetaField metaField, ViewSetting fieldView) {
+  public <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView,ObjectExtractor<T> objectExtractor) {
     Object value = null;
     MetaClass metaClass = metaField.getOwner();
     DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());
     Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(),
-        viewMapperBase.getId(obj, metaClass), false);
+        objectExtractor.getId(obj, metaClass), false);
     if (linkIds != null && !linkIds.isEmpty()) {
       DataSourceFromView linkedStore = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
       value = linkedStore
@@ -85,8 +83,8 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @param metaClass
    * @return
    */
-  private TableObjectsView emptyTableObjectsView(MetaClass metaClass) {
-    return new TableObjectsView(metaClass.getCode(), 0, viewMapperBase.constructColumnsView(metaClass),
+  private <T> TableObjectsView emptyTableObjectsView(MetaClass metaClass,ObjectExtractor<T> objectExtractor) {
+    return new TableObjectsView(metaClass.getCode(), 0, viewObjectController.constructColumnsView(metaClass),
         Collections.emptyList());
   }
 
@@ -94,7 +92,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @see ru.softshaper.web.admin.view.IViewAttrController#getTitle(java.lang.Object, ru.softshaper.services.meta.MetaField, ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
    */
   @Override
-  public String getTitle(Object obj, MetaField metaField, ViewSetting fieldView) {
+  public <T> String getTitle(T obj, MetaField metaField, ViewSetting fieldView,ObjectExtractor<T> objectExtractor) {
     return null;
   }
 
@@ -102,7 +100,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @see ru.softshaper.web.admin.view.IViewAttrController#getVariants(ru.softshaper.services.meta.MetaField)
    */
   @Override
-  public ListObjectsView getVariants(MetaField metaField) {
+  public <T> ListObjectsView getVariants(MetaField metaField,ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
   }

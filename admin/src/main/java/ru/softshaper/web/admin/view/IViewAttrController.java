@@ -1,6 +1,7 @@
 package ru.softshaper.web.admin.view;
 
 import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 
@@ -15,7 +16,7 @@ public interface IViewAttrController {
    * @param fieldView
    * @return
    */
-  Object getValueByObject(Object obj, MetaField metaField, ViewSetting fieldView);
+  <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor);
 
   /**
    * @param obj
@@ -23,7 +24,7 @@ public interface IViewAttrController {
    * @param fieldView
    * @return
    */
-  Object getValueByTable(Object obj, MetaField metaField, ViewSetting fieldView);
+  <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor);
 
   /**
    * @param obj
@@ -31,12 +32,12 @@ public interface IViewAttrController {
    * @param fieldView
    * @return
    */
-  String getTitle(Object obj, MetaField metaField, ViewSetting fieldView);
-  
+  <T> String getTitle(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor);
+
   /**
    * @param metaField
    * @return
    */
-  ListObjectsView getVariants(MetaField metaField);
-  
+  <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor);
+
 }
