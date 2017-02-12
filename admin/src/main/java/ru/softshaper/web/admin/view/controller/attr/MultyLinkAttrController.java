@@ -43,8 +43,8 @@ public class MultyLinkAttrController extends AttrControllerBase {
   public <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
     MetaClass metaClass = metaField.getOwner();
     Object value;
-    DataSourceFromView dataSourceFrom = dataSourceFromViewStore.get(metaField.getOwner().getCode());
-    DataSourceFromView dataSourceTo = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
+    DataSourceFromView dataSourceFrom = getDataSourceFromView(metaField.getOwner().getCode());
+    DataSourceFromView dataSourceTo = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
     Collection<String> objectsIds = dataSourceFrom.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(), objectExtractor.getId(obj, metaClass),
         false);
     ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(objectsIds);
@@ -71,11 +71,11 @@ public class MultyLinkAttrController extends AttrControllerBase {
   public <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
     Object value = null;
     MetaClass metaClass = metaField.getOwner();
-    DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());
+    DataSourceFromView dataSourceFromView = getDataSourceFromView(metaClass.getCode());
     Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(), objectExtractor.getId(obj, metaClass),
         false);
     if (linkIds != null && !linkIds.isEmpty()) {
-      DataSourceFromView linkedStore = dataSourceFromViewStore.get(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView linkedStore = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       value = linkedStore.getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
     }
     return value;

@@ -1,6 +1,7 @@
 package ru.softshaper.datasource.meta;
 
 import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 
 import java.util.Collection;
@@ -75,4 +76,9 @@ public interface ContentDataSource<T> {
    * @return
    */
   Class<?> getIdType(String metaClassCode);
+  
+  /**
+   * @return
+   */
+  ObjectExtractor<T> getObjectExtractor();
  }

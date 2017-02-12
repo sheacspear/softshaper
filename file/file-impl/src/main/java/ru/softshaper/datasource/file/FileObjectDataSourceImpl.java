@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.bean.file.FileObject;
 import ru.softshaper.bean.file.FileObjectBean;
 import ru.softshaper.datasource.file.FileObjectDataSource;
+import ru.softshaper.datasource.file.MangoDBFileObjectDataSourceImpl.FileObjectExtractor;
+import ru.softshaper.datasource.meta.AbstractObjectExtractor;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
@@ -134,5 +136,31 @@ public class FileObjectDataSourceImpl implements FileObjectDataSource {
     }
     byte[] data = record.get(dataField.getColumn(), byte[].class);
     return data == null ? null : new ByteArrayInputStream(data);
+  }
+  
+  @Override
+  public ObjectExtractor<FileObject> getObjectExtractor() {
+    return new FileObjectExtractor();
+  }
+
+  public static class FileObjectExtractor extends AbstractObjectExtractor<FileObject> {
+
+    private FileObjectExtractor() {
+      registerFieldExtractor(FileObjectStaticContent.Field.mimeType, FileObject::getMimeType);
+      registerFieldExtractor(FileObjectStaticContent.Field.name, FileObject::getName);
+      registerFieldExtractor(FileObjectStaticContent.Field.modificationDate, FileObject::getModificationDate);
+      registerFieldExtractor(FileObjectStaticContent.Field.size, FileObject::getSize);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(FileObject obj, MetaClass metaClass) {
+      return obj.getId();
+    }
   }
 }

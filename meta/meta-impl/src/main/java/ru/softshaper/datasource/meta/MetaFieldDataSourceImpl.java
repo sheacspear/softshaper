@@ -1,7 +1,16 @@
 package ru.softshaper.datasource.meta;
 
-import com.google.common.base.Preconditions;
-import org.jooq.*;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.InsertResultStep;
+import org.jooq.InsertSetMoreStep;
+import org.jooq.InsertSetStep;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,18 +18,22 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
+
 import ru.softshaper.bean.meta.MetaFieldBean;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.FieldType;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;
 import ru.softshaper.storage.jooq.tables.records.DynamicFieldRecord;
-
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Sunchise on 16.08.2016.
@@ -52,14 +65,15 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
    */
   private final MetaStorage metaStorage;
 
+  private final static ObjectExtractor<MetaField> objectExtractor = new   MetaFieldObjectExtractor();
+
   /**
    * @param dslContext
    * @param dynamicFieldDao
    * @param metaStorage
    */
   @Autowired
-  public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage,
-                                 @Qualifier(MetaFieldStaticContent.META_CLASS) ObjectExtractor<MetaField> objectExtractor) {
+  public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage) {
     super(objectExtractor);
     this.dslContext = dslContext;
     this.dynamicFieldDao = dynamicFieldDao;
@@ -69,7 +83,9 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.services.meta.MetaInitializer)
+   * @see
+   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+   * services.meta.MetaInitializer)
    */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
@@ -79,10 +95,12 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String,
+   * java.util.Map)
    */
   @Override
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   @Transactional
   public String createObject(String contentCode, Map<String, Object> values) {
     MetaField field = constructMetaField(null, values);
@@ -92,7 +110,7 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   /**
    * Конструирование объекта
    *
-   * @param id     ид
+   * @param id ид
    * @param values параметры
    * @return MetaField
    */
@@ -121,7 +139,7 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
    * Запись строки о нового поля в таблицу
    *
    * @param metaClassId динамический контент, с которым связано это поле
-   * @param field       описание поля
+   * @param field описание поля
    */
   private String createField(String metaClassId, MetaField field) {
     DynamicFieldRecord df = new DynamicFieldRecord();
@@ -180,29 +198,25 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String, java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String,
+   * java.lang.String, java.util.Map)
    */
   @Override
   @Transactional
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void updateObject(String contentCode, String id, Map<String, Object> values) {
     MetaField field = constructMetaField(id, values);
     ru.softshaper.storage.jooq.tables.DynamicField fieldTable = ru.softshaper.storage.jooq.tables.DynamicField.DYNAMIC_FIELD;
     dslContext.update(fieldTable).set(fieldTable.NAME, field.getName()).where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
 
-
     dslContext.update(fieldTable)
         .set(fieldTable.LINK_TO_DYNAMIC_CONTENT, field.getLinkToMetaClass() != null ? Long.valueOf(field.getLinkToMetaClass().getId()) : null)
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
+        .where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
     dslContext.update(fieldTable)
         .set(fieldTable.BACK_REFERENCE_FIELD, field.getBackReferenceField() != null ? Long.valueOf(field.getBackReferenceField().getId()) : null)
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
-    dslContext.update(fieldTable)
-        .set(fieldTable.TYPE_FIELD, field.getType().getId())
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
+        .where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
+    dslContext.update(fieldTable).set(fieldTable.TYPE_FIELD, field.getType().getId()).where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
 
     if (field.getColumn() != null) {
       dslContext.alterTable(field.getOwner().getTable()).alter(field.getColumn()).set(jooqFieldFactory.getDataType(field.getType())).execute();
@@ -214,11 +228,13 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String, java.lang.String)
+   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String,
+   * java.lang.String)
    */
   @Override
   @Transactional
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void deleteObject(String contentCode, String id) {
     ru.softshaper.storage.jooq.tables.pojos.DynamicField fieldsPojo = dynamicFieldDao.fetchOneById(Long.valueOf(id));
     MetaClass dc = metaStorage.getMetaClassById(fieldsPojo.getDynamicContentId().toString());
@@ -227,10 +243,8 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
     // todo: тут проблемка в том, что представление не совсем является частью
     // меты,
     // todo: т.ч. и удаление должно вызываться событием, а никак не напрямую
-    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId())))
-        .execute();
+    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId()))).execute();
   }
-
 
   @Override
   public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
@@ -250,5 +264,36 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   @Override
   protected Collection<MetaField> getAllObjects(GetObjectsParams params) {
     return metaStorage.getMetaFields();
+  }
+
+  @Override
+  public ObjectExtractor<MetaField> getObjectExtractor() {
+    return objectExtractor;
+  }
+
+  public static class MetaFieldObjectExtractor extends AbstractObjectExtractor<MetaField> {
+
+    private MetaFieldObjectExtractor() {
+      registerFieldExtractor(MetaFieldStaticContent.Field.code, MetaField::getCode);
+      registerFieldExtractor(MetaFieldStaticContent.Field.name, MetaField::getName);
+      registerFieldExtractor(MetaFieldStaticContent.Field.column, MetaField::getColumn);
+      registerFieldExtractor(MetaFieldStaticContent.Field.owner, field -> field.getOwner().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.type, field -> field.getType().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.linkToMetaClass,
+          field -> field.getLinkToMetaClass() == null ? null : field.getLinkToMetaClass().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.backReferenceField,
+          field -> field.getBackReferenceField() == null ? null : field.getBackReferenceField().getId());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(MetaField obj, MetaClass metaClass) {
+      return obj.getId();
+    }
   }
 }

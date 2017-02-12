@@ -1,4 +1,4 @@
-package ru.softshaper.web.admin.view.controller.extractors;
+package ru.softshaper.datasource.meta;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.web.admin.view.DataSourceFromViewStore;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 /**
  * Экстарктор для получения значения объекта по метаклассу
@@ -23,29 +20,12 @@ public abstract class AbstractObjectExtractor<T> implements ObjectExtractor<T> {
    */
   private final Map<String, FieldExtractor<T, ?>> valueExtractorByField = new HashMap<>();
 
-  @Autowired
-  protected DataSourceFromViewStore store;
-
-  /**
-   * Хранилище, которое возвращает представление поля по его параметрам (табица
-   * и колонка)
-   */
-  @Autowired
-  protected ViewSettingStore viewSetting;
-
   /**
    * MetaStorage
    */
   @Autowired
   protected MetaStorage metaStorage;
 
-  
-  /**
-   * Mapper Data to FormBean
-   */
-  @Autowired
-  protected  IViewObjectController viewObjectController;
-  
   /**
    * Зарегистрировать экстрактор поля
    *

@@ -1,11 +1,28 @@
 package ru.softshaper.rest.admin.query;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.google.common.base.Preconditions;
+
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.DataSourceStorage;
 import ru.softshaper.services.meta.MetaClass;
@@ -29,18 +46,12 @@ import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.DataSourceFromViewStore;
+import ru.softshaper.web.admin.view.IViewObjectController;
+import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
 import ru.softshaper.web.admin.view.params.FieldCollection;
 import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.web.admin.view.store.ViewSettingStore;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Контроллер работы со словарями
@@ -62,11 +73,7 @@ public class QueryServiceRest {
 	@Qualifier("data")
 	private ContentDataSource<Record> recordDataSource;
 
-	/**
-	 * Хранилище Источник данных для формы
-	 */
-	@Autowired
-	private DataSourceFromViewStore dataSourceFromViewStore;
+
 
 	/**
 	 *
@@ -85,6 +92,9 @@ public class QueryServiceRest {
 	 */
 	@Autowired
 	private ViewSettingStore viewSetting;
+	
+  @Autowired
+  protected IViewObjectController viewObjectController;
 
 	/**
 	 * inject this from spring context
@@ -109,7 +119,7 @@ public class QueryServiceRest {
 			@QueryParam("offset") Integer offset, @QueryParam("limit") Integer limit,
 			@QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection") String sortDirection) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(contentCode);
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
 		Preconditions.checkNotNull(dataSourceFromView);
 		ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaClass).setOffset(offset)
 				.setLimit(limit != null ? limit : 50).setFieldCollection(FieldCollection.TABLE);
@@ -135,7 +145,7 @@ public class QueryServiceRest {
 	public FullObjectView getObject(@PathParam("contentCode") String contentCode,
 			@PathParam("objectId") String objectId) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(contentCode);
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -154,7 +164,7 @@ public class QueryServiceRest {
 			@PathParam("objectId") String objectId, Map<String, Object> attrs) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
 		dataSourceStorage.get(metaClass).updateObject(contentCode, objectId, attrs);
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(contentCode);
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -171,7 +181,7 @@ public class QueryServiceRest {
 	public FullObjectView createObject(@PathParam("contentCode") String contentCode, Map<String, Object> attrs) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
 		String objectId = dataSourceStorage.get(metaClass).createObject(contentCode, attrs);
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(contentCode);
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -202,7 +212,7 @@ public class QueryServiceRest {
 	@Produces("application/json")
 	public FullObjectView getNewObject(@PathParam("contentCode") String contentCode,
 			@PathParam("backLinkAttr") String backLinkAttr, @PathParam("objId") String objId) {
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(contentCode);
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
 		return dataSourceFromView.getNewObject(contentCode, backLinkAttr, objId);
 	}
 
@@ -349,7 +359,7 @@ public class QueryServiceRest {
 				.filter(field -> viewSetting.getView(field).isTitleField())
 				.map(field -> (Condition) new CompareValueCondition<>(field, value, CompareOperation.LIKE))
 				.reduce(Condition::or).get();
-		DataSourceFromView dataSourceFromView = dataSourceFromViewStore.get(metaClass.getCode());
+		DataSourceFromView dataSourceFromView = getDataSourceFromView(metaClass.getCode());
 		ViewObjectsParams params = ViewObjectsParams.newBuilder(metaClass).setCondition(condition)
 				.setFieldCollection(FieldCollection.TITLE).build();
 		return dataSourceFromView.getListObjects(params);
@@ -380,6 +390,11 @@ public class QueryServiceRest {
 			}
 		}
 		paramsBuilder.setFieldCollection(FieldCollection.TABLE);
-		return dataSourceFromViewStore.get(metaClassCode).getTableObjects(paramsBuilder.build());
+		return getDataSourceFromView(metaClassCode).getTableObjects(paramsBuilder.build());
 	}
+	
+  protected DataSourceFromView getDataSourceFromView(String contentCode) {
+    ContentDataSource<?> dataSource = dataSourceStorage.get(metaStorage.getMetaClass(contentCode));
+    return new DataSourceFromViewImpl<>(viewObjectController, dataSource);
+  }
 }

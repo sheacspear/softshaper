@@ -1,14 +1,19 @@
 package ru.softshaper.datasource.meta;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.datasource.meta.MetaFieldDataSourceImpl.MetaFieldObjectExtractor;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.meta.meta.FieldTypeViewStaticContent;
-import java.util.*;
 
 /**
  * Created by Sunchise on 11.10.2016.
@@ -17,8 +22,9 @@ import java.util.*;
 @Qualifier("fieldTypeView")
 public class FieldTypeViewDataSource extends AbstractCustomDataSource<FieldTypeView> {
 
-  @Autowired
-  public FieldTypeViewDataSource(@Qualifier(FieldTypeViewStaticContent.META_CLASS) ObjectExtractor<FieldTypeView> objectExtractor) {
+  private final static ObjectExtractor<FieldTypeView> objectExtractor = new FieldTypeViewExtractor();
+  
+  public FieldTypeViewDataSource() {
     super(objectExtractor);
   }
 
@@ -56,4 +62,29 @@ public class FieldTypeViewDataSource extends AbstractCustomDataSource<FieldTypeV
   protected Collection<FieldTypeView> getAllObjects(GetObjectsParams params) {
     return FieldTypeView.getAll();
   }
+
+  @Override
+  public ObjectExtractor<FieldTypeView> getObjectExtractor() {
+    return objectExtractor;
+  }
+
+  public static class FieldTypeViewExtractor extends AbstractObjectExtractor<FieldTypeView> {
+
+    private FieldTypeViewExtractor() {
+      registerFieldExtractor(FieldTypeViewStaticContent.Field.code, FieldTypeView::getCode);
+      registerFieldExtractor(FieldTypeViewStaticContent.Field.name, FieldTypeView::getName);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(FieldTypeView obj, MetaClass metaClass) {
+      return obj.getCode();
+    }
+  }
+
 }

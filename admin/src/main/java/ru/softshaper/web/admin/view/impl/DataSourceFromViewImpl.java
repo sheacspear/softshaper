@@ -1,9 +1,11 @@
 package ru.softshaper.web.admin.view.impl;
 
+import java.util.Collection;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
 
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
@@ -11,9 +13,6 @@ import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.IViewObjectController;
 import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Источник данных для формы
@@ -33,20 +32,15 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
    */
   private final ContentDataSource<D> dataSource;
 
-  /**
-   * 
-   */
-  private final ObjectExtractor<D> objectExtractor;
 
   /**
    * @param mapper
    * @param dataSource
    */
-  public DataSourceFromViewImpl(IViewObjectController viewObjectController, ContentDataSource<D> dataSource, ObjectExtractor<D> objectExtractor) {
+  public DataSourceFromViewImpl(IViewObjectController viewObjectController, ContentDataSource<D> dataSource) {
     super();
     this.viewObjectController = viewObjectController;
     this.dataSource = dataSource;
-    this.objectExtractor = objectExtractor;
   }
 
   /*
@@ -72,7 +66,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   public FullObjectView getNewObject(String contentCode, String backLinkAttr, String objId) {
     Map<String, Object> defValue = Maps.newHashMap();
     defValue.put(backLinkAttr, objId);
-    return viewObjectController.getEmptyObj(contentCode, defValue, objectExtractor);
+    return viewObjectController.getEmptyObj(contentCode, defValue, dataSource.getObjectExtractor());
   }
 
   /*
@@ -88,7 +82,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
     if (objects != null) {
       // для погинации общее кол-во объектов
       int cntAll = dataSource.getCntObjList(params.getParams().getMetaClass().getCode());
-      return viewObjectController.convertTableObjects(objects, params.getParams().getMetaClass().getCode(), cntAll, objectExtractor);
+      return viewObjectController.convertTableObjects(objects, params.getParams().getMetaClass().getCode(), cntAll, dataSource.getObjectExtractor());
     }
     return null;
   }
@@ -104,7 +98,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   public ListObjectsView getListObjects(ViewObjectsParams params) {
     Collection<D> objects = dataSource.getObjects(params.getParams());
     if (objects != null) {
-      return viewObjectController.convertListObjects(objects, params.getParams().getMetaClass().getCode(), objects.size(), objectExtractor);
+      return viewObjectController.convertListObjects(objects, params.getParams().getMetaClass().getCode(), objects.size(), dataSource.getObjectExtractor());
     }
     return null;
   }
@@ -119,7 +113,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   @Override
   public FullObjectView getFullObject(ViewObjectsParams params) {
     D obj = dataSource.getObj(params.getParams());
-    return obj == null ? null : viewObjectController.convertFullObject(obj, params.getParams().getMetaClass().getCode(), objectExtractor);
+    return obj == null ? null : viewObjectController.convertFullObject(obj, params.getParams().getMetaClass().getCode(), dataSource.getObjectExtractor());
   }
 
   /*
@@ -132,6 +126,6 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   @Override
   public TitleObjectView getTitleObject(ViewObjectsParams params) {
     D obj = dataSource.getObj(params.getParams());
-    return obj == null ? null : viewObjectController.convertTitleObject(obj, params.getParams().getMetaClass().getCode(), objectExtractor);
+    return obj == null ? null : viewObjectController.convertTitleObject(obj, params.getParams().getMetaClass().getCode(), dataSource.getObjectExtractor());
   }
 }
