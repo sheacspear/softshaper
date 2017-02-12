@@ -22,10 +22,9 @@ import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 public class LinkAttrController extends AttrControllerBase {
 
   @PostConstruct
-  void init(){
-    viewObjectController.registerAttrController(FieldType.LINK, this);    
+  void init() {
+    viewObjectController.registerAttrController(FieldType.LINK, this);
   }
-
 
   /*
    * (non-Javadoc)

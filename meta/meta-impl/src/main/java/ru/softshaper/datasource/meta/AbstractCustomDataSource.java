@@ -31,31 +31,13 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
   private final ObjectExtractor<T> objectExtractor;
 
   /**
-   * Конструктор
-   *
-   * @param objectComparator Сравниватель объектов
-   * @param objectExtractor Вычленитель значений полей для объекта
-   */
-  public AbstractCustomDataSource(ObjectComparator<T> objectComparator, ObjectExtractor<T> objectExtractor) {
-    this.objectComparator = objectComparator;
-    this.objectExtractor = objectExtractor;
-  }
-
-  /**
-   *
-   * @return Вычленитель значений полей для объекта
-   */
-  protected ObjectExtractor<T> getObjectExtractor() {
-    return objectExtractor;
-  }
-
-  /**
    * Конструктор с компаратором по умолчанию
    *
    * @param objectExtractor Вычленитель значений полей для объекта
    */
   public AbstractCustomDataSource(ObjectExtractor<T> objectExtractor) {
-    this(new DefaultObjectComparator<>(objectExtractor), objectExtractor);
+    this.objectComparator = new DefaultObjectComparator<>(objectExtractor);
+    this.objectExtractor = objectExtractor;
   }
 
   @Override

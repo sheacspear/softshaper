@@ -22,27 +22,22 @@ public abstract class AttrControllerBase implements IViewAttrController {
    * MetaStorage
    */
   @Autowired
-  protected  MetaStorage metaStorage;
+  protected MetaStorage metaStorage;
 
   /**
    * Хранилище Источник данных для формы
    */
   @Autowired
-  protected  DataSourceFromViewStore dataSourceFromViewStore;
-  
+  protected DataSourceFromViewStore dataSourceFromViewStore;
+
   /**
    * 
    */
   @Autowired
-  protected  ViewSettingStore viewSetting;
-  
+  protected ViewSettingStore viewSetting;
+
   @Autowired
   protected IViewObjectController viewObjectController;
-  
-
-  
-
-
 
   /**
    * @param obj
@@ -59,13 +54,12 @@ public abstract class AttrControllerBase implements IViewAttrController {
     if (metaField.getType().equals(FieldType.FILE)) {
       linkedMetaClass = metaStorage.getMetaClass(FileObjectStaticContent.META_CLASS);
     }
-    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedMetaClass).ids().add(linkedObjId.toString())
-        .setFieldCollection(fieldCollection).build();
+    ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedMetaClass).ids().add(linkedObjId.toString()).setFieldCollection(fieldCollection).build();
     if (FieldCollection.TITLE.equals(fieldCollection)) {
       return dataSourceFromViewStore.get(linkedMetaClass.getCode()).getTitleObject(params);
     } else {
       return dataSourceFromViewStore.get(linkedMetaClass.getCode()).getFullObject(params);
     }
   }
-  
+
 }

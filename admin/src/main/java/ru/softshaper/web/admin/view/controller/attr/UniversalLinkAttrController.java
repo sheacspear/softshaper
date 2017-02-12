@@ -22,12 +22,11 @@ import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 @Component
 public class UniversalLinkAttrController extends AttrControllerBase {
 
-  
   @PostConstruct
-  void init(){
-    viewObjectController.registerAttrController(FieldType.UNIVERSAL_LINK, this);    
+  void init() {
+    viewObjectController.registerAttrController(FieldType.UNIVERSAL_LINK, this);
   }
-  
+
   /*
    * (non-Javadoc)
    * 

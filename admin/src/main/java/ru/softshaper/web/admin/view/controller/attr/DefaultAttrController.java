@@ -15,9 +15,8 @@ import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 @Component
 public class DefaultAttrController extends AttrControllerBase {
 
-  
   @PostConstruct
-  void init(){
+  void init() {
     viewObjectController.setDefaultAttrController(this);
   }
 
