@@ -6,6 +6,7 @@ import java.util.Map;
 
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
@@ -79,6 +80,8 @@ public interface IViewObjectController {
    * @param metaClass
    * @return
    */
-  List<ColumnView> constructColumnsView(MetaClass metaClass);
+  Map<MetaField, ColumnView> constructColumnsView(MetaClass metaClass);
+
+  DataSourceFromView getDataSourceFromView(String contentCode);
 
 }

@@ -88,7 +88,7 @@ public class LinkAttrController extends AttrControllerBase {
     ViewSetting fieldView = viewSetting.getView(metaField);
     if (FieldTypeView.LINK_SELECTBOX.equals(fieldView.getTypeView()) && metaField.getLinkToMetaClass() != null) {
       ListObjectsView variants;
-      DataSourceFromView dataSourceFromView = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       variants = dataSourceFromView
           .getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).setFieldCollection(FieldCollection.TITLE).build());
       return variants;

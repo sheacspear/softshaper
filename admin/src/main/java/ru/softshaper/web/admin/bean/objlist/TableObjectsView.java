@@ -1,5 +1,6 @@
 package ru.softshaper.web.admin.bean.objlist;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,14 +21,14 @@ public class TableObjectsView implements ObjectCollectionView {
   /**
    *
    */
-  private final List<ColumnView> columnsView;
+  private final Collection<ColumnView> columnsView;
 
   /**
    *
    */
-  private final List<ObjectRowView> objectsView;
+  private final Collection<ObjectRowView> objectsView;
 
-  public TableObjectsView(String clazz, int cnt, List<ColumnView> columnsView, List<ObjectRowView> objectsView) {
+  public TableObjectsView(String clazz, int cnt, Collection<ColumnView> columnsView, Collection<ObjectRowView> objectsView) {
     super();
     this.clazz = clazz;
     this.cnt = cnt;
@@ -52,14 +53,14 @@ public class TableObjectsView implements ObjectCollectionView {
   /**
    * @return the columnsView
    */
-  public List<ColumnView> getColumnsView() {
+  public Collection<ColumnView> getColumnsView() {
     return columnsView;
   }
 
   /**
    * @return the objectsView
    */
-  public List<ObjectRowView> getObjectsView() {
+  public Collection<ObjectRowView> getObjectsView() {
     return objectsView;
   }
 
