@@ -1,5 +1,11 @@
 package ru.softshaper.datasource.meta;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.ObjectComparator;
@@ -8,12 +14,6 @@ import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.meta.comparators.DefaultObjectComparator;
 import ru.softshaper.staticcontent.meta.conditions.DefaultConditionChecker;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Болванка для кастомного датасурса
@@ -31,31 +31,13 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
   private final ObjectExtractor<T> objectExtractor;
 
   /**
-   * Конструктор
-   *
-   * @param objectComparator Сравниватель объектов
-   * @param objectExtractor Вычленитель значений полей для объекта
-   */
-  public AbstractCustomDataSource(ObjectComparator<T> objectComparator, ObjectExtractor<T> objectExtractor) {
-    this.objectComparator = objectComparator;
-    this.objectExtractor = objectExtractor;
-  }
-
-  /**
-   *
-   * @return Вычленитель значений полей для объекта
-   */
-  protected ObjectExtractor<T> getObjectExtractor() {
-    return objectExtractor;
-  }
-
-  /**
    * Конструктор с компаратором по умолчанию
    *
    * @param objectExtractor Вычленитель значений полей для объекта
    */
   public AbstractCustomDataSource(ObjectExtractor<T> objectExtractor) {
-    this(new DefaultObjectComparator<>(objectExtractor), objectExtractor);
+    this.objectComparator = new DefaultObjectComparator<>(objectExtractor);
+    this.objectExtractor = objectExtractor;
   }
 
   @Override
@@ -83,7 +65,6 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
 
   }
 
-
   /**
    * Накладывает ограничение кол-ва возвращаемых объектов и отступ
    *
@@ -93,8 +74,7 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
    */
   protected Stream<T> limitOffset(GetObjectsParams params, Stream<T> stream) {
     if (params.getLimit() < Integer.MAX_VALUE || params.getOffset() > 0) {
-          stream = stream.skip(params.getOffset())
-          .limit(params.getLimit());
+      stream = stream.skip(params.getOffset()).limit(params.getLimit());
     }
     return stream;
   }
@@ -120,9 +100,7 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
           for (Map.Entry<MetaField, ru.softshaper.services.meta.impl.SortOrder> order : orderFields.entrySet()) {
             compareResult = objectComparator.compareField(order.getKey(), o1, o2);
             if (compareResult != 0) {
-              compareResult = ru.softshaper.services.meta.impl.SortOrder.DESC.equals(order.getValue())
-                  ? compareResult * -1
-                  : compareResult;
+              compareResult = ru.softshaper.services.meta.impl.SortOrder.DESC.equals(order.getValue()) ? compareResult * -1 : compareResult;
               break;
             }
           }
@@ -173,7 +151,8 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
   }
 
   /**
-   * Возвращает список объектов которые будут фильтроваться по условиям вдальнейшем
+   * Возвращает список объектов которые будут фильтроваться по условиям
+   * вдальнейшем
    *
    * @param params парамсы
    * @return коллекция объектов

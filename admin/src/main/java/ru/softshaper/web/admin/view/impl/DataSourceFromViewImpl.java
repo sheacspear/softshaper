@@ -1,5 +1,8 @@
 package ru.softshaper.web.admin.view.impl;
 
+import java.util.Collection;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
 
 import ru.softshaper.datasource.meta.ContentDataSource;
@@ -8,11 +11,8 @@ import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.DataViewMapper;
-import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
-
-import java.util.Collection;
-import java.util.Map;
+import ru.softshaper.web.admin.view.IViewObjectController;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 
 /**
  * Источник данных для формы
@@ -25,26 +25,30 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   /**
    * Mapper Data to FormBean
    */
-  private final DataViewMapper<D> mapper;
+  private final IViewObjectController viewObjectController;
 
   /**
    * DataSource
    */
   private final ContentDataSource<D> dataSource;
 
+
   /**
    * @param mapper
    * @param dataSource
    */
-  public DataSourceFromViewImpl(DataViewMapper<D> mapper, ContentDataSource<D> dataSource) {
+  public DataSourceFromViewImpl(IViewObjectController viewObjectController, ContentDataSource<D> dataSource) {
     super();
-    this.mapper = mapper;
+    this.viewObjectController = viewObjectController;
     this.dataSource = dataSource;
   }
 
-
-  /* (non-Javadoc)
-   * @see ru.softshaper.web.view.DataSourceFromView#getObjectsIdsByMultifield(java.lang.String, java.lang.String, java.lang.String, boolean)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getObjectsIdsByMultifield(java.
+   * lang.String, java.lang.String, java.lang.String, boolean)
    */
   @Override
   public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
@@ -54,56 +58,74 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.web.view.DataSourceFromView#getNewObject(ru.softshaper.web.rest.query. bean.NewObjParam)
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getNewObject(ru.softshaper.web.
+   * rest.query. bean.NewObjParam)
    */
   @Override
   public FullObjectView getNewObject(String contentCode, String backLinkAttr, String objId) {
     Map<String, Object> defValue = Maps.newHashMap();
     defValue.put(backLinkAttr, objId);
-    return mapper.getEmptyObj(contentCode, defValue);
+    return viewObjectController.getEmptyObj(contentCode, defValue, dataSource.getObjectExtractor());
   }
 
-  /* (non-Javadoc)
-   * @see ru.softshaper.web.view.DataSourceFromView#getTableObjects(ru.softshaper.web.view.utils.ViewObjectsParams)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getTableObjects(ru.softshaper.web
+   * .view.utils.ViewObjectsParams)
    */
   @Override
   public TableObjectsView getTableObjects(ViewObjectsParams params) {
     Collection<D> objects = dataSource.getObjects(params.getParams());
     if (objects != null) {
-    	//для погинации общее кол-во объектов
-    	int cntAll = dataSource.getCntObjList(params.getParams().getMetaClass().getCode());
-      return mapper.convertTableObjects(objects, params.getParams().getMetaClass().getCode(), cntAll);
+      // для погинации общее кол-во объектов
+      int cntAll = dataSource.getCntObjList(params.getParams().getMetaClass().getCode());
+      return viewObjectController.convertTableObjects(objects, params.getParams().getMetaClass().getCode(), cntAll, dataSource.getObjectExtractor());
     }
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see ru.softshaper.web.view.DataSourceFromView#getListObjects(ru.softshaper.web.view.utils.ViewObjectsParams)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getListObjects(ru.softshaper.web.
+   * view.utils.ViewObjectsParams)
    */
   @Override
   public ListObjectsView getListObjects(ViewObjectsParams params) {
     Collection<D> objects = dataSource.getObjects(params.getParams());
     if (objects != null) {
-      return mapper.convertListObjects(objects, params.getParams().getMetaClass().getCode(), objects.size());
+      return viewObjectController.convertListObjects(objects, params.getParams().getMetaClass().getCode(), objects.size(), dataSource.getObjectExtractor());
     }
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see ru.softshaper.web.view.DataSourceFromView#getFullObject(ru.softshaper.web.view.utils.ViewObjectsParams)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getFullObject(ru.softshaper.web.
+   * view.utils.ViewObjectsParams)
    */
   @Override
   public FullObjectView getFullObject(ViewObjectsParams params) {
     D obj = dataSource.getObj(params.getParams());
-    return obj == null ? null : mapper.convertFullObject(obj, params.getParams().getMetaClass().getCode());
+    return obj == null ? null : viewObjectController.convertFullObject(obj, params.getParams().getMetaClass().getCode(), dataSource.getObjectExtractor());
   }
 
-  /* (non-Javadoc)
-   * @see ru.softshaper.web.view.DataSourceFromView#getTitleObject(ru.softshaper.web.view.utils.ViewObjectsParams)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.web.view.DataSourceFromView#getTitleObject(ru.softshaper.web.
+   * view.utils.ViewObjectsParams)
    */
   @Override
   public TitleObjectView getTitleObject(ViewObjectsParams params) {
     D obj = dataSource.getObj(params.getParams());
-    return obj == null ? null : mapper.convertTitleObject(obj, params.getParams().getMetaClass().getCode());
+    return obj == null ? null : viewObjectController.convertTitleObject(obj, params.getParams().getMetaClass().getCode(), dataSource.getObjectExtractor());
   }
 }

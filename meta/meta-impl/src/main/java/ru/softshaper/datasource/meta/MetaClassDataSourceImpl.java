@@ -1,7 +1,25 @@
 package ru.softshaper.datasource.meta;
 
-import com.google.common.base.Preconditions;
-import org.jooq.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.jooq.CreateTableAsStep;
+import org.jooq.CreateTableColumnStep;
+import org.jooq.DSLContext;
+import org.jooq.DataType;
+import org.jooq.Field;
+import org.jooq.InsertResultStep;
+import org.jooq.InsertSetMoreStep;
+import org.jooq.InsertSetStep;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +28,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
+
 import ru.softshaper.bean.meta.MetaClassMutableBean;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.SortOrder;
 import ru.softshaper.services.security.ContentSecurityManager;
@@ -24,13 +46,6 @@ import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicContentDao;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;
 import ru.softshaper.storage.jooq.tables.records.DynamicContentRecord;
-
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Sunchise on 16.08.2016.
@@ -88,7 +103,9 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.services.meta. MetaInitializer)
+   * @see
+   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+   * services.meta. MetaInitializer)
    */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
@@ -98,10 +115,12 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String,
+   * java.util.Map)
    */
   @Override
-  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt" }, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public String createObject(String contentCode, Map<String, Object> values) {
     MetaClassMutableBean metaClass = constructMetaClass(null, values);
     return create(metaClass);
@@ -110,10 +129,12 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String, java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String,
+   * java.lang.String, java.util.Map)
    */
   @Override
-  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt" }, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void updateObject(String contentCode, String id, Map<String, Object> values) {
     update(constructMetaClass(id, values));
   }
@@ -130,7 +151,8 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     table = "dc_" + table;
     Boolean checkSecurity = (Boolean) values.get(MetaClassStaticContent.Field.checkSecurity);
     Boolean checkObjectSecurity = (Boolean) values.get(MetaClassStaticContent.Field.checkObjectSecurity);
-    return new MetaClassMutableBean(id, code, name, table, null, checkSecurity != null ? checkSecurity : false, checkObjectSecurity != null ? checkObjectSecurity : false);
+    return new MetaClassMutableBean(id, code, name, table, null, checkSecurity != null ? checkSecurity : false,
+        checkObjectSecurity != null ? checkObjectSecurity : false);
   }
 
   /**
@@ -172,67 +194,63 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     return objectId;
   }
 
-	/**
-	 * Изменение динамического контента
-	 *
-	 * @param content
-	 */
-	@Transactional
+  /**
+   * Изменение динамического контента
+   *
+   * @param content
+   */
+  @Transactional
 
-	private void update(MetaClass content) {
-		MetaClass oldContent = metaStorage.getMetaClassById(content.getId());
-		if (oldContent == null) {
-			throw new RuntimeException(
-					"Нельзя обновить, т.к. контента с идентификатором " + content.getId() + " не существует");
-		}
-		UpdateSetFirstStep<DynamicContentRecord> recordUpdateSetFirstStep = dslContext
-				.update(dynamicContentRepository.getTable());
-		UpdateSetMoreStep<DynamicContentRecord> updateSetMoreStep = null;
-		if (!isFieldEquals(content.getName(), oldContent.getName())) {
-			updateSetMoreStep = recordUpdateSetFirstStep
-					.set(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.NAME), content.getName());
-		}
-		if (!isFieldEquals(content.isCheckObjectSecurity(), oldContent.isCheckObjectSecurity())) {
-			Field<Boolean> field = DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.CHECKOBJECTSECURITY);
-			if (updateSetMoreStep == null) {
-				updateSetMoreStep = recordUpdateSetFirstStep.set(field, content.isCheckObjectSecurity());
-			} else {
-				updateSetMoreStep.set(field, content.isCheckObjectSecurity());
-			}
-			if (content.isCheckObjectSecurity()) {
-				createAclTable(content.getTable());
-			} else {
-				deleteAclTable(content);
-			}
-		}
-		if (!isFieldEquals(content.isCheckSecurity(), oldContent.isCheckSecurity())) {
-			Field<Boolean> field = DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.CHECKSECURITY);
-			if (updateSetMoreStep == null) {
-				updateSetMoreStep = recordUpdateSetFirstStep.set(field, content.isCheckSecurity());
-			} else {
-				updateSetMoreStep.set(field, content.isCheckSecurity());
-			}
-		}
-		if (!isFieldEquals(content.getName(), oldContent.getName())) {
-			updateSetMoreStep = recordUpdateSetFirstStep
-					.set(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.NAME), content.getName());
-		}
-		if (updateSetMoreStep != null) {
-			updateSetMoreStep
-					.where(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.ID).eq(Long.valueOf(content.getId())))
-					.execute();
-		}
-		metaInitializer.init();
-	}
+  private void update(MetaClass content) {
+    MetaClass oldContent = metaStorage.getMetaClassById(content.getId());
+    if (oldContent == null) {
+      throw new RuntimeException("Нельзя обновить, т.к. контента с идентификатором " + content.getId() + " не существует");
+    }
+    UpdateSetFirstStep<DynamicContentRecord> recordUpdateSetFirstStep = dslContext.update(dynamicContentRepository.getTable());
+    UpdateSetMoreStep<DynamicContentRecord> updateSetMoreStep = null;
+    if (!isFieldEquals(content.getName(), oldContent.getName())) {
+      updateSetMoreStep = recordUpdateSetFirstStep.set(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.NAME), content.getName());
+    }
+    if (!isFieldEquals(content.isCheckObjectSecurity(), oldContent.isCheckObjectSecurity())) {
+      Field<Boolean> field = DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.CHECKOBJECTSECURITY);
+      if (updateSetMoreStep == null) {
+        updateSetMoreStep = recordUpdateSetFirstStep.set(field, content.isCheckObjectSecurity());
+      } else {
+        updateSetMoreStep.set(field, content.isCheckObjectSecurity());
+      }
+      if (content.isCheckObjectSecurity()) {
+        createAclTable(content.getTable());
+      } else {
+        deleteAclTable(content);
+      }
+    }
+    if (!isFieldEquals(content.isCheckSecurity(), oldContent.isCheckSecurity())) {
+      Field<Boolean> field = DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.CHECKSECURITY);
+      if (updateSetMoreStep == null) {
+        updateSetMoreStep = recordUpdateSetFirstStep.set(field, content.isCheckSecurity());
+      } else {
+        updateSetMoreStep.set(field, content.isCheckSecurity());
+      }
+    }
+    if (!isFieldEquals(content.getName(), oldContent.getName())) {
+      updateSetMoreStep = recordUpdateSetFirstStep.set(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.NAME), content.getName());
+    }
+    if (updateSetMoreStep != null) {
+      updateSetMoreStep.where(DSL.field(ru.softshaper.storage.jooq.tables.DynamicContent.DYNAMIC_CONTENT.ID).eq(Long.valueOf(content.getId()))).execute();
+    }
+    metaInitializer.init();
+  }
 
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String, java.lang.String)
+   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String,
+   * java.lang.String)
    */
   @Override
   @Transactional
-  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt" }, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void deleteObject(String contentCode, String id) {
     MetaClass content = metaStorage.getMetaClassById(id);
     Preconditions.checkNotNull(content);
@@ -286,8 +304,7 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     // todo: тут проблемка в том, что представление не совсем является частью
     // меты,
     // todo: т.ч. и удаление должно вызываться событием, а никак не напрямую
-    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId())))
-        .execute();
+    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId()))).execute();
   }
 
   /**
@@ -304,8 +321,8 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     dslContext.createSequenceIfNotExists("s_" + tableName + "_acl_id").execute();
     tableColumnStep = aclTableCreateStep.column("id", dataType);
     tableColumnStep.constraint(DSL.constraint("pk_" + tableName + "_acl_id").primaryKey("id"));
-    tableColumnStep.column("object_id", SQLDataType.BIGINT).column("role", SQLDataType.VARCHAR).column("can_create", SQLDataType.BOOLEAN).column("can_read", SQLDataType.BOOLEAN)
-        .column("can_update", SQLDataType.BOOLEAN).column("can_delete", SQLDataType.BOOLEAN).execute();
+    tableColumnStep.column("object_id", SQLDataType.BIGINT).column("role", SQLDataType.VARCHAR).column("can_create", SQLDataType.BOOLEAN)
+        .column("can_read", SQLDataType.BOOLEAN).column("can_update", SQLDataType.BOOLEAN).column("can_delete", SQLDataType.BOOLEAN).execute();
   }
 
   /**
@@ -339,9 +356,7 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   public Collection<MetaClass> getObjects(GetObjectsParams params) {
     Collection<MetaClass> metaClasses = metaStorage.getAllMetaClasses();
     if (params.getIds() != null && !params.getIds().isEmpty()) {
-      metaClasses = metaClasses.stream()
-          .filter(metaClass -> params.getIds().contains(metaClass.getId()))
-          .collect(Collectors.toSet());
+      metaClasses = metaClasses.stream().filter(metaClass -> params.getIds().contains(metaClass.getId())).collect(Collectors.toSet());
     }
     LinkedHashMap<MetaField, ru.softshaper.services.meta.impl.SortOrder> orderFields = params.getOrderFields();
     Stream<MetaClass> stream = metaClasses.stream();
@@ -352,27 +367,27 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
     if (orderFields != null) {
       stream = stream.sorted((o1, o2) -> {
         int compareResult = 0;
-        //todo: something
+        // todo: something
         for (Map.Entry<MetaField, SortOrder> order : orderFields.entrySet()) {
           switch (order.getKey().getCode()) {
-            case MetaClassStaticContent.Field.code:
-              compareResult = o1.getCode().compareTo(o2.getCode());
-              break;
-            case MetaClassStaticContent.Field.name:
-              compareResult = o1.getName().compareTo(o2.getName());
-              break;
-            case MetaClassStaticContent.Field.checkObjectSecurity:
-              compareResult = o1.isCheckObjectSecurity() == o2.isCheckObjectSecurity() ? 0 : o1.isCheckObjectSecurity() ? 1 : -1;
-              break;
-            case MetaClassStaticContent.Field.checkSecurity:
-              compareResult = o1.isCheckSecurity() == o2.isCheckSecurity() ? 0 : o1.isCheckSecurity() ? 1 : -1;
-              break;
-            case MetaClassStaticContent.Field.fixed:
-              compareResult = o1.isFixed() == o2.isFixed() ? 0 : o1.isFixed() ? 1 : -1;
-              break;
-            case MetaClassStaticContent.Field.table:
-              compareResult = o1.getTable().compareTo(o2.getTable());
-              break;
+          case MetaClassStaticContent.Field.code:
+            compareResult = o1.getCode().compareTo(o2.getCode());
+            break;
+          case MetaClassStaticContent.Field.name:
+            compareResult = o1.getName().compareTo(o2.getName());
+            break;
+          case MetaClassStaticContent.Field.checkObjectSecurity:
+            compareResult = o1.isCheckObjectSecurity() == o2.isCheckObjectSecurity() ? 0 : o1.isCheckObjectSecurity() ? 1 : -1;
+            break;
+          case MetaClassStaticContent.Field.checkSecurity:
+            compareResult = o1.isCheckSecurity() == o2.isCheckSecurity() ? 0 : o1.isCheckSecurity() ? 1 : -1;
+            break;
+          case MetaClassStaticContent.Field.fixed:
+            compareResult = o1.isFixed() == o2.isFixed() ? 0 : o1.isFixed() ? 1 : -1;
+            break;
+          case MetaClassStaticContent.Field.table:
+            compareResult = o1.getTable().compareTo(o2.getTable());
+            break;
           }
           if (compareResult != 0) {
             compareResult = SortOrder.DESC.equals(order.getValue()) ? compareResult * -1 : compareResult;
@@ -382,8 +397,36 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
         return compareResult;
       });
     }
-    return stream.skip(params.getOffset())
-      .limit(params.getLimit())
-      .collect(Collectors.toList());
+    return stream.skip(params.getOffset()).limit(params.getLimit()).collect(Collectors.toList());
   }
+
+  @Override
+  public ObjectExtractor<MetaClass> getObjectExtractor() {
+    return new MetaClassObjectExtractor();
+  }
+
+  public static class MetaClassObjectExtractor extends AbstractObjectExtractor<MetaClass> {
+
+    private MetaClassObjectExtractor() {
+      registerFieldExtractor(MetaClassStaticContent.Field.code, MetaClass::getCode);
+      registerFieldExtractor(MetaClassStaticContent.Field.name, MetaClass::getName);
+      registerFieldExtractor(MetaClassStaticContent.Field.table, MetaClass::getTable);
+      registerFieldExtractor(MetaClassStaticContent.Field.fields, MetaClass::getFields);
+      registerFieldExtractor(MetaClassStaticContent.Field.fixed, MetaClass::isFixed);
+      registerFieldExtractor(MetaClassStaticContent.Field.checkObjectSecurity, MetaClass::isCheckObjectSecurity);
+      registerFieldExtractor(MetaClassStaticContent.Field.checkSecurity, MetaClass::isCheckSecurity);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(MetaClass obj, MetaClass metaClass) {
+      return obj.getId();
+    }
+  }
+
 }

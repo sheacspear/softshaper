@@ -1,8 +1,31 @@
 package ru.softshaper.datasource.meta;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import org.jooq.*;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.InsertResultStep;
+import org.jooq.InsertSetMoreStep;
+import org.jooq.InsertSetStep;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.RecordMapper;
+import org.jooq.RecordMapperProvider;
+import org.jooq.Result;
+import org.jooq.SelectJoinStep;
+import org.jooq.SortField;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.TableImpl;
@@ -12,18 +35,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+
 import ru.softshaper.datasource.file.FileObjectDataSource;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.DataSourceStorage;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.conditions.ConvertConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.SortOrder;
 import ru.softshaper.services.security.ContentSecurityManager;
-
-import javax.annotation.concurrent.ThreadSafe;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 //import org.jooq.util.Database;
 
@@ -49,9 +75,6 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Autowired
   private DSLContext dsl;
 
-  // @Autowired
-  // private Database database;
-
   /**
    * Менеджер безопасности
    */
@@ -70,10 +93,11 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   private ConvertConditionVisitor<Condition> conditionConverter;
 
   @Autowired
-  DataSourceStorage dataSourceStorage;
+  private DataSourceStorage dataSourceStorage;
 
   @Autowired
   private FieldConverter fieldConverter;
+
   // @Override
   /*
    * (non-Javadoc)
@@ -84,8 +108,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
    */
   @Override
   @SuppressWarnings("unchecked")
-  public <R extends Record, E> Collection<E> getObjects(TableImpl<R> table, Class<? extends E> type,
-      Collection<String> ids) {
+  public <R extends Record, E> Collection<E> getObjects(TableImpl<R> table, Class<? extends E> type, Collection<String> ids) {
     RecordMapperProvider recordMapperProvider = defaultConfiguration.recordMapperProvider();
     RecordMapper<R, E> recordMapper = recordMapperProvider.provide(table.recordType(), type);
     MetaClass metaClass = metaStorage.getMetaClassByTable(table.getName());
@@ -224,8 +247,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   @Override
-  public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id,
-      boolean reverse) {
+  public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
     MetaClass metaClass = getMetaClass(contentCode);
     MetaField mxNField = metaClass.getField(multyfieldCode);
     Field<Long> fromIdField;
@@ -238,8 +260,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       toIdField = DSL.field("to_id", Long.class);
 
     }
-    List<Long> fetch = dsl.select(toIdField).from(mxNField.getNxMTableName()).where(fromIdField.equal(Long.valueOf(id)))
-        .fetch(toIdField);
+    List<Long> fetch = dsl.select(toIdField).from(mxNField.getNxMTableName()).where(fromIdField.equal(Long.valueOf(id))).fetch(toIdField);
     return fetch == null ? null : fetch.stream().map(Object::toString).collect(Collectors.toList());
   }
 
@@ -346,6 +367,37 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     MetaClass content = metaStorage.getMetaClass(contentCode);
     Preconditions.checkNotNull(content);
     return content;
+  }
+
+  @Override
+  public ObjectExtractor<Record> getObjectExtractor() {
+    return new ObjectMetaExtractor();
+  }
+
+  public static class ObjectMetaExtractor implements ObjectExtractor<Record> {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(Record obj, MetaClass metaClass) {
+      return obj.get(metaClass.getIdColumn(), Long.class).toString();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ru.softshaper.services.meta.ObjectExtractor#getValue(java.lang.Object,
+     * ru.softshaper.services.meta.MetaField)
+     */
+    @Override
+    public Object getValue(Record obj, MetaField field) {
+      return obj.get(field.getColumn());
+    }
   }
 
 }

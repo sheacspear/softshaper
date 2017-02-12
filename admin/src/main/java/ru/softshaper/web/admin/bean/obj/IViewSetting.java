@@ -1,4 +1,4 @@
-package ru.softshaper.web.admin.view;
+package ru.softshaper.web.admin.bean.obj;
 
 import ru.softshaper.bean.meta.FieldTypeView;
 

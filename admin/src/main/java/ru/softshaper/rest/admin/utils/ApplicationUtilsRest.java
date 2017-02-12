@@ -3,7 +3,7 @@ package ru.softshaper.rest.admin.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
+import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
@@ -20,7 +20,7 @@ public class ApplicationUtilsRest {
   private MetaInitializer metaInitializer;
 
   @Autowired
-  private ViewSettingFactory viewSettingFactory;
+  private ViewSettingStore viewSettingFactory;
 
   /**
    * inject this from spring context

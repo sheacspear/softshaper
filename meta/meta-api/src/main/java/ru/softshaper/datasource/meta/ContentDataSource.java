@@ -1,6 +1,7 @@
 package ru.softshaper.datasource.meta;
 
 import ru.softshaper.services.meta.MetaInitializer;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 
 import java.util.Collection;
@@ -32,6 +33,10 @@ public interface ContentDataSource<T> {
   //todo: убрать этот метод от сюда
   void setMetaInitializer(MetaInitializer metaInitializer);
 
+  /**
+   * @param params
+   * @return
+   */
   T getObj(final GetObjectsParams params);
 
   /**
@@ -66,5 +71,14 @@ public interface ContentDataSource<T> {
    */
   Integer getCntObjList(String contentCode);
 
+  /**
+   * @param metaClassCode
+   * @return
+   */
   Class<?> getIdType(String metaClassCode);
+  
+  /**
+   * @return
+   */
+  ObjectExtractor<T> getObjectExtractor();
  }

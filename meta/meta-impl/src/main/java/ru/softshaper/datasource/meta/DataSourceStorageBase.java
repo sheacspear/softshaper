@@ -1,14 +1,14 @@
 package ru.softshaper.datasource.meta;
 
-import com.google.common.collect.Maps;
-import org.springframework.stereotype.Component;
-
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.MetaClass;
-
 import java.util.Collection;
 import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+
+import ru.softshaper.services.meta.DataSourceStorage;
+import ru.softshaper.services.meta.MetaClass;
 
 /**
  * Хранилище DataSource
@@ -27,7 +27,8 @@ public class DataSourceStorageBase implements DataSourceStorage {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSourceStorage#register(java.util.Collection, ru.softshaper.services.meta.DataSource)
+   * @see ru.softshaper.services.meta.DataSourceStorage#register(java.util.
+   * Collection, ru.softshaper.services.meta.DataSource)
    */
   @Override
   public synchronized void register(Collection<? extends MetaClass> clazzs, ContentDataSource<?> dataSource) {
@@ -41,7 +42,8 @@ public class DataSourceStorageBase implements DataSourceStorage {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSourceStorage#register(ru.softshaper.services.meta.MetaClass, ru.softshaper.services.meta.DataSource)
+   * @see ru.softshaper.services.meta.DataSourceStorage#register(ru.softshaper.
+   * services.meta.MetaClass, ru.softshaper.services.meta.DataSource)
    */
   @Override
   public synchronized void register(MetaClass clazz, ContentDataSource<?> dataSource) {
@@ -49,7 +51,6 @@ public class DataSourceStorageBase implements DataSourceStorage {
     dataSource2.put(clazz, dataSource);
     dataSources = dataSource2;
   }
-
 
   @Override
   public synchronized void registerAllWithClean(Map<? extends MetaClass, ContentDataSource<?>> dataSourceMap) {
@@ -59,12 +60,13 @@ public class DataSourceStorageBase implements DataSourceStorage {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSourceStorage#get(ru.softshaper.services.meta.MetaClass)
+   * @see
+   * ru.softshaper.services.meta.DataSourceStorage#get(ru.softshaper.services.
+   * meta.MetaClass)
    */
   @Override
   public ContentDataSource<?> get(MetaClass clazz) {
     return dataSources.get(clazz);
   }
-
 
 }

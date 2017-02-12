@@ -1,7 +1,7 @@
-package ru.softshaper.web.admin.view.bean;
+package ru.softshaper.web.admin.bean.obj.impl;
 
 import ru.softshaper.bean.meta.FieldTypeView;
-import ru.softshaper.web.admin.view.IViewSetting;
+import ru.softshaper.web.admin.bean.obj.IViewSetting;
 
 public class ViewSetting implements IViewSetting {
 

@@ -1,10 +1,13 @@
-package ru.softshaper.staticcontent.meta.extractors;
-
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.ObjectExtractor;
+package ru.softshaper.datasource.meta;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 
 /**
  * Экстарктор для получения значения объекта по метаклассу
@@ -12,9 +15,16 @@ import java.util.Map;
 public abstract class AbstractObjectExtractor<T> implements ObjectExtractor<T> {
 
   /**
-   * Мапа определяющая какой метод объекта вызвать, что бы получить значение поля
+   * Мапа определяющая какой метод объекта вызвать, что бы получить значение
+   * поля
    */
   private final Map<String, FieldExtractor<T, ?>> valueExtractorByField = new HashMap<>();
+
+  /**
+   * MetaStorage
+   */
+  @Autowired
+  protected MetaStorage metaStorage;
 
   /**
    * Зарегистрировать экстрактор поля
@@ -31,5 +41,4 @@ public abstract class AbstractObjectExtractor<T> implements ObjectExtractor<T> {
     FieldExtractor<T, ?> metaFieldValueFieldExtractor = valueExtractorByField.get(field.getCode());
     return metaFieldValueFieldExtractor == null ? null : metaFieldValueFieldExtractor.value(obj);
   }
-
 }

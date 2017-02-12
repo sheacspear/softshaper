@@ -7,8 +7,8 @@ import java.util.Map;
 import ru.softshaper.web.admin.bean.obj.IFieldView;
 import ru.softshaper.web.admin.bean.obj.IFullObjectView;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
+import ru.softshaper.web.admin.bean.obj.IViewSetting;
 import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
-import ru.softshaper.web.admin.view.IViewSetting;
 
 /**
  * View for bissness object</br>
