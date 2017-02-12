@@ -6,7 +6,7 @@ import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 
 /**
  * Источник данных для формы

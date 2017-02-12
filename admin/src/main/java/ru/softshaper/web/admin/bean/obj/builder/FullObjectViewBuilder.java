@@ -7,11 +7,11 @@ import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.web.admin.bean.obj.IFieldView;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
+import ru.softshaper.web.admin.bean.obj.IViewSetting;
 import ru.softshaper.web.admin.bean.obj.impl.FieldView;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.view.IViewSetting;
 
 import java.util.ArrayList;
 import java.util.Collection;

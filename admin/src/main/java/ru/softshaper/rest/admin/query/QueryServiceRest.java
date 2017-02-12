@@ -30,10 +30,10 @@ import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.DataSourceFromViewStore;
-import ru.softshaper.web.admin.view.impl.ViewSettingFactory;
-import ru.softshaper.web.admin.view.utils.FieldCollection;
-import ru.softshaper.web.admin.view.utils.ViewObjectParamsBuilder;
-import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
+import ru.softshaper.web.admin.view.params.FieldCollection;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
+import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
@@ -84,7 +84,7 @@ public class QueryServiceRest {
 	 *
 	 */
 	@Autowired
-	private ViewSettingFactory viewSetting;
+	private ViewSettingStore viewSetting;
 
 	/**
 	 * inject this from spring context

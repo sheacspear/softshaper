@@ -8,8 +8,8 @@ import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.DataViewMapper;
-import ru.softshaper.web.admin.view.utils.ViewObjectsParams;
+import ru.softshaper.web.admin.view.IViewObjectController;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
   /**
    * Mapper Data to FormBean
    */
-  private final DataViewMapper<D> mapper;
+  private final IViewObjectController<D> mapper;
 
   /**
    * DataSource
@@ -36,7 +36,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
    * @param mapper
    * @param dataSource
    */
-  public DataSourceFromViewImpl(DataViewMapper<D> mapper, ContentDataSource<D> dataSource) {
+  public DataSourceFromViewImpl(IViewObjectController<D> mapper, ContentDataSource<D> dataSource) {
     super();
     this.mapper = mapper;
     this.dataSource = dataSource;
