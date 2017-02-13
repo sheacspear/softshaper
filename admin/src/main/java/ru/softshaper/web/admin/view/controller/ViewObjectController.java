@@ -6,6 +6,8 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
 
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.datasource.meta.ContentDataSource;
@@ -27,6 +29,8 @@ import ru.softshaper.web.admin.view.DataSourceFromView;
 import ru.softshaper.web.admin.view.IViewAttrController;
 import ru.softshaper.web.admin.view.IViewObjectController;
 import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
+import ru.softshaper.web.admin.view.params.FieldCollection;
+import ru.softshaper.web.admin.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.view.store.ViewSettingStore;
 
 import java.util.*;
@@ -227,7 +231,18 @@ public class ViewObjectController implements IViewObjectController {
       });
     }
     // replace link value & NxM
-
+    List<MetaField> keys = new ArrayList<>(columnsViewData.keySet());
+    for (MetaField fileld : keys) {
+      if (fileld != null) {
+        if (FieldType.LINK.equals(fileld.getType())) {
+          fillLinkColumn(columnsViewData, fileld);
+        } else if (FieldType.MULTILINK.equals(fileld.getType())) {
+          // todo
+        } else if (FieldType.BACK_REFERENCE.equals(fileld.getType())) {
+          // todo
+        }
+      }
+    }
     // transform data by column -> data by rows
     List<ObjectRowView> objectsView = Lists.newArrayList();
     int rowSize = columns.keySet().size();
@@ -281,6 +296,42 @@ public class ViewObjectController implements IViewObjectController {
 
     return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columns.values(),
         objectsView);
+  }
+
+  private void fillLinkColumn(ListMultimap<MetaField, Object> columnsViewData, MetaField fileld) {
+    MetaClass linkToMetaClass = fileld.getLinkToMetaClass();
+    List<Object> ids = columnsViewData.get(fileld);
+    Set<String> idsStr = Sets.newHashSet();
+    if (ids != null) {
+      for (Object id : ids) {
+        if (id != null) {
+          idsStr.add(id.toString());
+        }
+      }
+    }
+
+    if (idsStr != null && !idsStr.isEmpty()) {
+      DataSourceFromView dataSourceFromView = getDataSourceFromView(linkToMetaClass.getCode());
+      // get link values
+      ListObjectsView listObjectsView = dataSourceFromView.getListObjects(ViewObjectsParams
+          .newBuilder(linkToMetaClass).setFieldCollection(FieldCollection.TITLE).addIds(idsStr).build());
+      // Map link value by key
+      Map<Object, TitleObjectView> dataKeys = Maps.newHashMap();
+      if (listObjectsView != null) {
+        Collection<TitleObjectView> objViews = listObjectsView.getObjects();
+        if (objViews != null) {
+          for (TitleObjectView objTitle : objViews) {
+            dataKeys.put(objTitle.getId(), objTitle);
+          }
+        }
+      }
+      // fill data ids
+      Collection<Object> objs = Lists.newArrayList();
+      for (Object id : ids) {
+        objs.add(dataKeys.get(id.toString()));
+      }
+      columnsViewData.replaceValues(fileld, objs);
+    }
   }
 
   /*
