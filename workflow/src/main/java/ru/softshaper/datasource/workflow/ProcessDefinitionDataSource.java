@@ -35,17 +35,26 @@ public class ProcessDefinitionDataSource extends AbstractCustomDataSource<Proces
     this.repositoryService = repositoryService;
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.AbstractCustomDataSource#filterByIds(ru.softshaper.services.meta.impl.GetObjectsParams, java.util.stream.Stream)
+   */
   @Override
   protected Stream<ProcessDefinition> filterByIds(GetObjectsParams params, Stream<ProcessDefinition> stream) {
     // уже отфильтровано в getAllObjects
     return stream;
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#getObjectsIdsByMultifield(java.lang.String, java.lang.String, java.lang.String, boolean)
+   */
   @Override
   public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
     throw new RuntimeException("Not supported exception");
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.AbstractCustomDataSource#getAllObjects(ru.softshaper.services.meta.impl.GetObjectsParams)
+   */
   @Override
   protected Collection<ProcessDefinition> getAllObjects(GetObjectsParams params) {
     ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -55,31 +64,49 @@ public class ProcessDefinitionDataSource extends AbstractCustomDataSource<Proces
     return processDefinitionQuery.active().list();
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#createObject(java.lang.String, java.util.Map)
+   */
   @Override
   public String createObject(String contentCode, Map<String, Object> values) {
     throw new RuntimeException("Not supported exception");
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#updateObject(java.lang.String, java.lang.String, java.util.Map)
+   */
   @Override
   public void updateObject(String contentCode, String String, Map<String, Object> values) {
     throw new RuntimeException("Not supported exception");
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#deleteObject(java.lang.String, java.lang.String)
+   */
   @Override
   public void deleteObject(String contentCode, String id) {
     throw new RuntimeException("Not supported exception");
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#getCntObjList(java.lang.String)
+   */
   @Override
   public Integer getCntObjList(String contentCode) {
     return repositoryService.createProcessDefinitionQuery().active().list().size();
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#getIdType(java.lang.String)
+   */
   @Override
   public Class<?> getIdType(String metaClassCode) {
     return String.class;
   }
 
+  /* (non-Javadoc)
+   * @see ru.softshaper.datasource.meta.ContentDataSource#getObjectExtractor()
+   */
   @Override
   public ObjectExtractor<ProcessDefinition> getObjectExtractor() {
     return objectExtractor;

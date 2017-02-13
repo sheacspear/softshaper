@@ -43,8 +43,8 @@ public class MultyLinkAttrController extends AttrControllerBase {
   public <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
     MetaClass metaClass = metaField.getOwner();
     Object value;
-    DataSourceFromView dataSourceFrom = getDataSourceFromView(metaField.getOwner().getCode());
-    DataSourceFromView dataSourceTo = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+    DataSourceFromView dataSourceFrom = viewObjectController.getDataSourceFromView(metaField.getOwner().getCode());
+    DataSourceFromView dataSourceTo = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
     Collection<String> objectsIds = dataSourceFrom.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(), objectExtractor.getId(obj, metaClass),
         false);
     ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(objectsIds);
@@ -71,11 +71,11 @@ public class MultyLinkAttrController extends AttrControllerBase {
   public <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
     Object value = null;
     MetaClass metaClass = metaField.getOwner();
-    DataSourceFromView dataSourceFromView = getDataSourceFromView(metaClass.getCode());
+    DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaClass.getCode());
     Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getCode(), objectExtractor.getId(obj, metaClass),
         false);
     if (linkIds != null && !linkIds.isEmpty()) {
-      DataSourceFromView linkedStore = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView linkedStore = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       value = linkedStore.getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
     }
     return value;
@@ -90,7 +90,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @return
    */
   private <T> TableObjectsView emptyTableObjectsView(MetaClass metaClass, ObjectExtractor<T> objectExtractor) {
-    return new TableObjectsView(metaClass.getCode(), 0, viewObjectController.constructColumnsView(metaClass), Collections.emptyList());
+    return new TableObjectsView(metaClass.getCode(), 0, viewObjectController.constructColumnsView(metaClass).values(), Collections.emptyList());
   }
 
   /*

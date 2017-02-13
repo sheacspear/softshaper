@@ -47,7 +47,7 @@ public class UniversalLinkAttrController extends AttrControllerBase {
         String linkedClassCode = stringValue.substring(delimiterPosition + 1);
         MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
         if (linkedClass != null) {
-          DataSourceFromView dataSourceFromView = getDataSourceFromView(linkedClass.getCode());
+          DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(linkedClass.getCode());
           if (FieldTypeView.LINK_INNER_OBJECT.equals(fieldView.getTypeView())) {
             ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier).setFieldCollection(FieldCollection.ALL).build();
             value = dataSourceFromView.getFullObject(params);
@@ -81,7 +81,7 @@ public class UniversalLinkAttrController extends AttrControllerBase {
         String linkedClassCode = stringValue.substring(delimiterPosition + 1);
         MetaClass linkedClass = metaStorage.getMetaClass(linkedClassCode);
         if (linkedClass != null) {
-          DataSourceFromView dataSourceFromView = getDataSourceFromView(linkedClass.getCode());
+          DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(linkedClass.getCode());
 
           ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier).setFieldCollection(FieldCollection.TITLE).build();
           TitleObjectView titleObject = dataSourceFromView.getTitleObject(params);

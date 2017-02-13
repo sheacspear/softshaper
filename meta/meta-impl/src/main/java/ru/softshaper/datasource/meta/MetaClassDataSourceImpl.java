@@ -348,7 +348,7 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   @Override
   public MetaClass getObj(GetObjectsParams params) {
     Collection<MetaClass> objects = getObjects(params);
-    return objects == null ? null : objects.iterator().next();
+    return (objects == null||objects.isEmpty()) ? null : objects.iterator().next();
   }
 
   @Override

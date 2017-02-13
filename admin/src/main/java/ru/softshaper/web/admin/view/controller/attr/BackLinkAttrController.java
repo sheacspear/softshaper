@@ -45,8 +45,8 @@ public class BackLinkAttrController extends AttrControllerBase {
     Object value = null;
     MetaClass metaClass = metaField.getOwner();
     if (metaField.getBackReferenceField().getType().equals(FieldType.MULTILINK)) {
-      DataSourceFromView dataSourceFrom = getDataSourceFromView(metaField.getOwner().getCode());
-      DataSourceFromView dataSourceTo = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView dataSourceFrom = viewObjectController.getDataSourceFromView(metaField.getOwner().getCode());
+      DataSourceFromView dataSourceTo = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       Collection<String> objectsIds = dataSourceTo.getObjectsIdsByMultifield(metaClass.getCode(), metaField.getBackReferenceField().getCode(),
           objectExtractor.getId(obj, metaClass), true);
       if (objectsIds != null && !objectsIds.isEmpty()) {
@@ -66,7 +66,7 @@ public class BackLinkAttrController extends AttrControllerBase {
         }
       }
     } else {
-      DataSourceFromView dataSourceFromView = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
           .setCondition(new ConditionFieldImpl(metaField.getBackReferenceField()).equal(objectExtractor.getId(obj, metaClass)));
       if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
@@ -92,15 +92,15 @@ public class BackLinkAttrController extends AttrControllerBase {
     Object value = null;
     MetaClass metaClass = metaField.getOwner();
     if (metaField.getBackReferenceField().getType() == FieldType.MULTILINK) {
-      DataSourceFromView dataSourceFromView = getDataSourceFromView(metaClass.getCode());
+      DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaClass.getCode());
       Collection<String> linkIds = dataSourceFromView.getObjectsIdsByMultifield(metaField.getLinkToMetaClass().getCode(),
           metaField.getBackReferenceField().getCode(), objectExtractor.getId(obj, metaClass), true);
       if (linkIds != null) {
-        DataSourceFromView linkedStore = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+        DataSourceFromView linkedStore = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
         value = linkedStore.getTitleObject(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(linkIds).build());
       }
     } else {
-      DataSourceFromView dataSourceFromView = getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
+      DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
           // todo: вот тут идентификатор надо приводить к реальному
           // типу

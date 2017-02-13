@@ -119,7 +119,7 @@ public class QueryServiceRest {
 			@QueryParam("offset") Integer offset, @QueryParam("limit") Integer limit,
 			@QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection") String sortDirection) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
 		Preconditions.checkNotNull(dataSourceFromView);
 		ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaClass).setOffset(offset)
 				.setLimit(limit != null ? limit : 50).setFieldCollection(FieldCollection.TABLE);
@@ -145,7 +145,7 @@ public class QueryServiceRest {
 	public FullObjectView getObject(@PathParam("contentCode") String contentCode,
 			@PathParam("objectId") String objectId) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -164,7 +164,7 @@ public class QueryServiceRest {
 			@PathParam("objectId") String objectId, Map<String, Object> attrs) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
 		dataSourceStorage.get(metaClass).updateObject(contentCode, objectId, attrs);
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -181,7 +181,7 @@ public class QueryServiceRest {
 	public FullObjectView createObject(@PathParam("contentCode") String contentCode, Map<String, Object> attrs) {
 		MetaClass metaClass = metaStorage.getMetaClass(contentCode);
 		String objectId = dataSourceStorage.get(metaClass).createObject(contentCode, attrs);
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
 		return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
 	}
 
@@ -212,7 +212,7 @@ public class QueryServiceRest {
 	@Produces("application/json")
 	public FullObjectView getNewObject(@PathParam("contentCode") String contentCode,
 			@PathParam("backLinkAttr") String backLinkAttr, @PathParam("objId") String objId) {
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(contentCode);
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
 		return dataSourceFromView.getNewObject(contentCode, backLinkAttr, objId);
 	}
 
@@ -359,7 +359,7 @@ public class QueryServiceRest {
 				.filter(field -> viewSetting.getView(field).isTitleField())
 				.map(field -> (Condition) new CompareValueCondition<>(field, value, CompareOperation.LIKE))
 				.reduce(Condition::or).get();
-		DataSourceFromView dataSourceFromView = getDataSourceFromView(metaClass.getCode());
+		DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaClass.getCode());
 		ViewObjectsParams params = ViewObjectsParams.newBuilder(metaClass).setCondition(condition)
 				.setFieldCollection(FieldCollection.TITLE).build();
 		return dataSourceFromView.getListObjects(params);
@@ -390,11 +390,6 @@ public class QueryServiceRest {
 			}
 		}
 		paramsBuilder.setFieldCollection(FieldCollection.TABLE);
-		return getDataSourceFromView(metaClassCode).getTableObjects(paramsBuilder.build());
+		return viewObjectController.getDataSourceFromView(metaClassCode).getTableObjects(paramsBuilder.build());
 	}
-	
-  protected DataSourceFromView getDataSourceFromView(String contentCode) {
-    ContentDataSource<?> dataSource = dataSourceStorage.get(metaStorage.getMetaClass(contentCode));
-    return new DataSourceFromViewImpl<>(viewObjectController, dataSource);
-  }
 }
