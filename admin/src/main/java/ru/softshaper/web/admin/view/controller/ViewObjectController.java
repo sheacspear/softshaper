@@ -102,7 +102,8 @@ public class ViewObjectController implements IViewObjectController {
     metaClass.getFields().forEach(dynamicField -> {
       ViewSetting typeView = viewSetting.getView(dynamicField);
       if (typeView.isTableField()) {
-        columnsView.put(dynamicField, new ColumnView(dynamicField.getName(), dynamicField.getCode(), typeView.getTypeView()));
+        columnsView.put(dynamicField,
+            new ColumnView(dynamicField.getName(), dynamicField.getCode(), typeView.getTypeView()));
       }
     });
     return columnsView;
@@ -113,8 +114,8 @@ public class ViewObjectController implements IViewObjectController {
    * @return
    */
   private String constructTitle(Map<ViewSetting, String> titleFields) {
-    return titleFields.keySet().stream().sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber())).map(titleFields::get)
-        .reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2)).orElse("");
+    return titleFields.keySet().stream().sorted((o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber()))
+        .map(titleFields::get).reduce((s, s2) -> s.isEmpty() ? s2 : s + (s2.isEmpty() ? "" : " " + s2)).orElse("");
   }
 
   /*
@@ -198,7 +199,8 @@ public class ViewObjectController implements IViewObjectController {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total, ObjectExtractor<T> objectExtractor) {
+  public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,
+      ObjectExtractor<T> objectExtractor) {
 
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
@@ -232,7 +234,7 @@ public class ViewObjectController implements IViewObjectController {
     int objCnt = objList.size();
     for (int i = 0; i < objCnt; i++) {
       List<Object> listKeys = columnsViewData.get(null);
-      List<Object> data = Lists.newArrayList(rowSize);
+      List<Object> data = new ArrayList<>(rowSize);
       for (MetaField filed : columns.keySet()) {
         List<Object> fieldVales = columnsViewData.get(filed);
         data.add(fieldVales.get(i));
@@ -240,7 +242,6 @@ public class ViewObjectController implements IViewObjectController {
       ObjectRowView objectRowView = new ObjectRowView(listKeys.get(i).toString(), data, null);
       objectsView.add(objectRowView);
     }
-
     //
 
     // хз что это такое
@@ -278,7 +279,8 @@ public class ViewObjectController implements IViewObjectController {
      * { row.getData().set(columnIndex, objectView.getTitle()); } } } }
      */
 
-    return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columns.values(), objectsView);
+    return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columns.values(),
+        objectsView);
   }
 
   /*
@@ -288,12 +290,13 @@ public class ViewObjectController implements IViewObjectController {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public <T> ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total, ObjectExtractor<T> objectExtractor) {
+  public <T> ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total,
+      ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
-    List<TitleObjectView> titleObjects = objects.stream().map(record -> convertTitleObject(record, metaClass.getCode(), objectExtractor))
-        .collect(Collectors.toList());
+    List<TitleObjectView> titleObjects = objects.stream()
+        .map(record -> convertTitleObject(record, metaClass.getCode(), objectExtractor)).collect(Collectors.toList());
     return new ListObjectsView(metaClassCode, total, titleObjects);
   }
 
@@ -304,7 +307,8 @@ public class ViewObjectController implements IViewObjectController {
    * java.util.Map)
    */
   @Override
-  public <T> FullObjectView getEmptyObj(String contentCode, Map<String, Object> defValue, ObjectExtractor<T> objectExtractor) {
+  public <T> FullObjectView getEmptyObj(String contentCode, Map<String, Object> defValue,
+      ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(contentCode);
     MetaClass content = metaStorage.getMetaClass(contentCode);
     Preconditions.checkNotNull(content);
