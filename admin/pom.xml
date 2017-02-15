@@ -185,11 +185,16 @@
 			<artifactId>cache</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.softshaper</groupId>
 			<artifactId>report</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>-->
+    <dependency>
+      <groupId>org.softshaper</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 	</dependencies>
 
 	<build>

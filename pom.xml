@@ -44,6 +44,7 @@
 		<module>notification</module>
 		<module>report</module>
 		<module>workflow</module>
+		<module>search</module>
 		<module>admin</module>
 	</modules>
 	<properties>
