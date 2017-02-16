@@ -33,9 +33,7 @@ public class Searcher {
     SearchRequest searchRequest = searchRequestBuilder
         .setQuery(new SimpleQueryStringBuilder(text))
         .setSuggestText(text)
-        .setIndices("zorb")
-        .setTypes("titles")
-        .addField("title")
+        .setIndices("softshaper")
         .request();
     ActionFuture<SearchResponse> search = client.search(searchRequest);
     SearchResponse searchResponse = search.actionGet();

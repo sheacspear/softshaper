@@ -59,7 +59,7 @@ public class ElasticsearchConf {
     try {
 
       transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
-      //transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(HOST), 9300));
+      transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), 9300));
     } catch (UnknownHostException e) {
       throw new RuntimeException("Unknown host" + host);
     }

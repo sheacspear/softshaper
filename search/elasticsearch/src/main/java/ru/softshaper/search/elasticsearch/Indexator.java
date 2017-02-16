@@ -59,24 +59,16 @@ public class Indexator {
         objList.forEach(object -> {
           try {
             XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject();
-            String title = "";
             for (MetaField field : metaClass.getFields()) {
               if (field.getColumn() != null) {
                 Object value = contentDataSource.getObjectExtractor().getValue(object, field);
                 sourceBuilder.field(field.getCode(), value == null ? null : value.toString());
-                title += value == null ? "" : value.toString() + " ";
               }
             }
             sourceBuilder = sourceBuilder.endObject();
-            IndexRequestBuilder index = client.prepareIndex("zorb", metaClass.getCode(), contentDataSource.getObjectExtractor().getId(object, metaClass));
+            IndexRequestBuilder index = client.prepareIndex("softshaper", metaClass.getCode(), contentDataSource.getObjectExtractor().getId(object, metaClass));
             index.setSource(sourceBuilder);
             bulkRequest.add(index);
-            XContentBuilder titleBuilder = XContentFactory.jsonBuilder().startObject();
-            titleBuilder.field("title", title);
-            titleBuilder = titleBuilder.endObject();
-            IndexRequestBuilder titleIndex = client.prepareIndex("zorb", "titles", contentDataSource.getObjectExtractor().getId(object, metaClass) + "@" + metaClass.getCode());
-            titleIndex.setSource(titleBuilder);
-            bulkRequest.add(titleIndex);
           } catch (IOException e) {
             e.printStackTrace();
           }
