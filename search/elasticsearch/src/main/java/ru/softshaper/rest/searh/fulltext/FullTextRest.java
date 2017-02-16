@@ -1,0 +1,34 @@
+package ru.softshaper.rest.searh.fulltext;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+@Path("/pr/fulltext")
+public class FullTextRest {
+
+  private static final Logger log = LoggerFactory.getLogger(FullTextRest.class);
+
+  /**
+   * inject this from spring context
+   */
+  @PostConstruct
+  public void init() {
+    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  }
+  
+  
+  @GET
+  @Path("/search/{text}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Object search(@PathParam("text") String text) {
+    return text;  
+  }  
+}

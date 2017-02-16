@@ -26,6 +26,23 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>elasticsearch-shek</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<elasticsearchHost>5.19.254.162</elasticsearchHost>
+				<elasticsearchPort>9200</elasticsearchPort>
+			</properties>
+		</profile>
+		<profile>
+			<id>elasticsearch-localhost</id>
+			<properties>
+				<elasticsearchHost>127.0.0.1</elasticsearchHost>
+				<elasticsearchPort>9200</elasticsearchPort>
+			</properties>
+		</profile>
+		<profile>
 			<id>postgres-localhost</id>
 			<properties>
 				<bdUrl>jdbc:postgresql://localhost:5432/zorb</bdUrl>
