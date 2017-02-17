@@ -1,13 +1,12 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -22,11 +21,11 @@ public class DefaultAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.admin.view.IViewAttrController#getValueByObject(java.lang
    * .Object, ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -35,11 +34,11 @@ public class DefaultAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.admin.view.IViewAttrController#getValueByTable(java.lang.
    * Object, ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -48,11 +47,11 @@ public class DefaultAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.admin.view.IViewAttrController#getTitle(java.lang.Object,
    * ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> String getTitle(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -62,7 +61,7 @@ public class DefaultAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.admin.view.IViewAttrController#getVariants(ru.softshaper.
    * services.meta.MetaField)

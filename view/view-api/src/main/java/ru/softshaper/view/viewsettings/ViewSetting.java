@@ -1,11 +1,11 @@
-package ru.softshaper.web.admin.bean.obj;
+package ru.softshaper.view.viewsettings;
 
 import ru.softshaper.bean.meta.FieldTypeView;
 
 /**
  *
  */
-public interface IViewSetting {
+public interface ViewSetting {
 
   /**
    * @return the columnContent

@@ -1,8 +1,8 @@
-package ru.softshaper.web.admin.view;
+package ru.softshaper.web.admin.view.controller;
 
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 
 /**

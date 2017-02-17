@@ -1,12 +1,12 @@
-package ru.softshaper.web.admin.view;
+package ru.softshaper.web.admin.view.controller;
 
-import java.util.Collection;
-
+import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
+
+import java.util.Collection;
 
 /**
  * Источник данных для формы

@@ -1,18 +1,17 @@
-package ru.softshaper.web.admin.view.impl;
-
-import java.util.Collection;
-import java.util.Map;
+package ru.softshaper.web.admin.view.controller.impl;
 
 import com.google.common.collect.Maps;
-
 import ru.softshaper.datasource.meta.ContentDataSource;
+import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
+import ru.softshaper.web.admin.view.controller.DataSourceFromView;
+import ru.softshaper.web.admin.view.controller.IViewObjectController;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Источник данных для формы
@@ -34,7 +33,6 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
 
   /**
-   * @param mapper
    * @param dataSource
    */
   public DataSourceFromViewImpl(IViewObjectController viewObjectController, ContentDataSource<D> dataSource) {
@@ -45,7 +43,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataSourceFromView#getObjectsIdsByMultifield(java.
    * lang.String, java.lang.String, java.lang.String, boolean)
@@ -71,7 +69,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataSourceFromView#getTableObjects(ru.softshaper.web
    * .view.utils.ViewObjectsParams)
@@ -89,7 +87,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataSourceFromView#getListObjects(ru.softshaper.web.
    * view.utils.ViewObjectsParams)
@@ -105,7 +103,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataSourceFromView#getFullObject(ru.softshaper.web.
    * view.utils.ViewObjectsParams)
@@ -118,7 +116,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * ru.softshaper.web.view.DataSourceFromView#getTitleObject(ru.softshaper.web.
    * view.utils.ViewObjectsParams)

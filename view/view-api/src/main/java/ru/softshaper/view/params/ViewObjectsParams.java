@@ -1,6 +1,4 @@
-package ru.softshaper.web.admin.view.params;
-
-import java.util.Collection;
+package ru.softshaper.view.params;
 
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
@@ -9,10 +7,12 @@ import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.GetObjectsParamsBuilder;
 import ru.softshaper.services.meta.impl.SortOrder;
 
+import java.util.Collection;
+
 /**
  * Created by Sunchise on 29.09.2016.
  */
-public class ViewObjectsParams {
+public final class ViewObjectsParams {
   private final GetObjectsParams params;
 
   private final FieldCollection fieldCollection;
