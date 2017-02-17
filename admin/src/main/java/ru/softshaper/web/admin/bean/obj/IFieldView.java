@@ -4,8 +4,6 @@ import ru.softshaper.bean.meta.FieldTypeView;
 
 /**
  * Field by Class
- * 
- * @param <T>
  */
 public interface IFieldView {
   /**

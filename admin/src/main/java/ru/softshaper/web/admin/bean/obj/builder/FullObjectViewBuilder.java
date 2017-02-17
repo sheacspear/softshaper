@@ -2,22 +2,17 @@ package ru.softshaper.web.admin.bean.obj.builder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.obj.IFieldView;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
-import ru.softshaper.web.admin.bean.obj.IViewSetting;
 import ru.softshaper.web.admin.bean.obj.impl.FieldView;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * FullObjectViewBuilder for create FullObjectView
@@ -40,27 +35,26 @@ public class FullObjectViewBuilder {
   private String title;
 
   /**
-   * 
+   *
    */
   private List<IFieldView> fields = Lists.newArrayList();
 
   /**
-   * 
+   *
    */
-  private Map<String, IViewSetting> viewSettig = Maps.newHashMap();
+  private Map<String, ViewSetting> viewSettig = Maps.newHashMap();
 
   /**
-   * 
+   *
    */
   private Map<String, Object> values = Maps.newHashMap();
 
   /**
-   * 
+   *
    */
   private Map<String, Collection<IObjectView>> variants = Maps.newHashMap();
 
   /**
-   * @param key bissness object
    */
   public FullObjectViewBuilder(String contentCode, String id) {
     this.contentCode = contentCode;
@@ -81,7 +75,7 @@ public class FullObjectViewBuilder {
     return this;
   }
 
-  public FullObjectViewBuilder addField(MetaField metaField, IViewSetting fieldView, Object value) {
+  public FullObjectViewBuilder addField(MetaField metaField, ViewSetting fieldView, Object value) {
     MetaField backReferenceField = metaField.getBackReferenceField();
     MetaClass linkToMetaClass = metaField.getLinkToMetaClass();
     fields.add(new FieldView(metaField.getName(), metaField.getCode(), metaField.getType().getDefaultView(),
@@ -92,8 +86,8 @@ public class FullObjectViewBuilder {
     return this;
   }
 
-  public <T> FullObjectViewBuilder addField(MetaField metaField, IViewSetting fieldView, T value,
-      ListObjectsView variants) {
+  public <T> FullObjectViewBuilder addField(MetaField metaField, ViewSetting fieldView, T value,
+                                            ListObjectsView variants) {
     addField(metaField, fieldView, value);
     List<IObjectView> variantsLocal = new ArrayList<>();
     if (variants != null) {
@@ -111,8 +105,8 @@ public class FullObjectViewBuilder {
    */
   public FullObjectView build() {
     Collections.sort(fields, (field1, field2) -> {
-      IViewSetting o1 = viewSettig.get(field1);
-      IViewSetting o2 = viewSettig.get(field2);
+      ViewSetting o1 = viewSettig.get(field1);
+      ViewSetting o2 = viewSettig.get(field2);
 
       if ((o1 == null && o2 != null) || (o2 != null && o1.getNumber() < o2.getNumber())) {
         return -1;

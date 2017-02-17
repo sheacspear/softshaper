@@ -1,14 +1,14 @@
 package ru.softshaper.web.admin.bean.obj.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.obj.IFieldView;
 import ru.softshaper.web.admin.bean.obj.IFullObjectView;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
-import ru.softshaper.web.admin.bean.obj.IViewSetting;
 import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * View for bissness object</br>
@@ -17,22 +17,22 @@ import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
 public class FullObjectView extends TitleObjectView implements IFullObjectView {
 
   /**
-   * 
+   *
    */
   private final List<IFieldView> fields;
 
   /**
-   * 
+   *
    */
-  private final Map<String, IViewSetting> viewSettig;
+  private final Map<String, ViewSetting> viewSettig;
 
   /**
-   * 
+   *
    */
   private final Map<String, ?> values;
 
   /**
-   * 
+   *
    */
   private final Map<String, Collection<IObjectView>> variants;
 
@@ -46,7 +46,7 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
    * @param variants
    */
   public FullObjectView(String contentCode, String id, String title, List<IFieldView> fields,
-      Map<String, IViewSetting> viewSettig, Map<String, ?> values, Map<String, Collection<IObjectView>> variants) {
+                        Map<String, ViewSetting> viewSettig, Map<String, ?> values, Map<String, Collection<IObjectView>> variants) {
     super(contentCode, id, title);
     this.fields = fields;
     this.viewSettig = viewSettig;
@@ -56,7 +56,7 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.bean.obj.IFullObjectView#getFields()
    */
   @Override
@@ -66,17 +66,17 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.bean.obj.IFullObjectView#getViewSettig()
    */
   @Override
-  public Map<String, IViewSetting> getViewSettig() {
+  public Map<String, ViewSetting> getViewSettig() {
     return viewSettig;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.bean.obj.IFullObjectView#getValues()
    */
   @Override
@@ -86,7 +86,7 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see ru.softshaper.web.bean.obj.IFullObjectView#getVariants()
    */
   @Override

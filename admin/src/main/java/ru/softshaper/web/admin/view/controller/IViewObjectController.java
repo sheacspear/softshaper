@@ -1,8 +1,4 @@
-package ru.softshaper.web.admin.view;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+package ru.softshaper.web.admin.view.controller;
 
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
@@ -14,12 +10,13 @@ import ru.softshaper.web.admin.bean.objlist.ColumnView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * Mapper Data to FormBean
  *
  * @author ashek
- *
- * @param <T>
  */
 public interface IViewObjectController {
 

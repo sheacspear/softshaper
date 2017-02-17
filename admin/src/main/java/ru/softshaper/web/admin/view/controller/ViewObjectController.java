@@ -1,43 +1,27 @@
 package ru.softshaper.web.admin.view.controller;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
-
+import com.google.common.collect.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
+import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.viewsettings.ViewSetting;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ColumnView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.ObjectRowView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.IViewAttrController;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
-import ru.softshaper.web.admin.view.params.FieldCollection;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
+import ru.softshaper.web.admin.view.controller.impl.DataSourceFromViewImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Базовый маппер
@@ -61,22 +45,22 @@ public class ViewObjectController implements IViewObjectController {
   @Autowired
   private DataSourceStorage dataSourceStorage;
   /**
-   * 
+   *
    */
   private IViewAttrController defaultViewAttrController;
 
   /**
-   * 
+   *
    */
   private final Map<FieldType, IViewAttrController> attrmapper = Maps.newHashMap();
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewObjectController#registerAttrController(
+   * ru.softshaper.view.IViewObjectController#registerAttrController(
    * ru.softshaper.services.meta.FieldType,
-   * ru.softshaper.web.admin.view.IViewAttrController)
+   * ru.softshaper.view.IViewAttrController)
    */
   @Override
   public void registerAttrController(FieldType fieldType, IViewAttrController viewAttrController) {
@@ -85,10 +69,10 @@ public class ViewObjectController implements IViewObjectController {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewObjectController#setDefaultAttrController
-   * (ru.softshaper.web.admin.view.IViewAttrController)
+   * ru.softshaper.view.IViewObjectController#setDefaultAttrController
+   * (ru.softshaper.view.IViewAttrController)
    */
   @Override
   public void setDefaultAttrController(IViewAttrController viewAttrController) {

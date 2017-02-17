@@ -1,30 +1,12 @@
 package ru.softshaper.rest.admin.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.DataSourceStorage;
 import ru.softshaper.services.meta.MetaClass;
@@ -43,16 +25,24 @@ import ru.softshaper.staticcontent.organizations.PositionStaticContent;
 import ru.softshaper.staticcontent.sec.SecRoleStaticContent;
 import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
+import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.nav.folder.FolderView;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.params.FieldCollection;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
+import ru.softshaper.web.admin.view.controller.DataSourceFromView;
+import ru.softshaper.web.admin.view.controller.IViewObjectController;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Контроллер работы со словарями

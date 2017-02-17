@@ -45,6 +45,7 @@
 		<module>report</module>
 		<module>workflow</module>
 		<module>search</module>
+		<module>view</module>
 		<module>admin</module>
 	</modules>
 	<properties>

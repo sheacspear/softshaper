@@ -1,24 +1,22 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
+import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.params.FieldCollection;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
+import ru.softshaper.web.admin.view.controller.DataSourceFromView;
+
+import javax.annotation.PostConstruct;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  *
@@ -33,11 +31,11 @@ public class MultyLinkAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewAttrController#getValueByObject(java.lang
+   * ru.softshaper.view.IViewAttrController#getValueByObject(java.lang
    * .Object, ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> Object getValueByObject(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -61,11 +59,11 @@ public class MultyLinkAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewAttrController#getValueByTable(java.lang.
+   * ru.softshaper.view.IViewAttrController#getValueByTable(java.lang.
    * Object, ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> Object getValueByTable(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -95,11 +93,11 @@ public class MultyLinkAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewAttrController#getTitle(java.lang.Object,
+   * ru.softshaper.view.IViewAttrController#getTitle(java.lang.Object,
    * ru.softshaper.services.meta.MetaField,
-   * ru.softshaper.web.admin.bean.obj.impl.ViewSetting)
+   * ru.softshaper.view.viewsettings.impl.ViewSettingImpl)
    */
   @Override
   public <T> String getTitle(T obj, MetaField metaField, ViewSetting fieldView, ObjectExtractor<T> objectExtractor) {
@@ -108,9 +106,9 @@ public class MultyLinkAttrController extends AttrControllerBase {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewAttrController#getVariants(ru.softshaper.
+   * ru.softshaper.view.IViewAttrController#getVariants(ru.softshaper.
    * services.meta.MetaField)
    */
   @Override
