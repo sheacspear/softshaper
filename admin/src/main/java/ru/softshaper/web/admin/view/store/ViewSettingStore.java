@@ -13,7 +13,9 @@ import com.google.common.collect.Maps;
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.storage.jooq.tables.daos.FieldViewDao;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
+import ru.softshaper.view.viewsettings.ViewSetting;
+import ru.softshaper.view.viewsettings.impl.ViewSettingImpl;
+
 
 /**
  * Хранилище, которое возвращает представление поля по его параметрам (табица и колонка)
@@ -64,7 +66,7 @@ public class ViewSettingStore {
    * @return
    */
   private ViewSetting convert(ru.softshaper.storage.jooq.tables.pojos.FieldView fieldViewBean) {
-    return new ViewSetting(fieldViewBean.getColumnContent(), fieldViewBean.getNumber(), fieldViewBean.getReadonly(),
+    return new ViewSettingImpl(fieldViewBean.getColumnContent(), fieldViewBean.getNumber(), fieldViewBean.getReadonly(),
         fieldViewBean.getRequired(), fieldViewBean.getTitle(), fieldViewBean.getTitlefield(),
         fieldViewBean.getTablefield(),
         FieldTypeView.byCode(fieldViewBean.getTypeviewcode()));
