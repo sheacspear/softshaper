@@ -189,7 +189,6 @@ public class ViewObjectController implements IViewObjectController {
   @Override
   public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,
       ObjectExtractor<T> objectExtractor) {
-
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -241,43 +240,6 @@ public class ViewObjectController implements IViewObjectController {
       ObjectRowView objectRowView = new ObjectRowView(listKeys.get(i).toString(), data, null);
       objectsView.add(objectRowView);
     }
-    //
-
-    // хз что это такое
-    /*
-     * for (Map.Entry<MetaField, String> entry :
-     * linkedValuesOfObject.entrySet()) { Map<ObjectRowView, String>
-     * objectRowViewStringMap = linkedValues.get(entry.getKey()); if
-     * (objectRowViewStringMap == null) { objectRowViewStringMap = new
-     * HashMap<>(); linkedValues.put(entry.getKey(), objectRowViewStringMap); }
-     * objectRowViewStringMap.put(objectRowView, entry.getValue()); }
-     */
-
-    // поиск значений ссылочных колонок
-
-    // замена значений
-
-    // хз что это такое
-    /*
-     * for (MetaField field : linkedValues.keySet()) { Map<ObjectRowView,
-     * String> objectRowViewStringMap = linkedValues.get(field);
-     * DataSourceFromView dataSourceFromView =
-     * dataSourceFromViewStore.get(field.getLinkToMetaClass().getCode());
-     * ViewObjectsParams params =
-     * ViewObjectsParams.newBuilder(field.getLinkToMetaClass())
-     * .addIds(objectRowViewStringMap.values()).setFieldCollection(
-     * FieldCollection.TITLE).build(); int columnIndex = 0; for (ColumnView
-     * columnView : columnsView) { if
-     * (columnView.getKey().equals(field.getCode())) { break; } columnIndex++; }
-     * ListObjectsView ListObjectView =
-     * dataSourceFromView.getListObjects(params); for (Map.Entry<ObjectRowView,
-     * String> rowLink : objectRowViewStringMap.entrySet()) { ObjectRowView row
-     * = rowLink.getKey(); for (TitleObjectView objectView :
-     * ListObjectView.getObjects()) { if (row.getData().get(columnIndex) != null
-     * && objectView.getId().equals(row.getData().get(columnIndex).toString()))
-     * { row.getData().set(columnIndex, objectView.getTitle()); } } } }
-     */
-
     return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columns.values(),
         objectsView);
   }
@@ -312,7 +274,7 @@ public class ViewObjectController implements IViewObjectController {
       // fill data ids
       Collection<Object> objs = Lists.newArrayList();
       for (Object id : ids) {
-        objs.add(dataKeys.get(id.toString()));
+        objs.add(id!=null?dataKeys.get(id.toString()):null);
       }
       columnsViewData.replaceValues(fileld, objs);
     }
