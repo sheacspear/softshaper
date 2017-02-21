@@ -1,4 +1,4 @@
-package ru.softshaper.web.admin.view.params;
+package ru.softshaper.view.params;
 
 /**
  * Created by Sunchise on 29.09.2016.

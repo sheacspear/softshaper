@@ -1,43 +1,27 @@
 package ru.softshaper.web.admin.view.controller;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
-
+import com.google.common.collect.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
+import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.viewsettings.ViewSetting;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.obj.impl.ViewSetting;
 import ru.softshaper.web.admin.bean.objlist.ColumnView;
 import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.ObjectRowView;
 import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-import ru.softshaper.web.admin.view.DataSourceFromView;
-import ru.softshaper.web.admin.view.IViewAttrController;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.impl.DataSourceFromViewImpl;
-import ru.softshaper.web.admin.view.params.FieldCollection;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
+import ru.softshaper.web.admin.view.controller.impl.DataSourceFromViewImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Базовый маппер
@@ -61,22 +45,22 @@ public class ViewObjectController implements IViewObjectController {
   @Autowired
   private DataSourceStorage dataSourceStorage;
   /**
-   * 
+   *
    */
   private IViewAttrController defaultViewAttrController;
 
   /**
-   * 
+   *
    */
   private final Map<FieldType, IViewAttrController> attrmapper = Maps.newHashMap();
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewObjectController#registerAttrController(
+   * ru.softshaper.view.IViewObjectController#registerAttrController(
    * ru.softshaper.services.meta.FieldType,
-   * ru.softshaper.web.admin.view.IViewAttrController)
+   * ru.softshaper.view.IViewAttrController)
    */
   @Override
   public void registerAttrController(FieldType fieldType, IViewAttrController viewAttrController) {
@@ -85,10 +69,10 @@ public class ViewObjectController implements IViewObjectController {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
-   * ru.softshaper.web.admin.view.IViewObjectController#setDefaultAttrController
-   * (ru.softshaper.web.admin.view.IViewAttrController)
+   * ru.softshaper.view.IViewObjectController#setDefaultAttrController
+   * (ru.softshaper.view.IViewAttrController)
    */
   @Override
   public void setDefaultAttrController(IViewAttrController viewAttrController) {
@@ -205,7 +189,6 @@ public class ViewObjectController implements IViewObjectController {
   @Override
   public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,
       ObjectExtractor<T> objectExtractor) {
-
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -257,43 +240,6 @@ public class ViewObjectController implements IViewObjectController {
       ObjectRowView objectRowView = new ObjectRowView(listKeys.get(i).toString(), data, null);
       objectsView.add(objectRowView);
     }
-    //
-
-    // хз что это такое
-    /*
-     * for (Map.Entry<MetaField, String> entry :
-     * linkedValuesOfObject.entrySet()) { Map<ObjectRowView, String>
-     * objectRowViewStringMap = linkedValues.get(entry.getKey()); if
-     * (objectRowViewStringMap == null) { objectRowViewStringMap = new
-     * HashMap<>(); linkedValues.put(entry.getKey(), objectRowViewStringMap); }
-     * objectRowViewStringMap.put(objectRowView, entry.getValue()); }
-     */
-
-    // поиск значений ссылочных колонок
-
-    // замена значений
-
-    // хз что это такое
-    /*
-     * for (MetaField field : linkedValues.keySet()) { Map<ObjectRowView,
-     * String> objectRowViewStringMap = linkedValues.get(field);
-     * DataSourceFromView dataSourceFromView =
-     * dataSourceFromViewStore.get(field.getLinkToMetaClass().getCode());
-     * ViewObjectsParams params =
-     * ViewObjectsParams.newBuilder(field.getLinkToMetaClass())
-     * .addIds(objectRowViewStringMap.values()).setFieldCollection(
-     * FieldCollection.TITLE).build(); int columnIndex = 0; for (ColumnView
-     * columnView : columnsView) { if
-     * (columnView.getKey().equals(field.getCode())) { break; } columnIndex++; }
-     * ListObjectsView ListObjectView =
-     * dataSourceFromView.getListObjects(params); for (Map.Entry<ObjectRowView,
-     * String> rowLink : objectRowViewStringMap.entrySet()) { ObjectRowView row
-     * = rowLink.getKey(); for (TitleObjectView objectView :
-     * ListObjectView.getObjects()) { if (row.getData().get(columnIndex) != null
-     * && objectView.getId().equals(row.getData().get(columnIndex).toString()))
-     * { row.getData().set(columnIndex, objectView.getTitle()); } } } }
-     */
-
     return new TableObjectsView(metaClassCode, total != null ? total : objectsView.size(), columns.values(),
         objectsView);
   }
@@ -328,7 +274,7 @@ public class ViewObjectController implements IViewObjectController {
       // fill data ids
       Collection<Object> objs = Lists.newArrayList();
       for (Object id : ids) {
-        objs.add(dataKeys.get(id.toString()));
+        objs.add(id!=null?dataKeys.get(id.toString()):null);
       }
       columnsViewData.replaceValues(fileld, objs);
     }

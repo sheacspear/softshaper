@@ -1,19 +1,14 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
+import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
-import ru.softshaper.web.admin.view.IViewAttrController;
-import ru.softshaper.web.admin.view.IViewObjectController;
-import ru.softshaper.web.admin.view.params.FieldCollection;
-import ru.softshaper.web.admin.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
+import ru.softshaper.web.admin.view.controller.IViewAttrController;
+import ru.softshaper.web.admin.view.controller.IViewObjectController;
 
 public abstract class AttrControllerBase implements IViewAttrController {
 
@@ -26,7 +21,7 @@ public abstract class AttrControllerBase implements IViewAttrController {
   protected MetaStorage metaStorage;
 
   /**
-   * 
+   *
    */
   @Autowired
   protected ViewSettingStore viewSetting;

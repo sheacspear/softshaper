@@ -1,9 +1,9 @@
-package ru.softshaper.web.admin.bean.obj.impl;
+package ru.softshaper.view.viewsettings.impl;
 
 import ru.softshaper.bean.meta.FieldTypeView;
-import ru.softshaper.web.admin.bean.obj.IViewSetting;
+import ru.softshaper.view.viewsettings.ViewSetting;
 
-public class ViewSetting implements IViewSetting {
+public final class ViewSettingImpl implements ViewSetting {
 
   private final String columnContent;
   private final Integer number;
@@ -14,7 +14,7 @@ public class ViewSetting implements IViewSetting {
   private final Boolean tableField;
   private final FieldTypeView typeView;
 
-  public ViewSetting(String columnContent, Integer number, Boolean readonly, Boolean required, String title, Boolean titleField, Boolean tableField, FieldTypeView typeView) {
+  public ViewSettingImpl(String columnContent, Integer number, Boolean readonly, Boolean required, String title, Boolean titleField, Boolean tableField, FieldTypeView typeView) {
     this.columnContent = columnContent;
     this.number = number;
     this.readonly = readonly;
@@ -26,7 +26,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getColumnContent()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getColumnContent()
    */
   @Override
   public String getColumnContent() {
@@ -34,7 +34,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getNumber()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getNumber()
    */
   @Override
   public Integer getNumber() {
@@ -42,7 +42,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getReadonly()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getReadonly()
    */
   @Override
   public Boolean getReadonly() {
@@ -50,7 +50,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getRequired()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getRequired()
    */
   @Override
   public Boolean getRequired() {
@@ -58,7 +58,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getTitle()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getTitle()
    */
   @Override
   public String getTitle() {
@@ -66,7 +66,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#isTitleField()
+   * @see ru.softshaper.web.view.bean.ViewSetting#isTitleField()
    */
   @Override
   public Boolean isTitleField() {
@@ -74,7 +74,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#isTableField()
+   * @see ru.softshaper.web.view.bean.ViewSetting#isTableField()
    */
   @Override
   public Boolean isTableField() {
@@ -82,7 +82,7 @@ public class ViewSetting implements IViewSetting {
   }
 
   /* (non-Javadoc)
-   * @see ru.softshaper.web.view.bean.IViewSetting#getTypeView()
+   * @see ru.softshaper.web.view.bean.ViewSetting#getTypeView()
    */
   @Override
   public FieldTypeView getTypeView() {

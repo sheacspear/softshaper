@@ -209,6 +209,11 @@
 		</dependency>-->
     <dependency>
       <groupId>org.softshaper</groupId>
+      <artifactId>view-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.softshaper</groupId>
       <artifactId>elasticsearch</artifactId>
       <version>${project.version}</version>
     </dependency>

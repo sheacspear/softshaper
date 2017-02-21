@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.search.elasticsearch.Indexator;
 import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.web.admin.view.store.ViewSettingStore;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
