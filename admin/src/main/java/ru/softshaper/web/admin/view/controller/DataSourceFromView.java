@@ -1,11 +1,10 @@
 package ru.softshaper.web.admin.view.controller;
 
 import ru.softshaper.view.params.ViewObjectsParams;
-import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
-import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
-
+import ru.softshaper.web.admin.bean.obj.IFullObjectView;
+import ru.softshaper.web.admin.bean.obj.IObjectView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
 import java.util.Collection;
 
 /**
@@ -32,29 +31,29 @@ public interface DataSourceFromView {
    * @param objId
    * @return
    */
-  FullObjectView getNewObject(String contentCode, String backLinkAttr, String objId);
+  IFullObjectView getNewObject(String contentCode, String backLinkAttr, String objId);
 
   /**
    * @param params
    * @return
    */
-  TableObjectsView getTableObjects(final ViewObjectsParams params);
+  ITableObjectsView getTableObjects(final ViewObjectsParams params);
 
   /**
    * @param params
    * @return
    */
-  ListObjectsView getListObjects(final ViewObjectsParams params);
+  IListObjectsView getListObjects(final ViewObjectsParams params);
 
   /**
    * @param params
    * @return
    */
-  FullObjectView getFullObject(final ViewObjectsParams params);
+  IFullObjectView getFullObject(final ViewObjectsParams params);
 
   /**
    * @param params
    * @return
    */
-  TitleObjectView getTitleObject(final ViewObjectsParams params);
+  IObjectView getTitleObject(final ViewObjectsParams params);
 }

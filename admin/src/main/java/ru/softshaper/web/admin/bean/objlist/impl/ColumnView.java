@@ -1,11 +1,12 @@
-package ru.softshaper.web.admin.bean.objlist;
+package ru.softshaper.web.admin.bean.objlist.impl;
 
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.web.admin.bean.objlist.IColumnView;
 
 /**
  *
  */
-public class ColumnView {
+public class ColumnView implements IColumnView {
 
   /**
    * title column
@@ -47,23 +48,26 @@ public class ColumnView {
     this.sortable = sortable;
   }
 
-  /**
-   * @return the name
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.bean.objlist.impl.IColumnView#getName()
    */
+  @Override
   public String getName() {
     return name;
   }
 
-  /**
-   * @return the key
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.bean.objlist.impl.IColumnView#getKey()
    */
+  @Override
   public String getKey() {
     return key;
   }
 
-  /**
-   * @return the typeView
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.bean.objlist.impl.IColumnView#getTypeView()
    */
+  @Override
   public FieldTypeView getTypeView() {
     return typeView;
   }
@@ -78,16 +82,18 @@ public class ColumnView {
     return "ColumnView [name=" + name + ", key=" + key + ", typeView=" + typeView + "]";
   }
 
-  /**
-   * @return the sortable
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.bean.objlist.impl.IColumnView#isSortable()
    */
+  @Override
   public boolean isSortable() {
     return sortable;
   }
 
-  /**
-   * @return the filterable
+  /* (non-Javadoc)
+   * @see ru.softshaper.web.admin.bean.objlist.impl.IColumnView#isFilterable()
    */
+  @Override
   public boolean isFilterable() {
     return filterable;
   }

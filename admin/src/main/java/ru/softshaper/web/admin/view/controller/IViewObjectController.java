@@ -6,9 +6,10 @@ import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ColumnView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IColumnView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.impl.ColumnView;
 
 import java.util.Collection;
 import java.util.Map;
@@ -54,7 +55,7 @@ public interface IViewObjectController {
    * @param contentCode
    * @return FormListBean
    */
-  <T> TableObjectsView convertTableObjects(Collection<T> objList, String contentCode, Integer cnt,ObjectExtractor<T> objectExtractor);
+  <T> ITableObjectsView convertTableObjects(Collection<T> objList, String contentCode, Integer cnt,ObjectExtractor<T> objectExtractor);
 
   /**
    * @param objList
@@ -63,7 +64,7 @@ public interface IViewObjectController {
    * @param backLinkAttr
    * @return
    */
-  <T> ListObjectsView convertListObjects(Collection<T> objList, String contentCode, Integer total,ObjectExtractor<T> objectExtractor);
+  <T> IListObjectsView convertListObjects(Collection<T> objList, String contentCode, Integer total,ObjectExtractor<T> objectExtractor);
 
   /**
    * Создаёт болванку с описанием полей класса
@@ -77,7 +78,7 @@ public interface IViewObjectController {
    * @param metaClass
    * @return
    */
-  Map<MetaField, ColumnView> constructColumnsView(MetaClass metaClass);
+  Map<MetaField, IColumnView> constructColumnsView(MetaClass metaClass);
 
   DataSourceFromView getDataSourceFromView(String contentCode);
 

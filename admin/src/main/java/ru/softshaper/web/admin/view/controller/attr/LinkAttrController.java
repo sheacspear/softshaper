@@ -9,7 +9,7 @@ import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 
 import javax.annotation.PostConstruct;
@@ -83,10 +83,10 @@ public class LinkAttrController extends AttrControllerBase {
    * services.meta.MetaField)
    */
   @Override
-  public <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
+  public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     ViewSetting fieldView = viewSetting.getView(metaField);
     if (FieldTypeView.LINK_SELECTBOX.equals(fieldView.getTypeView()) && metaField.getLinkToMetaClass() != null) {
-      ListObjectsView variants;
+      IListObjectsView variants;
       DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(metaField.getLinkToMetaClass().getCode());
       variants = dataSourceFromView
           .getListObjects(ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).setFieldCollection(FieldCollection.TITLE).build());

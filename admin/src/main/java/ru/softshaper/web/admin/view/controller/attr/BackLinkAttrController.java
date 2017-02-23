@@ -11,8 +11,9 @@ import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.ViewSetting;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.impl.ListObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 
 import javax.annotation.PostConstruct;
@@ -51,11 +52,11 @@ public class BackLinkAttrController extends AttrControllerBase {
         ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass()).addIds(objectsIds);
         if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
           ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TITLE).build();
-          ListObjectsView listObjectsView = objectsIds != null ? dataSourceFrom.getListObjects(params) : null;
+          IListObjectsView listObjectsView = objectsIds != null ? dataSourceFrom.getListObjects(params) : null;
           value = listObjectsView;
         } else {
           ViewObjectsParams params = paramsBuilder.setFieldCollection(FieldCollection.TABLE).build();
-          TableObjectsView tableObjectsView = objectsIds != null ? dataSourceFrom.getTableObjects(params) : null;
+          ITableObjectsView tableObjectsView = objectsIds != null ? dataSourceFrom.getTableObjects(params) : null;
           value = tableObjectsView;
         }
       } else {
@@ -68,7 +69,7 @@ public class BackLinkAttrController extends AttrControllerBase {
       ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaField.getLinkToMetaClass())
           .setCondition(new ConditionFieldImpl(metaField.getBackReferenceField()).equal(objectExtractor.getId(obj, metaClass)));
       if (FieldTypeView.BACK_REFERENCE_LIST.equals(fieldView.getTypeView())) {
-        ListObjectsView listObjects = dataSourceFromView.getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
+        IListObjectsView listObjects = dataSourceFromView.getListObjects(paramsBuilder.setFieldCollection(FieldCollection.TITLE).build());
         value = listObjects;
       } else {
         value = dataSourceFromView.getTableObjects(paramsBuilder.setFieldCollection(FieldCollection.TABLE).build());
@@ -129,7 +130,7 @@ public class BackLinkAttrController extends AttrControllerBase {
    * services.meta.MetaField)
    */
   @Override
-  public <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
+  public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
   }

@@ -10,7 +10,7 @@ import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.FieldView;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 
 import java.util.*;
 
@@ -87,7 +87,7 @@ public class FullObjectViewBuilder {
   }
 
   public <T> FullObjectViewBuilder addField(MetaField metaField, ViewSetting fieldView, T value,
-                                            ListObjectsView variants) {
+                                            IListObjectsView variants) {
     addField(metaField, fieldView, value);
     List<IObjectView> variantsLocal = new ArrayList<>();
     if (variants != null) {

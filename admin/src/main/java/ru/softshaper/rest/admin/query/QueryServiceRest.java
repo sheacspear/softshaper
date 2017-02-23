@@ -1,12 +1,30 @@
 package ru.softshaper.rest.admin.query;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.DataSourceStorage;
 import ru.softshaper.services.meta.MetaClass;
@@ -30,19 +48,11 @@ import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.nav.folder.FolderView;
-import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.obj.IFullObjectView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 import ru.softshaper.web.admin.view.controller.IViewObjectController;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Контроллер работы со словарями
@@ -104,7 +114,7 @@ public class QueryServiceRest {
   @GET
   @Path("/obj/{contentCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public TableObjectsView getObjectList(@PathParam("contentCode") String contentCode,
+  public ITableObjectsView getObjectList(@PathParam("contentCode") String contentCode,
       @QueryParam("offset") Integer offset, @QueryParam("limit") Integer limit,
       @QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection") String sortDirection) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
@@ -131,7 +141,7 @@ public class QueryServiceRest {
   @GET
   @Path("/obj/{contentCode}/{objectId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public FullObjectView getObject(@PathParam("contentCode") String contentCode,
+  public IFullObjectView getObject(@PathParam("contentCode") String contentCode,
       @PathParam("objectId") String objectId) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
@@ -149,7 +159,7 @@ public class QueryServiceRest {
   @PUT
   @Path("/obj/{contentCode}/{objectId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public FullObjectView updateObject(@PathParam("contentCode") String contentCode,
+  public IFullObjectView updateObject(@PathParam("contentCode") String contentCode,
       @PathParam("objectId") String objectId, Map<String, Object> attrs) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
     dataSourceStorage.get(metaClass).updateObject(contentCode, objectId, attrs);
@@ -167,7 +177,7 @@ public class QueryServiceRest {
   @POST
   @Path("/obj/{contentCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public FullObjectView createObject(@PathParam("contentCode") String contentCode, Map<String, Object> attrs) {
+  public IFullObjectView createObject(@PathParam("contentCode") String contentCode, Map<String, Object> attrs) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
     String objectId = dataSourceStorage.get(metaClass).createObject(contentCode, attrs);
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
@@ -199,7 +209,7 @@ public class QueryServiceRest {
   @GET
   @Path("/newObj/{contentCode}/{backLinkAttr}/{objId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public FullObjectView getNewObject(@PathParam("contentCode") String contentCode,
+  public IFullObjectView getNewObject(@PathParam("contentCode") String contentCode,
       @PathParam("backLinkAttr") String backLinkAttr, @PathParam("objId") String objId) {
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
     return dataSourceFromView.getNewObject(contentCode, backLinkAttr, objId);
@@ -335,7 +345,7 @@ public class QueryServiceRest {
   @GET
   @Path("/quickinput/{contentCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ListObjectsView getQuickInput(@PathParam("contentCode") String contentCode,
+  public IListObjectsView getQuickInput(@PathParam("contentCode") String contentCode,
       @QueryParam("value") String value) {
     Preconditions.checkNotNull(contentCode);
     Preconditions.checkArgument(!StringUtils.isEmpty(value));
@@ -353,7 +363,7 @@ public class QueryServiceRest {
   @GET
   @Path("/search/{contentCode}/{offset}/{limit}/{orderFieldCode}/{sortDirection}?{query}")
   @Produces(MediaType.APPLICATION_JSON)
-  public TableObjectsView search(@PathParam("contentCode") String metaClassCode, @PathParam("limit") int limit,
+  public ITableObjectsView search(@PathParam("contentCode") String metaClassCode, @PathParam("limit") int limit,
       @PathParam("offset") int offset, @PathParam("orderFieldCode") String orderFieldCode,
       @PathParam("sortDirection") String sortDirection, @PathParam("query") String query) {
     Preconditions.checkNotNull(metaClassCode);
