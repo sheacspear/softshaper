@@ -15,6 +15,7 @@ import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.MetaStorage;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
+import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -34,14 +35,17 @@ public class Indexator {
 
   private final MetaStorage metaStorage;
 
+  private final ViewSettingStore viewSettingStore;
+
   @Autowired
   Searcher searcher;
 
   @Autowired
-  public Indexator(Client client, DataSourceStorage dataSourceStorage, MetaStorage metaStorage) {
+  public Indexator(Client client, DataSourceStorage dataSourceStorage, MetaStorage metaStorage, ViewSettingStore viewSettingStore) {
     this.client = client;
     this.dataSourceStorage = dataSourceStorage;
     this.metaStorage = metaStorage;
+    this.viewSettingStore = viewSettingStore;
   }
 
   public void fullIndex() {

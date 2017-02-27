@@ -32,14 +32,14 @@
 			</activation>
 			<properties>
 				<elasticsearchHost>5.19.254.162</elasticsearchHost>
-				<elasticsearchPort>9200</elasticsearchPort>
+				<elasticsearchPort>9300</elasticsearchPort>
 			</properties>
 		</profile>
 		<profile>
 			<id>elasticsearch-localhost</id>
 			<properties>
 				<elasticsearchHost>192.168.99.100</elasticsearchHost>
-				<elasticsearchPort>9200</elasticsearchPort>
+				<elasticsearchPort>9300</elasticsearchPort>
 			</properties>
 		</profile>
 		<profile>

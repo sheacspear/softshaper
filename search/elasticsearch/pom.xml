@@ -27,6 +27,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.0</version>
+    </dependency>
     <!-- meta -->
     <dependency>
       <groupId>org.softshaper</groupId>
@@ -37,6 +43,12 @@
     <dependency>
       <groupId>org.softshaper</groupId>
       <artifactId>meta-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- view -->
+    <dependency>
+      <groupId>org.softshaper</groupId>
+      <artifactId>view-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- elasticsearch -->

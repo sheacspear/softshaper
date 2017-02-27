@@ -31,7 +31,7 @@ public class Searcher {
   public List<String> search(String text) {
     SearchRequestBuilder searchRequestBuilder = SearchAction.INSTANCE.newRequestBuilder(client);
     SearchRequest searchRequest = searchRequestBuilder
-        .setQuery(new SimpleQueryStringBuilder(text))
+        .setQuery(new SimpleQueryStringBuilder(text).analyzer("russian"))
         .setSuggestText(text)
         .setIndices("softshaper")
         .request();

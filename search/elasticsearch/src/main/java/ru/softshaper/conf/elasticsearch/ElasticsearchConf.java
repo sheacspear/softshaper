@@ -1,8 +1,10 @@
 package ru.softshaper.conf.elasticsearch;
 
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -21,10 +24,6 @@ public class ElasticsearchConf {
   private static final String ELASTICSEARCH_HOST = "elasticsearchHost";
   
   private static final String ELASTICSEARCH_PORT = "elasticsearchPort";
-
-
-
-
 
   /**
   * Environment
@@ -41,29 +40,62 @@ public class ElasticsearchConf {
   private String clientPingTimeout = "5s";
   private String clientNodesSamplerInterval = "5s";
 
-  public Settings settings() {
-    return Settings.builder()
-        .put("cluster.name", clusterName)
-  /*      .put("client.transport.sniff", clientTransportSniff)
-        .put("client.transport.ignore_cluster_name", clientIgnoreClusterName)
-        .put("client.transport.ping_timeout", clientPingTimeout)
-        .put("client.transport.nodes_sampler_interval", clientNodesSamplerInterval)*/
-        .build();
+  public Settings.Builder settings() {
+    try {
+      return Settings.settingsBuilder().loadFromSource(XContentFactory.jsonBuilder()
+      .startObject()
+        .startObject("analysis")
+          .startObject("filter")
+            .startObject("russian_stop")
+              .field("type", "stop")
+              .field("stopwords", "_russian_" )
+            .endObject()
+        /*  .startObject("russian_keywords")
+            .field("type", "keyword_marker")
+            .field("keywords", new String[]{})
+          .endObject()*/
+          .startObject("russian_stemmer")
+            .field("type", "stemmer")
+            .field("language", "russian")
+          .endObject()
+          .endObject()
+          .startObject("analyzer")
+            .startObject("russian")
+              .field("type", "custom")
+              .field("tokenizer", "standard")
+              .field("filter", new String[]{"lowercase", /*"russian_morphology", "english_morphology",*/ "russian_stop", /*"russian_keywords",*/ "russian_stemmer"})
+            .endObject()
+          .endObject()
+        .endObject()
+        .startObject("cluster")
+          .field("name", clusterName)
+        .endObject()
+      .endObject()
+      .string());
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
   }
 
   @Bean
   public TransportClient transportClient() {    
     String host = env.getProperty(ELASTICSEARCH_HOST);
     String port = env.getProperty(ELASTICSEARCH_PORT);    
-    TransportClient transportClient = TransportClient.builder().settings(settings()).build();
+    TransportClient client = TransportClient.builder().settings(settings()).build();
     try {
-
-      transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
-      transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), 9300));
+      client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
     } catch (UnknownHostException e) {
       throw new RuntimeException("Unknown host" + host);
     }
-    return transportClient;
+    IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
+    if (softshaper.isExists()) {
+      client.admin().indices().prepareDelete("softshaper").execute().actionGet();
+    }
+    client.admin().indices().prepareCreate("softshaper")
+        .setSettings(settings())
+        .execute().actionGet();
+
+    return client;
   }
 
 }

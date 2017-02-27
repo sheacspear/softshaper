@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import ru.softshaper.search.elasticsearch.Indexator;
 import ru.softshaper.search.elasticsearch.Searcher;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,9 @@ public class FullTextRest {
   @Autowired
   Searcher searcher;
 
+  @Autowired
+  private Indexator indexator;
+
   /**
    * inject this from spring context
    */
@@ -35,5 +39,14 @@ public class FullTextRest {
   @Produces(MediaType.APPLICATION_JSON)
   public Object search(@PathParam("text") String text) {
     return searcher.search(text);
-  }  
+  }
+
+
+  @GET
+  @Path("/init")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String fullInit() {
+    indexator.fullIndex();
+    return "success";
+  }
 }
