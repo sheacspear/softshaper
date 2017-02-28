@@ -11,13 +11,18 @@ import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
+import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ColumnView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.ObjectRowView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IColumnView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IObjectRowView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.impl.ColumnView;
+import ru.softshaper.web.admin.bean.objlist.impl.ListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.impl.ObjectRowView;
+import ru.softshaper.web.admin.bean.objlist.impl.TableObjectsView;
 import ru.softshaper.web.admin.view.controller.impl.DataSourceFromViewImpl;
 
 import java.util.*;
@@ -84,8 +89,8 @@ public class ViewObjectController implements IViewObjectController {
    * @return
    */
   @Override
-  public Map<MetaField, ColumnView> constructColumnsView(MetaClass metaClass) {
-    Map<MetaField, ColumnView> columnsView = Maps.newLinkedHashMap();
+  public Map<MetaField, IColumnView> constructColumnsView(MetaClass metaClass) {
+    Map<MetaField, IColumnView> columnsView = Maps.newLinkedHashMap();
     columnsView.put(null, new ColumnView("Идентификатор", "id", FieldTypeView.STRING_SINGLE, false));
     metaClass.getFields().forEach(dynamicField -> {
       ViewSetting typeView = viewSetting.getView(dynamicField);
@@ -121,7 +126,7 @@ public class ViewObjectController implements IViewObjectController {
     Map<ViewSetting, String> titleFields = Maps.newHashMap();
     FullObjectViewBuilder view = FullObjectView.newBuilder(metaClass.getCode(), objectExtractor.getId(obj, metaClass));
     for (MetaField metaField : metaClass.getFields()) {
-      ListObjectsView variants = null;
+      IListObjectsView variants = null;
       ViewSetting fieldView = viewSetting.getView(metaField);
       FieldType fieldType = metaField.getType();
       // get values
@@ -187,13 +192,13 @@ public class ViewObjectController implements IViewObjectController {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public <T> TableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,
+  public <T> ITableObjectsView convertTableObjects(Collection<T> objList, String metaClassCode, Integer total,
       ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
     // column names
-    Map<MetaField, ColumnView> columns = constructColumnsView(metaClass);
+    Map<MetaField, IColumnView> columns = constructColumnsView(metaClass);
     // data by column
     ListMultimap<MetaField, Object> columnsViewData = ArrayListMultimap.create();
     // fill data by column
@@ -227,7 +232,7 @@ public class ViewObjectController implements IViewObjectController {
       }
     }
     // transform data by column -> data by rows
-    List<ObjectRowView> objectsView = Lists.newArrayList();
+    List<IObjectRowView> objectsView = Lists.newArrayList();
     int rowSize = columns.keySet().size();
     int objCnt = objList.size();
     for (int i = 0; i < objCnt; i++) {
@@ -259,14 +264,14 @@ public class ViewObjectController implements IViewObjectController {
     if (idsStr != null && !idsStr.isEmpty()) {
       DataSourceFromView dataSourceFromView = getDataSourceFromView(linkToMetaClass.getCode());
       // get link values
-      ListObjectsView listObjectsView = dataSourceFromView.getListObjects(ViewObjectsParams
+      IListObjectsView listObjectsView = dataSourceFromView.getListObjects(ViewObjectsParams
           .newBuilder(linkToMetaClass).setFieldCollection(FieldCollection.TITLE).addIds(idsStr).build());
       // Map link value by key
-      Map<Object, TitleObjectView> dataKeys = Maps.newHashMap();
+      Map<Object, IObjectView> dataKeys = Maps.newHashMap();
       if (listObjectsView != null) {
-        Collection<TitleObjectView> objViews = listObjectsView.getObjects();
+        Collection<IObjectView> objViews = listObjectsView.getObjects();
         if (objViews != null) {
-          for (TitleObjectView objTitle : objViews) {
+          for (IObjectView objTitle : objViews) {
             dataKeys.put(objTitle.getId(), objTitle);
           }
         }
@@ -287,12 +292,12 @@ public class ViewObjectController implements IViewObjectController {
    * Collection, java.lang.String, java.lang.Integer)
    */
   @Override
-  public <T> ListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total,
+  public <T> IListObjectsView convertListObjects(Collection<T> objects, String metaClassCode, Integer total,
       ObjectExtractor<T> objectExtractor) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
-    List<TitleObjectView> titleObjects = objects.stream()
+    List<IObjectView> titleObjects = objects.stream()
         .map(record -> convertTitleObject(record, metaClass.getCode(), objectExtractor)).collect(Collectors.toList());
     return new ListObjectsView(metaClassCode, total, titleObjects);
   }
@@ -316,7 +321,7 @@ public class ViewObjectController implements IViewObjectController {
       if (attrMapper == null) {
         attrMapper = defaultViewAttrController;
       }
-      ListObjectsView variants = attrMapper.getVariants(metaField, objectExtractor);
+      IListObjectsView variants = attrMapper.getVariants(metaField, objectExtractor);
       ViewSetting fieldView = viewSetting.getView(metaField);
       view.addField(metaField, fieldView, defValue.get(metaField.getCode()), variants);
     }

@@ -3,7 +3,7 @@ package ru.softshaper.web.admin.view.controller;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.view.viewsettings.ViewSetting;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 
 /**
  *
@@ -38,6 +38,6 @@ public interface IViewAttrController {
    * @param metaField
    * @return
    */
-  <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor);
+  <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor);
 
 }

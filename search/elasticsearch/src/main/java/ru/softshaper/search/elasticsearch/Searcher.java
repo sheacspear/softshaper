@@ -21,9 +21,6 @@ import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Sunchise on 15.02.2017.
- */
 @Component
 public class Searcher {
 
@@ -69,7 +66,7 @@ public class Searcher {
       List<String> hits1 = source.values().stream()
           .map(Object::toString)
           .collect(Collectors.toList());
-      result.add(new SearchResult(id, type, title.toString(), hits1));
+      result.add(new SearchResult(id, type, title, hits1));
     }
     return result;
   }

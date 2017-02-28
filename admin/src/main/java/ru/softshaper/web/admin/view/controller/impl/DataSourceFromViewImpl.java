@@ -5,8 +5,8 @@ import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
 import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 import ru.softshaper.web.admin.view.controller.IViewObjectController;
 
@@ -75,7 +75,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
    * .view.utils.ViewObjectsParams)
    */
   @Override
-  public TableObjectsView getTableObjects(ViewObjectsParams params) {
+  public ITableObjectsView getTableObjects(ViewObjectsParams params) {
     Collection<D> objects = dataSource.getObjects(params.getParams());
     if (objects != null) {
       // для погинации общее кол-во объектов
@@ -93,7 +93,7 @@ public class DataSourceFromViewImpl<D> implements DataSourceFromView {
    * view.utils.ViewObjectsParams)
    */
   @Override
-  public ListObjectsView getListObjects(ViewObjectsParams params) {
+  public IListObjectsView getListObjects(ViewObjectsParams params) {
     Collection<D> objects = dataSource.getObjects(params.getParams());
     if (objects != null) {
       return viewObjectController.convertListObjects(objects, params.getParams().getMetaClass().getCode(), objects.size(), dataSource.getObjectExtractor());

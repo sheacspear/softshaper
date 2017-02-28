@@ -10,8 +10,9 @@ import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.ViewSetting;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.TableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.bean.objlist.impl.TableObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 
 import javax.annotation.PostConstruct;
@@ -87,7 +88,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * @param metaClass
    * @return
    */
-  private <T> TableObjectsView emptyTableObjectsView(MetaClass metaClass, ObjectExtractor<T> objectExtractor) {
+  private <T> ITableObjectsView emptyTableObjectsView(MetaClass metaClass, ObjectExtractor<T> objectExtractor) {
     return new TableObjectsView(metaClass.getCode(), 0, viewObjectController.constructColumnsView(metaClass).values(), Collections.emptyList());
   }
 
@@ -112,7 +113,7 @@ public class MultyLinkAttrController extends AttrControllerBase {
    * services.meta.MetaField)
    */
   @Override
-  public <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
+  public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
   }

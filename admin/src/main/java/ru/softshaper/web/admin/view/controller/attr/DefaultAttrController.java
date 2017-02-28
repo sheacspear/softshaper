@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.view.viewsettings.ViewSetting;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 
 import javax.annotation.PostConstruct;
 
@@ -67,7 +67,7 @@ public class DefaultAttrController extends AttrControllerBase {
    * services.meta.MetaField)
    */
   @Override
-  public <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
+  public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     return null;
   }
 }

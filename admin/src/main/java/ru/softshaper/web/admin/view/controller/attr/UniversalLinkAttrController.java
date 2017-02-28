@@ -1,6 +1,9 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.stereotype.Component;
+
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
@@ -9,11 +12,9 @@ import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.viewsettings.ViewSetting;
-import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.ListObjectsView;
+import ru.softshaper.web.admin.bean.obj.IObjectView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
-
-import javax.annotation.PostConstruct;
 
 /**
  *
@@ -83,7 +84,7 @@ public class UniversalLinkAttrController extends AttrControllerBase {
           DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(linkedClass.getCode());
 
           ViewObjectsParams params = ViewObjectsParams.newBuilder(linkedClass).ids().add(identifier).setFieldCollection(FieldCollection.TITLE).build();
-          TitleObjectView titleObject = dataSourceFromView.getTitleObject(params);
+          IObjectView titleObject = dataSourceFromView.getTitleObject(params);
           value = titleObject == null ? value : titleObject.getTitle();
         }
       }
@@ -113,7 +114,7 @@ public class UniversalLinkAttrController extends AttrControllerBase {
    * services.meta.MetaField)
    */
   @Override
-  public <T> ListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
+  public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
   }
