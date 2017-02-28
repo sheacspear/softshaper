@@ -2,7 +2,6 @@ package ru.softshaper.rest.admin.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import ru.softshaper.search.elasticsearch.Indexator;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 
@@ -23,9 +22,6 @@ public class ApplicationUtilsRest {
   @Autowired
   private ViewSettingStore viewSettingFactory;
 
-  @Autowired
-  private Indexator indexator;
-
   /**
    * inject this from spring context
    */
@@ -40,13 +36,6 @@ public class ApplicationUtilsRest {
   public void init() {
     metaInitializer.init();
     viewSettingFactory.init();
-    indexator.fullIndex();
   }
 
-  @GET
-  @Path("/fullIndex")
-  @Produces("application/json")
-  public void fullIndex() {
-    indexator.fullIndex();
-  }
 }

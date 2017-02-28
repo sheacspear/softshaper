@@ -88,13 +88,15 @@ public class ElasticsearchConf {
       throw new RuntimeException("Unknown host" + host);
     }
     IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
-    if (softshaper.isExists()) {
+    /*if (softshaper.isExists()) {
       client.admin().indices().prepareDelete("softshaper").execute().actionGet();
-    }
-    client.admin().indices().prepareCreate("softshaper")
-        .setSettings(settings())
-        .execute().actionGet();
+    }*/
 
+    if (!softshaper.isExists()) {
+      client.admin().indices().prepareCreate("softshaper")
+          .setSettings(settings())
+          .execute().actionGet();
+    }
     return client;
   }
 
