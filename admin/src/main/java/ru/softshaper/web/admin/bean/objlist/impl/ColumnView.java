@@ -21,6 +21,8 @@ public class ColumnView implements IColumnView {
   private final boolean sortable;
 
   private final boolean filterable = true;
+  
+  private final boolean resizable = true;
 
   /**
    * typeView field column
@@ -96,6 +98,10 @@ public class ColumnView implements IColumnView {
   @Override
   public boolean isFilterable() {
     return filterable;
+  }
+
+  public boolean isResizable() {
+    return resizable;
   }
 
   @Override

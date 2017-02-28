@@ -28,5 +28,7 @@ public interface IColumnView {
    * @return the filterable
    */
   boolean isFilterable();
+  
+  boolean isResizable();
 
 }
