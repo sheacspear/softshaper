@@ -5,6 +5,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +22,7 @@ import java.net.UnknownHostException;
 @ComponentScan(basePackages = {"ru.softshaper.search.elasticsearch"})
 @PropertySource("classpath:application.properties")
 public class ElasticsearchConf {
+  private static final Logger log = LoggerFactory.getLogger(ElasticsearchConf.class);
   
   private static final String ELASTICSEARCH_HOST = "elasticsearchHost";
   
@@ -78,26 +81,31 @@ public class ElasticsearchConf {
   }
 
   @Bean
-  public TransportClient transportClient() {    
-    String host = env.getProperty(ELASTICSEARCH_HOST);
-    String port = env.getProperty(ELASTICSEARCH_PORT);    
-    TransportClient client = TransportClient.builder().settings(settings()).build();
+  public TransportClient transportClient() {
     try {
-      client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
-    } catch (UnknownHostException e) {
-      throw new RuntimeException("Unknown host" + host);
-    }
-    IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
+      String host = env.getProperty(ELASTICSEARCH_HOST);
+      String port = env.getProperty(ELASTICSEARCH_PORT);
+      TransportClient client = TransportClient.builder().settings(settings()).build();
+      try {
+        client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
+      } catch (UnknownHostException e) {
+        throw new RuntimeException("Unknown host" + host);
+      }
+      IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
     /*if (softshaper.isExists()) {
       client.admin().indices().prepareDelete("softshaper").execute().actionGet();
     }*/
 
-    if (!softshaper.isExists()) {
-      client.admin().indices().prepareCreate("softshaper")
-          .setSettings(settings())
-          .execute().actionGet();
+      if (!softshaper.isExists()) {
+        client.admin().indices().prepareCreate("softshaper")
+            .setSettings(settings())
+            .execute().actionGet();
+      }
+      return client;
+    } catch (RuntimeException e) {
+      log.error(e.getMessage(), e);
+      return null;
     }
-    return client;
   }
 
 }
