@@ -43,16 +43,16 @@ import ru.softshaper.staticcontent.organizations.PositionStaticContent;
 import ru.softshaper.staticcontent.sec.SecRoleStaticContent;
 import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
+import ru.softshaper.view.bean.nav.folder.FolderView;
+import ru.softshaper.view.bean.obj.IFullObjectView;
+import ru.softshaper.view.bean.objlist.IListObjectsView;
+import ru.softshaper.view.bean.objlist.ITableObjectsView;
+import ru.softshaper.view.controller.DataSourceFromView;
+import ru.softshaper.view.controller.IViewObjectController;
 import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
-import ru.softshaper.web.admin.bean.nav.folder.FolderView;
-import ru.softshaper.web.admin.bean.obj.IFullObjectView;
-import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
-import ru.softshaper.web.admin.view.controller.DataSourceFromView;
-import ru.softshaper.web.admin.view.controller.IViewObjectController;
 
 /**
  * Контроллер работы со словарями
