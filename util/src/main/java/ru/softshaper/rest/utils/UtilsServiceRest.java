@@ -5,7 +5,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -29,12 +34,18 @@ public class UtilsServiceRest {
     SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
   }
 
-  public Collection<UtilBean> getUtilsByObject(String metaClazz, String objId) {
+  @GET
+  @Path("/utils/{metaClazz}/{objId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<UtilBean> getUtilsByObject(@PathParam("metaClazz") String metaClazz, @PathParam("objId") String objId) {
     Collection<IUtil> utils = utilsEngine.getAvailableUtilsForObject(metaClazz, objId);
     return utils.stream().map(util -> new UtilBean(util.getName(), util.getCode())).collect(Collectors.toList());
   }
 
-  public StepUtil getNextStep(String utilCode, Map<String, Object> data) {
+  @POST
+  @Path("/nextstep/{utilCode}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public StepUtil getNextStep(@PathParam("utilCode") String utilCode, Map<String, Object> data) {
     StepUtil step = utilsEngine.getNextStep(utilCode, data);
     return step;
   }
