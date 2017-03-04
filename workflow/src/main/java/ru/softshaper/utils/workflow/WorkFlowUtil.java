@@ -23,7 +23,7 @@ public class WorkFlowUtil implements IUtil {
 
   @PostConstruct
   public void init() {
-    utilsEngine.registerUtils(this);
+    utilsEngine.registerObjectUtil(this);
   }
 
   /*

@@ -20,9 +20,15 @@ import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
 import ru.softshaper.services.utils.StepUtil;
 
+/**
+ *
+ */
 @Path("/pr/utils")
 public class UtilsServiceRest {
 
+  /**
+   * 
+   */
   @Autowired
   private IUtilsEngine utilsEngine;
 

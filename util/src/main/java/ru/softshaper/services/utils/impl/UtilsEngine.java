@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import ru.softshaper.services.utils.IUtil;
@@ -18,20 +19,37 @@ import ru.softshaper.services.utils.StepUtil;
 public class UtilsEngine implements IUtilsEngine {
 
   /**
-  *
-  */
-  private final Map<String, IUtil> utilsMap = Maps.newHashMap();
+   * System utils
+   */
+  private final Collection<IUtil> systemUtils = Lists.newArrayList();
+
+  /**
+   * Object utils
+   */
+  private final Map<String, IUtil> objectUtils = Maps.newHashMap();
 
   /*
    * (non-Javadoc)
-   *
-   * @see ru.softshaper.view.IViewObjectController#registerAttrController(
-   * ru.softshaper.services.meta.FieldType,
-   * ru.softshaper.view.IViewAttrController)
+   * 
+   * @see
+   * ru.softshaper.services.utils.IUtilsEngine#registerSystemUtil(ru.softshaper.
+   * services.utils.IUtil)
    */
   @Override
-  public synchronized void registerUtils(IUtil util) {
-    utilsMap.put(util.getCode(), util);
+  public synchronized void registerSystemUtil(IUtil util) {
+    systemUtils.add(util);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * ru.softshaper.services.utils.IUtilsEngine#registerObjectUtil(ru.softshaper.
+   * services.utils.IUtil)
+   */
+  @Override
+  public synchronized void registerObjectUtil(IUtil util) {
+    objectUtils.put(util.getCode(), util);
   }
 
   /*
@@ -40,13 +58,13 @@ public class UtilsEngine implements IUtilsEngine {
    * @see ru.softshaper.services.util.IUtilsEngine#getAvailableUtilsForToolbar()
    */
   @Override
-  public Collection<IUtil> getAvailableUtilsForToolbar() {
+  public Collection<IUtil> getSystemUtils() {
     return Collections.emptyList();
   }
 
   @Override
   public Collection<IUtil> getAvailableUtilsForObject(String metaClazz, String objId) {
-    Collection<IUtil> utils = utilsMap.values();
+    Collection<IUtil> utils = objectUtils.values();
     // check security
     utils = checkSecurity(utils, metaClazz, objId);
     // check condition
@@ -62,7 +80,7 @@ public class UtilsEngine implements IUtilsEngine {
    */
   @Override
   public IUtil getUtilByCode(String utilCode) {
-    return utilsMap.get(utilCode);
+    return objectUtils.get(utilCode);
   }
 
   /*

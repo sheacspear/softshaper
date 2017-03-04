@@ -30,7 +30,7 @@ public class SystemInitUtil implements IUtil {
   
   @PostConstruct
   public void init() {
-    utilsEngine.registerUtils(this);
+    utilsEngine.registerSystemUtil(this);
   }
 
   /* (non-Javadoc)
