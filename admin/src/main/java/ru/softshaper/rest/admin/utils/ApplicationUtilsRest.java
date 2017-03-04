@@ -13,7 +13,7 @@ import javax.ws.rs.Produces;
 /**
  * Created by arostov on 20.10.2016.
  */
-@Path("/pb/utils")
+@Path("/pb/utils_old")
 public class ApplicationUtilsRest {
 
   @Autowired

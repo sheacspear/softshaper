@@ -1,5 +1,8 @@
 package ru.softshaper.view.controller;
 
+import java.util.Collection;
+import java.util.Map;
+
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
@@ -9,10 +12,6 @@ import ru.softshaper.view.bean.obj.impl.TitleObjectView;
 import ru.softshaper.view.bean.objlist.IColumnView;
 import ru.softshaper.view.bean.objlist.IListObjectsView;
 import ru.softshaper.view.bean.objlist.ITableObjectsView;
-import ru.softshaper.view.bean.objlist.impl.ColumnView;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Mapper Data to FormBean

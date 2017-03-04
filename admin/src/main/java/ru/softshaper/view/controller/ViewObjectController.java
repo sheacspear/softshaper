@@ -68,7 +68,7 @@ public class ViewObjectController implements IViewObjectController {
    * ru.softshaper.view.IViewAttrController)
    */
   @Override
-  public void registerAttrController(FieldType fieldType, IViewAttrController viewAttrController) {
+  public synchronized void registerAttrController(FieldType fieldType, IViewAttrController viewAttrController) {
     attrmapper.put(fieldType, viewAttrController);
   }
 

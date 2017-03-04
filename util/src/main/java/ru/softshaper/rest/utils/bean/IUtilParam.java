@@ -1,4 +1,4 @@
-package ru.softshaper.rest.util.bean;
+package ru.softshaper.rest.utils.bean;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +9,7 @@ import ru.softshaper.view.bean.obj.IObjectView;
 import ru.softshaper.view.viewsettings.ViewSetting;
 
 public interface IUtilParam {
+  
   List<IFieldView> getFields();
 
   Map<String, ViewSetting> getViewSettig();
