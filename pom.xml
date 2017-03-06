@@ -59,7 +59,6 @@
 		<!--<validation-api>1.1.0.Final</validation-api>-->
 		<commons-fileupload>1.3.1</commons-fileupload>
 		<cxf.version>3.0.9</cxf.version>
-		<elasticsearch.version>2.3.2</elasticsearch.version>
 	</properties>
 
 	<dependencyManagement>
@@ -174,18 +173,6 @@
 				<groupId>com.fasterxml.jackson.jaxrs</groupId>
 				<artifactId>jackson-jaxrs-json-provider</artifactId>
 				<version>2.7.4</version>
-			</dependency>
-			<!-- elasticsearch -->
-			<dependency>
-				<groupId>org.elasticsearch</groupId>
-				<artifactId>elasticsearch</artifactId>
-				<version>${elasticsearch.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>guava</artifactId>
-						<groupId>com.google.guava</groupId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
