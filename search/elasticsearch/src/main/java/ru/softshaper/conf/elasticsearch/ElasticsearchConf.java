@@ -36,7 +36,7 @@ public class ElasticsearchConf {
 
   // public static final String HOST = "192.168.99.100";
   // public static final int PORT = 9200;
-  private String clusterName = "elasticsearch";
+  private String clusterName = "softshaper";
   private Boolean clientTransportSniff = true;
   private Boolean clientIgnoreClusterName = Boolean.FALSE;
   private String clientPingTimeout = "5s";
@@ -75,7 +75,7 @@ public class ElasticsearchConf {
     } catch (UnknownHostException e) {
       throw new RuntimeException("Unknown host" + host);
     }
-    /*
+    
     IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
     
       if (softshaper.isExists()) {
@@ -83,10 +83,10 @@ public class ElasticsearchConf {
       ); }
      
 
-    if (!softshaper.isExists()) {
-      client.admin().indices().prepareCreate("softshaper").setSettings(settings()).execute().actionGet();
-    }
-    */
+   // if (!softshaper.isExists()) {
+    //  client.admin().indices().prepareCreate("softshaper").setSettings(settings()).execute().actionGet();
+   // }
+    
    
     final ClusterHealthResponse res = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
     System.out.println(res.getClusterName());
