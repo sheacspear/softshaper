@@ -38,7 +38,7 @@
 		<profile>
 			<id>elasticsearch-localhost</id>
 			<properties>
-				<elasticsearchHost>192.168.99.100</elasticsearchHost>
+				<elasticsearchHost>127.0.0.1</elasticsearchHost>
 				<elasticsearchPort>9300</elasticsearchPort>
 			</properties>
 		</profile>
