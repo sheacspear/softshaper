@@ -1,5 +1,7 @@
 package ru.softshaper.conf.elasticsearch;
 
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -65,21 +67,29 @@ public class ElasticsearchConf {
     String port = env.getProperty(ELASTICSEARCH_PORT);
     TransportClient client = null;
     try {
-      client = new PreBuiltTransportClient(settings().build())
-          .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("host"), Integer.valueOf(port)));
+      // settings().build()
+
+      Settings settings = Settings.builder().put("cluster.name", "softshaper").build();
+
+      client = new PreBuiltTransportClient(settings).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
     } catch (UnknownHostException e) {
       throw new RuntimeException("Unknown host" + host);
     }
-    IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
     /*
-     * if (softshaper.isExists()) {
-     * client.admin().indices().prepareDelete("softshaper").execute().actionGet(
-     * ); }
-     */
+    IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
+    
+      if (softshaper.isExists()) {
+      client.admin().indices().prepareDelete("softshaper").execute().actionGet(
+      ); }
+     
 
     if (!softshaper.isExists()) {
       client.admin().indices().prepareCreate("softshaper").setSettings(settings()).execute().actionGet();
     }
+    */
+   
+    final ClusterHealthResponse res = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
+    System.out.println(res.getClusterName());
     return client;
   }
 }
