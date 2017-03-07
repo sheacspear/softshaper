@@ -55,7 +55,7 @@ public class ElasticsearchConf {
           .field("filter",
               new String[] { "lowercase",
                   /* "russian_morphology", "english_morphology", */ "russian_stop", /* "russian_keywords", */ "russian_stemmer" })
-          .endObject().endObject().endObject().startObject("cluster").field("name", clusterName).endObject().endObject().string());
+          .endObject().endObject().endObject().endObject().string());
     } catch (IOException e) {
       throw new RuntimeException(e.getMessage(), e);
     }
@@ -83,9 +83,9 @@ public class ElasticsearchConf {
       ); }
      
 
-   // if (!softshaper.isExists()) {
-    //  client.admin().indices().prepareCreate("softshaper").setSettings(settings()).execute().actionGet();
-   // }
+    if (!softshaper.isExists()) {
+      client.admin().indices().prepareCreate("softshaper").setSettings(settings()).execute().actionGet();
+    }
     
    
     final ClusterHealthResponse res = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
