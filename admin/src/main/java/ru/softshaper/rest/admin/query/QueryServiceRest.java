@@ -1,6 +1,8 @@
 package ru.softshaper.rest.admin.query;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -20,11 +22,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
@@ -375,9 +379,35 @@ public class QueryServiceRest {
     ViewObjectParamsBuilder paramsBuilder = ViewObjectsParams.newBuilder(metaClass);
     if (query != null) {
       ObjectMapper mapper = new ObjectMapper();
+      mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
       Map<String, Object> values = new HashMap<String, Object>();
       try {
-        values = mapper.readValue(new String(Base64.getDecoder().decode(query.getBytes("UTF-8")),"UTF-8") , new TypeReference<Map<String, String>>() {
+        String content = new String(Base64.getDecoder().decode(query.getBytes("UTF-8")),"UTF-8");
+        
+        content = content.replaceAll("%0", "%u000");
+        content = content.replaceAll("%1", "%u001");
+        content = content.replaceAll("%2", "%u002");
+        content = content.replaceAll("%3", "%u003");
+        content = content.replaceAll("%4", "%u004");
+        content = content.replaceAll("%5", "%u005");
+        content = content.replaceAll("%6", "%u006");
+        content = content.replaceAll("%7", "%u007");
+        content = content.replaceAll("%8", "%u008");
+        content = content.replaceAll("%9", "%u009");
+        content = content.replaceAll("%A", "%u00A");
+        content = content.replaceAll("%B", "%u00B");
+        content = content.replaceAll("%C", "%u00C");
+        content = content.replaceAll("%D", "%u00D");
+        content = content.replaceAll("%E", "%u00E");
+        content = content.replaceAll("%F", "%u00F");
+        
+        //content = StringEscapeUtils.escapeEcmaScript(content);
+        //content = URLDecoder.decode(content,"UTF-8");
+        //URLEncoder.encode(content)
+        
+        
+        
+        values = mapper.readValue(content , new TypeReference<Map<String, String>>() {
         });
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage(), e);
