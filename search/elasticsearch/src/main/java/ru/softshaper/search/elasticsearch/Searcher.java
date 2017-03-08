@@ -9,6 +9,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaClass;
@@ -41,7 +42,8 @@ public class Searcher {
     SearchRequestBuilder searchRequestBuilder = SearchAction.INSTANCE.newRequestBuilder(client);
     SearchRequest searchRequest = searchRequestBuilder
         .setQuery(new SimpleQueryStringBuilder(text).analyzer("russian"))
-        .setSuggestText(text)
+        .suggest(new SuggestBuilder().setGlobalText(text))//new
+        //.setSuggestText(text)
         .setIndices("softshaper")
         .request();
     ActionFuture<SearchResponse> search = client.search(searchRequest);
