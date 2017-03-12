@@ -66,7 +66,7 @@ public class Searcher {
           .reduce((o, o2) -> o + " " + o2)
           .orElse("");
       List<String> hits1 = source.values().stream()
-          .map(Object::toString)
+          .map(o -> o == null ? null : o.toString())
           .collect(Collectors.toList());
       result.add(new SearchResult(id, type, title, hits1));
     }
