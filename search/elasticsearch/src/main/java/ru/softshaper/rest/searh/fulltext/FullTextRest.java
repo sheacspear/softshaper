@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.search.elasticsearch.Indexator;
 import ru.softshaper.search.elasticsearch.Searcher;
+import ru.softshaper.view.SearchResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
@@ -37,8 +41,13 @@ public class FullTextRest {
   @GET
   @Path("/search")
   @Produces(MediaType.APPLICATION_JSON)
-  public Object search(@QueryParam("text") String text) {
-    return searcher.search(text);
+  public List<SearchResult> search(@QueryParam("text") String text) {
+    return searcher.search(text);/*
+    List<SearchResult> result = new ArrayList<>();
+    result.add(new SearchResult("1","doc","Заголовок1",null));
+    result.add(new SearchResult("2","doc","Заголовок2",null));
+    return result;
+    */
   }
 
 

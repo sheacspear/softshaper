@@ -9,15 +9,15 @@ public class SearchResult {
 
   private final String id;
 
-  private final String metaClassCode;
+  private final String contentCode;
 
   private final String title;
 
   private final Collection<String> hits;
 
-  public SearchResult(String id, String metaClassCode, String title, Collection<String> hits) {
+  public SearchResult(String id, String contentCode, String title, Collection<String> hits) {
     this.id = id;
-    this.metaClassCode = metaClassCode;
+    this.contentCode = contentCode;
     this.title = title;
     this.hits = hits;
   }
@@ -26,8 +26,8 @@ public class SearchResult {
     return id;
   }
 
-  public String getMetaClassCode() {
-    return metaClassCode;
+  public String getContentCode() {
+    return contentCode;
   }
 
   public String getTitle() {

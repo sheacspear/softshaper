@@ -383,7 +383,7 @@ public class QueryServiceRest {
       Map<String, Object> values = new HashMap<String, Object>();
       try {
         String content = new String(Base64.getDecoder().decode(query.getBytes("UTF-8")),"UTF-8");
-        
+        /*
         content = content.replaceAll("%0", "%u000");
         content = content.replaceAll("%1", "%u001");
         content = content.replaceAll("%2", "%u002");
@@ -400,7 +400,7 @@ public class QueryServiceRest {
         content = content.replaceAll("%D", "%u00D");
         content = content.replaceAll("%E", "%u00E");
         content = content.replaceAll("%F", "%u00F");
-        
+        */
         //content = StringEscapeUtils.escapeEcmaScript(content);
         //content = URLDecoder.decode(content,"UTF-8");
         //URLEncoder.encode(content)
