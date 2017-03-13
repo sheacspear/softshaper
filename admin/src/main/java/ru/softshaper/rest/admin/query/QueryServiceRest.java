@@ -1,44 +1,16 @@
 package ru.softshaper.rest.admin.query;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.jooq.Record;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-
+import org.apache.commons.lang.StringUtils;
+import org.jooq.Record;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.Condition;
 import ru.softshaper.services.meta.conditions.impl.CompareOperation;
 import ru.softshaper.services.meta.conditions.impl.CompareValueCondition;
@@ -53,15 +25,23 @@ import ru.softshaper.staticcontent.sec.SecRoleStaticContent;
 import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
 import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectParamsBuilder;
 import ru.softshaper.view.params.ViewObjectsParams;
-import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.nav.folder.FolderView;
 import ru.softshaper.web.admin.bean.obj.IFullObjectView;
+import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 import ru.softshaper.web.admin.view.controller.IViewObjectController;
+
+import javax.annotation.PostConstruct;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер работы со словарями
@@ -338,21 +318,21 @@ public class QueryServiceRest {
   /**
    * Получние списка объектов
    *
-   * @param contentCode
+   * @param metaClassCode
    * @param offset
    * @param limit
    * @return
    */
   /*
    * @GET
-   * 
+   *
    * @Path("/obj/{contentCode}")
-   * 
+   *
    * @Produces(MediaType.APPLICATION_JSON) public ITableObjectsView
    * getObjectList(@PathParam("contentCode") String contentCode,
-   * 
+   *
    * @QueryParam("offset") Integer offset, @QueryParam("limit") Integer limit,
-   * 
+   *
    * @QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection")
    * String sortDirection) { MetaClass metaClass =
    * metaStorage.getMetaClass(contentCode); DataSourceFromView
@@ -383,39 +363,43 @@ public class QueryServiceRest {
       Map<String, Object> values = new HashMap<String, Object>();
       try {
         String content = new String(Base64.getDecoder().decode(query.getBytes("UTF-8")),"UTF-8");
-        /*
-        content = content.replaceAll("%0", "%u000");
-        content = content.replaceAll("%1", "%u001");
-        content = content.replaceAll("%2", "%u002");
-        content = content.replaceAll("%3", "%u003");
-        content = content.replaceAll("%4", "%u004");
-        content = content.replaceAll("%5", "%u005");
-        content = content.replaceAll("%6", "%u006");
-        content = content.replaceAll("%7", "%u007");
-        content = content.replaceAll("%8", "%u008");
-        content = content.replaceAll("%9", "%u009");
-        content = content.replaceAll("%A", "%u00A");
-        content = content.replaceAll("%B", "%u00B");
-        content = content.replaceAll("%C", "%u00C");
-        content = content.replaceAll("%D", "%u00D");
-        content = content.replaceAll("%E", "%u00E");
-        content = content.replaceAll("%F", "%u00F");
-        */
-        //content = StringEscapeUtils.escapeEcmaScript(content);
-        //content = URLDecoder.decode(content,"UTF-8");
-        //URLEncoder.encode(content)
-        
-        
-        
         values = mapper.readValue(content , new TypeReference<Map<String, String>>() {
         });
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage(), e);
       }
       if (values != null && !values.isEmpty()) {
-        Condition condition = values.entrySet().stream()
-            .map(valueEntry -> (Condition) new CompareValueCondition<>(metaClass.getField(valueEntry.getKey()), valueEntry.getValue(), CompareOperation.LIKE))
-            .reduce(Condition::and).get();
+
+
+        Condition condition = null;
+        for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
+          MetaField field = metaClass.getField(valueEntry.getKey());
+          Condition condition1;
+          if (FieldType.LINK.equals(field.getType())) {
+            MetaClass linkToMetaClass = field.getLinkToMetaClass();
+            Collection<? extends MetaField> titleFieldsOfLinkedClass = linkToMetaClass.getFields().stream()
+                .filter(fieldOfLinkedClass -> viewSetting.getView(fieldOfLinkedClass).isTitleField())
+                .collect(Collectors.toSet());
+            ViewObjectParamsBuilder linkedClassParams = ViewObjectsParams.newBuilder(linkToMetaClass);
+            Condition linkedCondition = titleFieldsOfLinkedClass.stream()
+                .map(o -> (Condition) new CompareValueCondition<>(o, valueEntry.getValue(), CompareOperation.LIKE))
+                .reduce(Condition::or)
+                .get();
+            linkedClassParams.setCondition(linkedCondition);
+            IListObjectsView listObjects = viewObjectController.getDataSourceFromView(metaClassCode).getListObjects(linkedClassParams.build());
+            Collection<String> linkedIds = listObjects.getObjects().stream()
+                .map(IObjectView::getId)
+                .collect(Collectors.toSet());
+            condition1 = new CompareValueCondition<>(field, linkedIds, CompareOperation.IN);
+          } else {
+            condition1 = new CompareValueCondition<>(field, valueEntry.getValue(), CompareOperation.LIKE);
+          }
+          if (condition == null) {
+            condition = condition1;
+          } else {
+            condition = condition.and(condition1);
+          }
+        }
         paramsBuilder.setCondition(condition);
       }
     }
