@@ -78,9 +78,9 @@ public class ElasticsearchConf {
     
     IndicesExistsResponse softshaper = client.admin().indices().prepareExists("softshaper").execute().actionGet();
     
-      if (softshaper.isExists()) {
-      client.admin().indices().prepareDelete("softshaper").execute().actionGet(
-      ); }
+    //  if (softshaper.isExists()) {
+    //  client.admin().indices().prepareDelete("softshaper").execute().actionGet(
+    //  ); }
      
 
     if (!softshaper.isExists()) {

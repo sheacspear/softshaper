@@ -52,26 +52,27 @@ public class DefaultConditionChecker<T> implements CheckConditionVisitor {
           return value.equals(condition.getValue());
         }
       case END_WITH:
-        Preconditions.checkNotNull(value);
         Preconditions.checkNotNull(condition.getValue());
-        return value.toString().endsWith(condition.getValue().toString());
+        return value != null && value.toString().endsWith(condition.getValue().toString());
       case START_WITH:
-        Preconditions.checkNotNull(value);
         Preconditions.checkNotNull(condition.getValue());
-        return value.toString().startsWith(condition.getValue().toString());
+        return value != null && value.toString().startsWith(condition.getValue().toString());
       case LIKE:
-        Preconditions.checkNotNull(value);
         Preconditions.checkNotNull(condition.getValue());
-        return value.toString().contains(condition.getValue().toString());
+        return value != null && value.toString().contains(condition.getValue().toString());
       case GREAT:
-        Preconditions.checkNotNull(value);
+        if (value == null) {
+          return false;
+        }
         Preconditions.checkNotNull(condition.getValue());
         if (value instanceof Number && condition.getValue() instanceof Number) {
           return compareNumbers((Number) value, (Number) condition.getValue()) == 1;
         }
         throw new RuntimeException("Not supported for field " + condition.getField().getCode());
       case LESS:
-        Preconditions.checkNotNull(value);
+        if (value == null) {
+          return false;
+        }
         Preconditions.checkNotNull(condition.getValue());
         if (value instanceof Number && condition.getValue() instanceof Number) {
           return compareNumbers((Number) value, (Number) condition.getValue()) == 1;
@@ -81,7 +82,7 @@ public class DefaultConditionChecker<T> implements CheckConditionVisitor {
         throw new RuntimeException("Not implemented yet!");
     }
     throw new RuntimeException("Not supported for field " + condition.getField().getCode());
-  }
+}
 
   /**
    * Сравниваем два числа

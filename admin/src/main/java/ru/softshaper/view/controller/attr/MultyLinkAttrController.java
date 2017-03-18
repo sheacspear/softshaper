@@ -11,8 +11,8 @@ import ru.softshaper.view.bean.objlist.ITableObjectsView;
 import ru.softshaper.view.bean.objlist.impl.TableObjectsView;
 import ru.softshaper.view.controller.DataSourceFromView;
 import ru.softshaper.view.params.FieldCollection;
+import ru.softshaper.view.params.ViewObjectParamsBuilder;
 import ru.softshaper.view.params.ViewObjectsParams;
-import ru.softshaper.view.params.ViewObjectsParams.ViewObjectParamsBuilder;
 import ru.softshaper.view.viewsettings.ViewSetting;
 
 import javax.annotation.PostConstruct;
