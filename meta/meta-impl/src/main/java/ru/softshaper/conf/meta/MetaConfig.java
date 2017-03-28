@@ -1,5 +1,6 @@
 package ru.softshaper.conf.meta;
 
+import com.google.common.eventbus.EventBus;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
 import ru.softshaper.conf.db.JooqConfig;
+import ru.softshaper.conf.event.EventConfig;
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.MetaInitializerImpl;
 import ru.softshaper.services.meta.impl.loader.DynamicContentLoader;
 import ru.softshaper.services.meta.impl.loader.StaticContentLoader;
@@ -24,7 +21,7 @@ import ru.softshaper.services.meta.impl.loader.StaticContentLoader;
  * Created by Sunchise on 10.08.2016.
  */
 @Configuration
-@Import({ JooqConfig.class})
+@Import({ JooqConfig.class, EventConfig.class})
 @ComponentScan({"ru.softshaper.datasource.meta","ru.softshaper.staticcontent.meta","ru.softshaper.services.meta"})
 public class MetaConfig {
 
@@ -73,14 +70,15 @@ public class MetaConfig {
   @Qualifier("StaticContentLoader")
   private StaticContentLoader staticContentLoader;
 
-
+  @Autowired
+  private EventBus eventBus;
 
   /**
    * @return MetaInitializer
    */
   @Bean
   public MetaInitializer metaInitializer() {
-    MetaInitializerImpl metaInitializer = new MetaInitializerImpl(metaStorage, dataSourceStorage);
+    MetaInitializerImpl metaInitializer = new MetaInitializerImpl(metaStorage, dataSourceStorage, eventBus);
     metaClassDataSource.setMetaInitializer(metaInitializer);
     metaFieldDataSource.setMetaInitializer(metaInitializer);
     metaInitializer.registerLoader(new DynamicContentLoader(dslContext, dynamicDataSource));

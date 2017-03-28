@@ -1,25 +1,17 @@
 package ru.softshaper.services.meta.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import ru.softshaper.datasource.meta.ContentDataSource;
+import ru.softshaper.services.events.MetaInitialized;
+import ru.softshaper.services.meta.*;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaClassMutable;
-import ru.softshaper.services.meta.MetaFieldMutable;
-import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.services.meta.MetaLoader;
-import ru.softshaper.services.meta.MetaStorage;
 
 /**
  * MetaInitializer<br/>
@@ -43,14 +35,16 @@ public class MetaInitializerImpl implements MetaInitializer {
    */
   private final DataSourceStorage dataSourceStorage;
 
+  private final EventBus eventBus;
   /**
    * @param metaStorage
    * @param dataSourceStorage
+   * @param eventBus
    */
-  @Autowired
-  public MetaInitializerImpl(MetaStorage metaStorage, DataSourceStorage dataSourceStorage) {
+  public MetaInitializerImpl(MetaStorage metaStorage, DataSourceStorage dataSourceStorage, EventBus eventBus) {
     this.metaStorage = metaStorage;
     this.dataSourceStorage = dataSourceStorage;
+    this.eventBus = eventBus;
   }
 
   /*
@@ -115,6 +109,7 @@ public class MetaInitializerImpl implements MetaInitializer {
     });
     dataSourceStorage.registerAllWithClean(dataSourceMap);
     metaStorage.register(result);
+    eventBus.post(new MetaInitialized());
   }
 
   /*
