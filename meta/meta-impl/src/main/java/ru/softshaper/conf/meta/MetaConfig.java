@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.softshaper.conf.db.JooqConfig;
-import ru.softshaper.conf.event.EventConfig;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.MetaInitializerImpl;
@@ -21,7 +20,7 @@ import ru.softshaper.services.meta.impl.loader.StaticContentLoader;
  * Created by Sunchise on 10.08.2016.
  */
 @Configuration
-@Import({ JooqConfig.class, EventConfig.class})
+@Import({ JooqConfig.class})
 @ComponentScan({"ru.softshaper.datasource.meta","ru.softshaper.staticcontent.meta","ru.softshaper.services.meta"})
 public class MetaConfig {
 
