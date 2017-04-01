@@ -6,7 +6,6 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRespon
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +21,7 @@ import java.net.UnknownHostException;
 @Configuration
 @ComponentScan(basePackages = { "ru.softshaper.search.elasticsearch" })
 @PropertySource("classpath:application.properties")
+
 public class ElasticsearchConf {
 
   private static final String ELASTICSEARCH_HOST = "elasticsearchHost";
@@ -44,18 +44,19 @@ public class ElasticsearchConf {
 
   public Settings.Builder settings() {
     try {
-      return Settings.builder().loadFromSource(XContentFactory.jsonBuilder().startObject().startObject("analysis").startObject("filter")
+      /*return Settings.builder().loadFromSource(XContentFactory.jsonBuilder().startObject().startObject("analysis").startObject("filter")
           .startObject("russian_stop").field("type", "stop").field("stopwords", "_russian_").endObject()
-          /*
+          *//*
            * .startObject("russian_keywords") .field("type", "keyword_marker")
            * .field("keywords", new String[]{}) .endObject()
-           */
+           *//*
           .startObject("russian_stemmer").field("type", "stemmer").field("language", "russian").endObject().endObject().startObject("analyzer")
           .startObject("russian").field("type", "custom").field("tokenizer", "standard")
           .field("filter",
               new String[] { "lowercase",
-                  /* "russian_morphology", "english_morphology", */ "russian_stop", /* "russian_keywords", */ "russian_stemmer" })
-          .endObject().endObject().endObject().endObject().string());
+                  *//* "russian_morphology", "english_morphology", *//* "russian_stop", *//* "russian_keywords", *//* "russian_stemmer" })
+          .endObject().endObject().endObject().endObject().string());*/
+      return Settings.builder().loadFromStream("elasticsearch-index-settings.json", getClass().getClassLoader().getResourceAsStream("elasticsearch-index-settings.json"));
     } catch (IOException e) {
       throw new RuntimeException(e.getMessage(), e);
     }
