@@ -362,47 +362,48 @@ public class QueryServiceRest {
       mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
       Map<String, Object> values = new HashMap<String, Object>();
       try {
-        String content = new String(Base64.getDecoder().decode(query.getBytes("UTF-8")),"UTF-8");
-        values = mapper.readValue(content , new TypeReference<Map<String, String>>() {
+        String content = new String(Base64.getDecoder().decode(query.getBytes("UTF-8")), "UTF-8");
+        values = mapper.readValue(content, new TypeReference<Map<String, String>>() {
         });
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage(), e);
       }
       if (values != null && !values.isEmpty()) {
 
-
         Condition condition = null;
         for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
-          MetaField field = metaClass.getField(valueEntry.getKey());
-          Condition condition1;
-          if (FieldType.LINK.equals(field.getType())) {
-            MetaClass linkToMetaClass = field.getLinkToMetaClass();
-            Collection<? extends MetaField> titleFieldsOfLinkedClass = linkToMetaClass.getFields().stream()
-                .filter(fieldOfLinkedClass -> viewSetting.getView(fieldOfLinkedClass).isTitleField())
-                .collect(Collectors.toSet());
-            ViewObjectParamsBuilder linkedClassParams = ViewObjectsParams.newBuilder(linkToMetaClass);
-            Condition linkedCondition = titleFieldsOfLinkedClass.stream()
-                .map(o -> (Condition) new CompareValueCondition<>(o, valueEntry.getValue(), CompareOperation.LIKE))
-                .reduce(Condition::or)
-                .get();
-            linkedClassParams.setCondition(linkedCondition);
-            IListObjectsView listObjects = viewObjectController.getDataSourceFromView(metaClassCode).getListObjects(linkedClassParams.build());
-            Collection<String> linkedIds = listObjects.getObjects().stream()
-                .map(IObjectView::getId)
-                .collect(Collectors.toSet());
-            condition1 = new CompareValueCondition<>(field, linkedIds, CompareOperation.IN);
+          String fieldKey = valueEntry.getKey();
+          if (fieldKey.equals("id")) {
+            paramsBuilder.addIds(Arrays.asList((String)valueEntry.getValue()));
           } else {
-            condition1 = new CompareValueCondition<>(field, valueEntry.getValue(), CompareOperation.LIKE);
+
+            MetaField field = metaClass.getField(fieldKey);
+            Condition condition1;
+            if (FieldType.LINK.equals(field.getType())) {
+              MetaClass linkToMetaClass = field.getLinkToMetaClass();
+              Collection<? extends MetaField> titleFieldsOfLinkedClass = linkToMetaClass.getFields().stream()
+                  .filter(fieldOfLinkedClass -> viewSetting.getView(fieldOfLinkedClass).isTitleField()).collect(Collectors.toSet());
+              ViewObjectParamsBuilder linkedClassParams = ViewObjectsParams.newBuilder(linkToMetaClass);
+              Condition linkedCondition = titleFieldsOfLinkedClass.stream()
+                  .map(o -> (Condition) new CompareValueCondition<>(o, valueEntry.getValue(), CompareOperation.LIKE)).reduce(Condition::or).get();
+              linkedClassParams.setCondition(linkedCondition);
+              IListObjectsView listObjects = viewObjectController.getDataSourceFromView(metaClassCode).getListObjects(linkedClassParams.build());
+              Collection<String> linkedIds = listObjects.getObjects().stream().map(IObjectView::getId).collect(Collectors.toSet());
+              condition1 = new CompareValueCondition<>(field, linkedIds, CompareOperation.IN);
+            } else {
+              condition1 = new CompareValueCondition<>(field, valueEntry.getValue(), CompareOperation.LIKE);
+            }
+            if (condition == null) {
+              condition = condition1;
+            } else {
+              condition = condition.and(condition1);
+            }
           }
-          if (condition == null) {
-            condition = condition1;
-          } else {
-            condition = condition.and(condition1);
-          }
+          paramsBuilder.setCondition(condition);
         }
-        paramsBuilder.setCondition(condition);
       }
     }
+
     paramsBuilder.setLimit(limit);
     paramsBuilder.setOffset(offset);
     if (orderFieldCode != null) {
