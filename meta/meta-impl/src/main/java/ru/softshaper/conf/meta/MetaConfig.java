@@ -10,11 +10,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.softshaper.conf.db.JooqConfig;
+import ru.softshaper.datasource.events.listeners.WebSocketCUDListener;
 import ru.softshaper.datasource.meta.ContentDataSource;
+import ru.softshaper.services.event.UserSessionStorage;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.MetaInitializerImpl;
 import ru.softshaper.services.meta.impl.loader.DynamicContentLoader;
 import ru.softshaper.services.meta.impl.loader.StaticContentLoader;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Created by Sunchise on 10.08.2016.
@@ -71,6 +75,14 @@ public class MetaConfig {
 
   @Autowired
   private EventBus eventBus;
+
+  @Autowired
+  private UserSessionStorage userSessionStorage;
+
+  @PostConstruct
+  private void init() {
+    eventBus.register(new WebSocketCUDListener(userSessionStorage));
+  }
 
   /**
    * @return MetaInitializer

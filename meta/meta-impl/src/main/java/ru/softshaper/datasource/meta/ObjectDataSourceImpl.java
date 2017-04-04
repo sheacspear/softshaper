@@ -319,7 +319,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     }
     Table<Record> table = DSL.table(metaClass.getTable());
     dsl.update(table).set(fieldValues).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
-    eventBus.post(new ObjectUpdated(metaClass, id, valuesMap));
+    eventBus.post(new ObjectUpdated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
   }
 
   private Map<MetaField, Object> constructValuesMap(Map<String, Object> values, MetaClass metaClass) {

@@ -17,16 +17,16 @@ public class UserSessionStorageImpl implements UserSessionStorage {
   private final BiMap<String, Session> storage = HashBiMap.create();
 
   @Override
-  public void register(String userId, Session session) {
+  public void register(String userLogin, Session session) {
     lock.writeLock().lock();
-    storage.put(userId, session);
+    storage.put(userLogin, session);
     lock.writeLock().unlock();
   }
 
   @Override
-  public void unregister(String userId) {
+  public void unregister(String userLogin) {
     lock.writeLock().lock();
-    storage.remove(userId);
+    storage.remove(userLogin);
     lock.writeLock().unlock();
   }
 
@@ -37,9 +37,9 @@ public class UserSessionStorageImpl implements UserSessionStorage {
   }
 
   @Override
-  public Session getSession(String userId) {
+  public Session getSession(String userLogin) {
     lock.readLock().lock();
-    Session session = storage.get(userId);
+    Session session = storage.get(userLogin);
     lock.readLock().unlock();
     return session;
   }

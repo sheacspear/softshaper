@@ -13,12 +13,15 @@ public class ObjectUpdated {
 
   private final String id;
 
+  private final String userLogin;
+
   private final Map<MetaField, Object> values;
 
-  public ObjectUpdated(MetaClass metaClass, String id, Map<MetaField, Object> values) {
+  public ObjectUpdated(MetaClass metaClass, String id, Map<MetaField, Object> values, String userLogin) {
     this.metaClass = metaClass;
     this.id = id;
     this.values = Collections.unmodifiableMap(values);
+    this.userLogin = userLogin;
   }
 
   public MetaClass getMetaClass() {
@@ -27,6 +30,10 @@ public class ObjectUpdated {
 
   public String getId() {
     return id;
+  }
+
+  public String getUserLogin() {
+    return userLogin;
   }
 
   public Map<MetaField, Object> getValues() {
@@ -38,6 +45,7 @@ public class ObjectUpdated {
     return "ObjectUpdated{" +
         "metaClass=" + metaClass +
         ", id='" + id + '\'' +
+        ", userLogin='" + userLogin + '\'' +
         '}';
   }
 }
