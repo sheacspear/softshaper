@@ -81,11 +81,6 @@ public class FieldTypeDataSourceImpl extends AbstractCustomDataSource<FieldType>
     return super.getObjects(params);
   }
 
-  @Override
-  public ObjectExtractor<FieldType> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class FieldTypeExtractor extends AbstractObjectExtractor<FieldType> {
 
     private FieldTypeExtractor() {

@@ -266,11 +266,6 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
     return metaStorage.getMetaFields();
   }
 
-  @Override
-  public ObjectExtractor<MetaField> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class MetaFieldObjectExtractor extends AbstractObjectExtractor<MetaField> {
 
     private MetaFieldObjectExtractor() {

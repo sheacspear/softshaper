@@ -104,14 +104,6 @@ public class ProcessDefinitionDataSource extends AbstractCustomDataSource<Proces
     return String.class;
   }
 
-  /* (non-Javadoc)
-   * @see ru.softshaper.datasource.meta.ContentDataSource#getObjectExtractor()
-   */
-  @Override
-  public ObjectExtractor<ProcessDefinition> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class ProcessDefinitionExtractor extends AbstractObjectExtractor<ProcessDefinition> {
 
     private ProcessDefinitionExtractor() {

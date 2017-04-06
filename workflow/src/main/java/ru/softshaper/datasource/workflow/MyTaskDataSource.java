@@ -208,16 +208,6 @@ public class MyTaskDataSource extends AbstractCustomDataSource<WFTask> {
     return String.class;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see ru.softshaper.datasource.meta.ContentDataSource#getObjectExtractor()
-   */
-  @Override
-  public ObjectExtractor<WFTask> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class MyTaskExtractor extends AbstractObjectExtractor<WFTask> {
     private MyTaskExtractor() {
       registerFieldExtractor(MyTaskStaticContent.Field.name, WFTask::getName);
