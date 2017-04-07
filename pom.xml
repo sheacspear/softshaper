@@ -59,6 +59,7 @@
 		<!--<validation-api>1.1.0.Final</validation-api>-->
 		<commons-fileupload>1.3.1</commons-fileupload>
 		<cxf.version>3.0.9</cxf.version>
+		<tomcat.version>7.0.72</tomcat.version>
 	</properties>
 
 	<dependencyManagement>
