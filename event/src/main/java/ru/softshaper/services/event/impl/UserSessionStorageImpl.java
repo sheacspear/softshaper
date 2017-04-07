@@ -18,30 +18,41 @@ public class UserSessionStorageImpl implements UserSessionStorage {
 
   @Override
   public void register(String userLogin, Session session) {
-    lock.writeLock().lock();
-    storage.put(userLogin, session);
-    lock.writeLock().unlock();
+    try {
+      lock.writeLock().lock();
+      storage.put(userLogin, session);
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   @Override
   public void unregister(String userLogin) {
-    lock.writeLock().lock();
-    storage.remove(userLogin);
-    lock.writeLock().unlock();
+    try {
+      lock.writeLock().lock();
+      storage.remove(userLogin);
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   public void unregister(Session session) {
-    lock.writeLock().lock();
-    storage.inverse().remove(session);
-    lock.writeLock().unlock();
+    try {
+      lock.writeLock().lock();
+      storage.inverse().remove(session);
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   @Override
   public Session getSession(String userLogin) {
-    lock.readLock().lock();
-    Session session = storage.get(userLogin);
-    lock.readLock().unlock();
-    return session;
+    try {
+      lock.readLock().lock();
+      Session session = storage.get(userLogin);
+      return session;
+    } finally {
+      lock.readLock().unlock();
+    }
   }
-
 }
