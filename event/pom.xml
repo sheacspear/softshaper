@@ -9,6 +9,11 @@
     </parent>
     <artifactId>event</artifactId>
     <dependencies>
+      <dependency>
+        <groupId>org.softshaper</groupId>
+        <artifactId>security-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
         <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>

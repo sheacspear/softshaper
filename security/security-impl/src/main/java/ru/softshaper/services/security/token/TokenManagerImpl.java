@@ -2,7 +2,6 @@ package ru.softshaper.services.security.token;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import ru.softshaper.services.security.token.storage.TokenStorage;
 
 import java.util.Date;
@@ -11,17 +10,19 @@ import java.util.Date;
  * Менеджер для работы с токенами
  */
 @Service
-class TokenManager {
+class TokenManagerImpl implements TokenManager {
 
   @Autowired
   private TokenStorage tokenStorage;
 
+  @Override
   public Token createToken(String login) {
     Token token = new Token(login);
     tokenStorage.addToken(token);
     return token;
   }
 
+  @Override
   public Token getToken(String tokenId) {
     Token token = tokenStorage.getToken(tokenId);
     if (token == null) {

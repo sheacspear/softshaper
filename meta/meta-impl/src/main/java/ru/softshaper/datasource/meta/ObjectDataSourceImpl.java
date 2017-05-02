@@ -1,31 +1,9 @@
 package ru.softshaper.datasource.meta;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.InsertResultStep;
-import org.jooq.InsertSetMoreStep;
-import org.jooq.InsertSetStep;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.RecordMapper;
-import org.jooq.RecordMapperProvider;
-import org.jooq.Result;
-import org.jooq.SelectJoinStep;
-import org.jooq.SortField;
-import org.jooq.Table;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.TableImpl;
@@ -35,21 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-
+import ru.softshaper.datasource.events.ObjectCreated;
+import ru.softshaper.datasource.events.ObjectDeleted;
+import ru.softshaper.datasource.events.ObjectUpdated;
 import ru.softshaper.datasource.file.FileObjectDataSource;
-import ru.softshaper.services.meta.DataSourceStorage;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.ConvertConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.impl.SortOrder;
 import ru.softshaper.services.security.ContentSecurityManager;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 //import org.jooq.util.Database;
 
@@ -98,6 +76,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Autowired
   private FieldConverter fieldConverter;
 
+
+  @Autowired
+  private EventBus eventBus;
   // @Override
   /*
    * (non-Javadoc)
@@ -302,7 +283,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     insertSetMoreStep.set(idFields, filed);
     InsertResultStep<Record> insertResultStep = insertSetMoreStep.returning(idFields);
     Result<Record> result = insertResultStep.fetch();
-    return result.getValue(0, idFields).toString();
+    String id = result.getValue(0, idFields).toString();
+    eventBus.post(new ObjectCreated(metaClass, id, valuesMap));
+    return id;
   }
 
   /*
@@ -336,6 +319,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     }
     Table<Record> table = DSL.table(metaClass.getTable());
     dsl.update(table).set(fieldValues).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
+    eventBus.post(new ObjectUpdated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
   }
 
   private Map<MetaField, Object> constructValuesMap(Map<String, Object> values, MetaClass metaClass) {
@@ -357,9 +341,10 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Transactional
   @Override
   public void deleteObject(String contentCode, String id) {
-    MetaClass content = getMetaClass(contentCode);
-    Table<Record> table = DSL.table(content.getTable());
-    dsl.delete(table).where(DSL.field(content.getIdColumn()).equal(Long.valueOf(id))).execute();
+    MetaClass metaClass = getMetaClass(contentCode);
+    Table<Record> table = DSL.table(metaClass.getTable());
+    dsl.delete(table).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
+    eventBus.post(new ObjectDeleted(metaClass, id));
   }
 
   private MetaClass getMetaClass(String contentCode) {
