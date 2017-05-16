@@ -1,7 +1,10 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
@@ -19,6 +22,11 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class LinkAttrController extends AttrControllerBase {
+
+
+  @Autowired
+  @Qualifier("linkedField")
+  private FieldConverter fieldConverter;
 
   @PostConstruct
   void init() {
@@ -93,5 +101,10 @@ public class LinkAttrController extends AttrControllerBase {
       return variants;
     }
     return null;
+  }
+
+  @Override
+  protected FieldConverter getFieldConverter() {
+    return fieldConverter;
   }
 }

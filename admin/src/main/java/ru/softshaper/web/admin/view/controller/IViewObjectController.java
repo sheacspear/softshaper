@@ -9,7 +9,6 @@ import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
 import ru.softshaper.web.admin.bean.objlist.IColumnView;
 import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
-import ru.softshaper.web.admin.bean.objlist.impl.ColumnView;
 
 import java.util.Collection;
 import java.util.Map;
@@ -82,4 +81,5 @@ public interface IViewObjectController {
 
   DataSourceFromView getDataSourceFromView(String contentCode);
 
+  Map<String, Object> parseAttrsFromView(MetaClass metaClass, Map<String, Object> viewAttrs);
 }

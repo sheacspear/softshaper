@@ -1,10 +1,10 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
@@ -16,11 +16,18 @@ import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
 import ru.softshaper.web.admin.view.controller.DataSourceFromView;
 
+import javax.annotation.PostConstruct;
+
 /**
  *
  */
 @Component
 public class UniversalLinkAttrController extends AttrControllerBase {
+
+
+  @Autowired
+  @Qualifier("universalLink")
+  private FieldConverter fieldConverter;
 
   @PostConstruct
   void init() {
@@ -117,5 +124,10 @@ public class UniversalLinkAttrController extends AttrControllerBase {
   public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  protected FieldConverter getFieldConverter() {
+    return fieldConverter;
   }
 }
