@@ -70,15 +70,10 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Qualifier("jooq")
   private ConvertConditionVisitor<Condition> conditionConverter;
 
-  @Autowired
-  private DataSourceStorage dataSourceStorage;
-
-  @Autowired
-  private FieldConverter fieldConverter;
-
 
   @Autowired
   private EventBus eventBus;
+
   // @Override
   /*
    * (non-Javadoc)
@@ -142,7 +137,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /**
    * Добавление фильтра безопасности
    *
-   * @param content мета класс
+   * @param content      мета класс
    * @param queryBuilder билдер запроса
    * @return билдер запроса
    */
@@ -271,7 +266,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     Map<Field<?>, Object> fieldValues = Maps.newHashMap();
     Map<MetaField, Object> valuesMap = constructValuesMap(values, metaClass);
     valuesMap.forEach((MetaField field, Object value) -> {
-      if (value != null) {
+      if (value != null && field.getColumn() != null) {
         fieldValues.put(DSL.field(field.getColumn(), value.getClass()), value);
       }
     });
@@ -284,6 +279,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     InsertResultStep<Record> insertResultStep = insertSetMoreStep.returning(idFields);
     Result<Record> result = insertResultStep.fetch();
     String id = result.getValue(0, idFields).toString();
+    valuesMap.entrySet().stream()
+        .filter(entry -> FieldType.MULTILINK.equals(entry.getKey().getType()))
+        .forEach(entry -> updateMultilink(id, entry.getKey(), entry.getValue()));
     eventBus.post(new ObjectCreated(metaClass, id, valuesMap));
     return id;
   }
@@ -310,24 +308,46 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     for (Entry<MetaField, Object> entry : valuesMap.entrySet()) {
       MetaField field = entry.getKey();
       Object value = entry.getValue();
-      if(field.getColumn() != null){
-      if (value != null ) {
-        fieldValues.put(DSL.field(field.getColumn()), value);
+      if (field.getColumn() != null) {
+        if (value != null) {
+          fieldValues.put(DSL.field(field.getColumn()), value);
+        } else {
+          // todo: вообщем то работает, но какой то лайвхак
+          fieldValues.put(DSL.field(field.getColumn()), DSL.castNull(Long.class));
+        }
       } else {
-        // todo: вообщем то работает, но какой то лайвхак
-        fieldValues.put(DSL.field(field.getColumn()), DSL.castNull(Long.class));
+        if (FieldType.MULTILINK.equals(field.getType())) {
+          updateMultilink(id, field, value);
+        }
       }
-    }}
+    }
     Table<Record> table = DSL.table(metaClass.getTable());
     dsl.update(table).set(fieldValues).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
     eventBus.post(new ObjectUpdated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
+  }
+
+  private void updateMultilink(String id, MetaField field, Object value) {
+    if (value instanceof Collection) {
+      deleteMultilink(id, field);
+      Table<Record> linkTable = DSL.table(field.getNxMTableName());
+      InsertValuesStep2<Record, Object, Object> query = dsl.insertInto(linkTable).columns(DSL.field("from_id"), DSL.field("to_id"));
+      for (Object linkValueId : ((Collection<Object>) value)) {
+        query.values(Long.valueOf(id), linkValueId);
+      }
+      query.execute();
+    }
+  }
+
+  private void deleteMultilink(String id, MetaField field) {
+    Table<Record> linkTable = DSL.table(field.getNxMTableName());
+    dsl.delete(linkTable).where(DSL.field("from_id").eq(Long.valueOf(id))).execute();
   }
 
   private Map<MetaField, Object> constructValuesMap(Map<String, Object> values, MetaClass metaClass) {
     final Map<MetaField, Object> valuesMap = new HashMap<>();
     values.forEach((fieldCode, value) -> {
       MetaField metaField = metaClass.getField(fieldCode);
-      valuesMap.put(metaField, fieldConverter.convert(metaField, value == null ? null : value.toString()));
+      valuesMap.put(metaField, value);
     });
     return valuesMap;
   }
@@ -344,6 +364,11 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   public void deleteObject(String contentCode, String id) {
     MetaClass metaClass = getMetaClass(contentCode);
     Table<Record> table = DSL.table(metaClass.getTable());
+    metaClass.getFields().stream().forEach(field -> {
+        if (FieldType.MULTILINK.equals(field.getType())) {
+          deleteMultilink(id, field);
+        }
+    });
     dsl.delete(table).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
     eventBus.post(new ObjectDeleted(metaClass, id));
   }

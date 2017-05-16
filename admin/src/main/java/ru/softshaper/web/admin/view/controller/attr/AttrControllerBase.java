@@ -1,10 +1,12 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
 import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectsParams;
+import ru.softshaper.view.viewsettings.ViewSetting;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 import ru.softshaper.web.admin.bean.obj.IObjectView;
 import ru.softshaper.web.admin.view.controller.IViewAttrController;
@@ -52,5 +54,10 @@ public abstract class AttrControllerBase implements IViewAttrController {
     }
   }
 
+  protected abstract FieldConverter getFieldConverter();
 
+  @Override
+  public <T> Object convertViewValueToObjectValue(T viewValue, MetaField metaField, ViewSetting fieldView) {
+    return getFieldConverter().convert(metaField, viewValue);
+  }
 }

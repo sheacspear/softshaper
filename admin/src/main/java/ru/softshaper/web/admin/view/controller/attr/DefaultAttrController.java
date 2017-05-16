@@ -1,6 +1,9 @@
 package ru.softshaper.web.admin.view.controller.attr;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.view.viewsettings.ViewSetting;
@@ -13,6 +16,10 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class DefaultAttrController extends AttrControllerBase {
+
+  @Autowired
+  @Qualifier("simpleField")
+  private FieldConverter fieldConverter;
 
   @PostConstruct
   void init() {
@@ -69,5 +76,10 @@ public class DefaultAttrController extends AttrControllerBase {
   @Override
   public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     return null;
+  }
+
+  @Override
+  protected FieldConverter getFieldConverter() {
+    return fieldConverter;
   }
 }
