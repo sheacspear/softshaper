@@ -310,13 +310,14 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     for (Entry<MetaField, Object> entry : valuesMap.entrySet()) {
       MetaField field = entry.getKey();
       Object value = entry.getValue();
-      if (value != null) {
+      if(field.getColumn() != null){
+      if (value != null ) {
         fieldValues.put(DSL.field(field.getColumn()), value);
       } else {
         // todo: вообщем то работает, но какой то лайвхак
         fieldValues.put(DSL.field(field.getColumn()), DSL.castNull(Long.class));
       }
-    }
+    }}
     Table<Record> table = DSL.table(metaClass.getTable());
     dsl.update(table).set(fieldValues).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
     eventBus.post(new ObjectUpdated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));

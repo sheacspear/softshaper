@@ -275,6 +275,28 @@ public class QueryServiceRest {
     folderView.setId(EmployeeStaticContent.META_CLASS + "/page/1");
     folderView.setName("Сотрудники");
     folders2.add(folderView);
+    // Классы
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("metaClass/page/1");
+    folderView.setName("Классы");
+    folders2.add(folderView);   
+    
+    // Все задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("task/page/1");
+    folderView.setName("Все задачи");
+    folders2.add(folderView);   
+    
+    
+    // Мои задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("myTask/page/1");
+    folderView.setName("Мои задачи");
+    folders2.add(folderView);   
+    
     // workflowdesign
     folderView = new FolderView();
     folderView.setType("workflowdesign");
@@ -352,7 +374,7 @@ public class QueryServiceRest {
   @Path("/obj/{contentCode}/")
   @Produces(MediaType.APPLICATION_JSON)
   public ITableObjectsView getObjectList(@PathParam("contentCode") String metaClassCode, @QueryParam("limit") int limit, @QueryParam("offset") int offset,
-      @QueryParam("orderFieldCode") String orderFieldCode, @QueryParam("sortDirection") String sortDirection, @QueryParam("query") String query) {
+      @QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection") String sortDirection, @QueryParam("query") String query) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -406,8 +428,8 @@ public class QueryServiceRest {
 
     paramsBuilder.setLimit(limit);
     paramsBuilder.setOffset(offset);
-    if (orderFieldCode != null) {
-      MetaField orderField = metaClass.getField(orderFieldCode);
+    if (sortColumn != null) {
+      MetaField orderField = metaClass.getField(sortColumn);
       if (orderField != null) {
         paramsBuilder.orderFields().add(orderField, "DESC".equals(sortDirection) ? SortOrder.DESC : SortOrder.ASC);
       }
