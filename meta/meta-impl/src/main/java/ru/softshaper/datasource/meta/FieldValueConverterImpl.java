@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jooq.DataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,18 +50,21 @@ public class FieldValueConverterImpl implements FieldConverter {
 
   @Override
   public <T> T convert(MetaField field, String stringValue) {
-    if ("null".equals(stringValue)) {
+    if ("null".equals(stringValue) || stringValue == null) {
       return null;
     }
-    FieldValueConverterFunction fieldValueConverterFunction;
+    FieldValueConverterFunction fieldValueConverterFunction = null;
     if (FieldType.LINK.equals(field.getType())) {
       Class<?> idType = dataSourceStorage.get(field.getLinkToMetaClass()).getIdType(field.getLinkToMetaClass().getCode());
       fieldValueConverterFunction = converterMap.get(idType);
     } else {
-      fieldValueConverterFunction = converterMap.get(jooqFieldFactory.getDataType(field.getType()).getType());
+      DataType<?> dataType = jooqFieldFactory.getDataType(field.getType());
+      if (dataType != null) {
+        fieldValueConverterFunction = converterMap.get(dataType.getType());
+      }
     }
     // noinspection unchecked
-    return (T) fieldValueConverterFunction.convert(stringValue);
+    return fieldValueConverterFunction != null ? (T) fieldValueConverterFunction.convert(stringValue) : null;
   }
 
 }

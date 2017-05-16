@@ -275,6 +275,28 @@ public class QueryServiceRest {
     folderView.setId(EmployeeStaticContent.META_CLASS + "/page/1");
     folderView.setName("Сотрудники");
     folders2.add(folderView);
+    // Классы
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("metaClass/page/1");
+    folderView.setName("Классы");
+    folders2.add(folderView);   
+    
+    // Все задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("task/page/1");
+    folderView.setName("Все задачи");
+    folders2.add(folderView);   
+    
+    
+    // Мои задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("myTask/page/1");
+    folderView.setName("Мои задачи");
+    folders2.add(folderView);   
+    
     // workflowdesign
     folderView = new FolderView();
     folderView.setType("workflowdesign");
