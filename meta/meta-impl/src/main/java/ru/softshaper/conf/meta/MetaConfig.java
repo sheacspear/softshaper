@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import ru.softshaper.audit.listeners.AuditObjectChangeListener;
 import ru.softshaper.conf.db.JooqConfig;
 import ru.softshaper.datasource.events.listeners.WebSocketCUDListener;
 import ru.softshaper.datasource.meta.ContentDataSource;
@@ -25,7 +26,8 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @Import({ JooqConfig.class})
-@ComponentScan({"ru.softshaper.datasource.meta","ru.softshaper.staticcontent.meta","ru.softshaper.services.meta"})
+@ComponentScan({"ru.softshaper.datasource.meta","ru.softshaper.staticcontent.meta","ru.softshaper.services.meta",
+                "ru.softshaper.audit.staticcontent"})
 public class MetaConfig {
 
   /**
@@ -82,6 +84,7 @@ public class MetaConfig {
   @PostConstruct
   private void init() {
     eventBus.register(new WebSocketCUDListener(userSessionStorage));
+    eventBus.register(new AuditObjectChangeListener(dslContext));
   }
 
   /**

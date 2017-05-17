@@ -11,9 +11,12 @@ public class ObjectDeleted {
 
   private final String id;
 
-  public ObjectDeleted(MetaClass metaClass, String id) {
+  private final String userLogin;
+
+  public ObjectDeleted(MetaClass metaClass, String id, String userLogin) {
     this.metaClass = metaClass;
     this.id = id;
+    this.userLogin = userLogin;
   }
 
   public MetaClass getMetaClass() {
@@ -22,6 +25,10 @@ public class ObjectDeleted {
 
   public String getId() {
     return id;
+  }
+
+  public String getUserLogin() {
+    return userLogin;
   }
 
   @Override

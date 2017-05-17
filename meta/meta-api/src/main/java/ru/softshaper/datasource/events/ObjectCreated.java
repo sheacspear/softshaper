@@ -13,12 +13,15 @@ public class ObjectCreated {
 
   private final String id;
 
+  private final String userLogin;
+
   private final Map<MetaField, Object> values;
 
-  public ObjectCreated(MetaClass metaClass, String id, Map<MetaField, Object> values) {
+  public ObjectCreated(MetaClass metaClass, String id, Map<MetaField, Object> values, String userLogin) {
     this.metaClass = metaClass;
     this.id = id;
     this.values = Collections.unmodifiableMap(values);
+    this.userLogin = userLogin;
   }
 
   public MetaClass getMetaClass() {
@@ -31,6 +34,10 @@ public class ObjectCreated {
 
   public Map<MetaField, Object> getValues() {
     return values;
+  }
+
+  public String getUserLogin() {
+    return userLogin;
   }
 
   @Override

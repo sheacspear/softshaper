@@ -282,7 +282,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     valuesMap.entrySet().stream()
         .filter(entry -> FieldType.MULTILINK.equals(entry.getKey().getType()))
         .forEach(entry -> updateMultilink(id, entry.getKey(), entry.getValue()));
-    eventBus.post(new ObjectCreated(metaClass, id, valuesMap));
+    eventBus.post(new ObjectCreated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
     return id;
   }
 
@@ -371,7 +371,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
         }
     });
     dsl.delete(table).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
-    eventBus.post(new ObjectDeleted(metaClass, id));
+    eventBus.post(new ObjectDeleted(metaClass, id, securityManager.getCurrentUserLogin()));
   }
 
   private MetaClass getMetaClass(String contentCode) {
