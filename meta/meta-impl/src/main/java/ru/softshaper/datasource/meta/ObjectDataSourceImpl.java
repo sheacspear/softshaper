@@ -330,9 +330,10 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     if (value instanceof Collection) {
       deleteMultilink(id, field);
       Table<Record> linkTable = DSL.table(field.getNxMTableName());
-      InsertValuesStep2<Record, Object, Object> query = dsl.insertInto(linkTable).columns(DSL.field("from_id"), DSL.field("to_id"));
+      InsertValuesStep3<Record, Object, Object, Object> query = dsl.insertInto(linkTable).columns(DSL.field("id"), DSL.field("from_id"), DSL.field("to_id"));
       for (Object linkValueId : ((Collection<Object>) value)) {
-        query.values(Long.valueOf(id), linkValueId);
+        Field<BigInteger> filed = DSL.sequence("seq_" + field.getNxMTableName() + "_id").nextval();
+        query.values(filed, Long.valueOf(id), linkValueId);
       }
       query.execute();
     }

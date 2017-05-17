@@ -13,6 +13,9 @@ import ru.softshaper.services.meta.MetaField;
 public class UniversalLinkFieldValueConverter implements FieldConverter {
   @Override
   public <T> T convert(MetaField field, Object viewValue) {
+    if (viewValue == null) {
+      return null;
+    }
     return (T) (viewValue + "@" + field.getOwner().getCode());
   }
 }

@@ -1,16 +1,7 @@
 package ru.softshaper.datasource.meta;
 
-import java.util.Collection;
-import java.util.Map;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.InsertResultStep;
-import org.jooq.InsertSetMoreStep;
-import org.jooq.InsertSetStep;
-import org.jooq.Result;
+import com.google.common.base.Preconditions;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +9,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Preconditions;
-
 import ru.softshaper.bean.meta.MetaFieldBean;
-import ru.softshaper.services.meta.FieldType;
-import ru.softshaper.services.meta.MetaClass;
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.services.meta.MetaStorage;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;
 import ru.softshaper.storage.jooq.tables.records.DynamicFieldRecord;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Sunchise on 16.08.2016.
@@ -101,13 +88,13 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
   @Override
   @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
       "fieldObjCnt" }, allEntries = true)
-  @Transactional
+  @Transactional(rollbackFor = Throwable.class)
   public String createObject(String contentCode, Map<String, Object> values) {
     MetaField field = constructMetaField(null, values);
     return createField(field.getOwner().getId(), field);
   }
 
-  /**
+  /**seq_dc_magic_id
    * Конструирование объекта
    *
    * @param id ид
@@ -115,24 +102,32 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
    * @return MetaField
    */
   private MetaField constructMetaField(String id, Map<String, Object> values) {
-    String ownerStr = (String) values.get("owner");
-    String objectId = String.valueOf(ownerStr);
-    MetaClass owner = metaStorage.getMetaClassById(objectId);
+    Object objectId = values.get("owner");
+    Preconditions.checkNotNull(objectId);
+    MetaClass owner = metaStorage.getMetaClassById(objectId.toString());
     String code = (String) values.get("code");
     String name = (String) values.get("name");
-    String column = (String) values.get("column");
-    Long type = Long.valueOf(values.get("type").toString());
-    String linkToMetaClassStr = (String) values.get("linkToMetaClass");
-    String backReferenceFieldStr = (String) values.get("backReferenceField");
+    Long type = (Long) values.get("type");
+    FieldType fieldType = FieldType.getFieldType(type);
+    String column = null;
+    if (!FieldType.MULTILINK.equals(fieldType) && !FieldType.BACK_REFERENCE.equals(fieldType)) {
+      column = (String) values.get("column");
+    }
+    Object linkToMetaClassId = values.get("linkToMetaClass");
+    Object backReferenceFieldId = values.get("backReferenceField");
     MetaClass linkToMetaClass = null;
     MetaField backReferenceField = null;
-    if (linkToMetaClassStr != null) {
-      linkToMetaClass = metaStorage.getMetaClassById(String.valueOf(linkToMetaClassStr));
-      if (backReferenceFieldStr != null) {
-        backReferenceField = linkToMetaClass.getFields().stream().filter(field -> field.getId().equals(backReferenceFieldStr)).findFirst().orElse(null);
+    if (linkToMetaClassId != null) {
+      linkToMetaClass = metaStorage.getMetaClassById(String.valueOf(linkToMetaClassId));
+      if (backReferenceFieldId != null) {
+        backReferenceField = linkToMetaClass.getFields()
+            .stream()
+            .filter(field -> field.getId().equals(String.valueOf(backReferenceFieldId)))
+            .findFirst()
+            .orElse(null);
       }
     }
-    return new MetaFieldBean(id, owner, name, code, column, FieldType.getFieldType(type), linkToMetaClass, backReferenceField, null);
+    return new MetaFieldBean(id, owner, name, code, column, fieldType, linkToMetaClass, backReferenceField, null);
   }
 
   /**
@@ -165,7 +160,7 @@ public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField>
     InsertResultStep<DynamicFieldRecord> insertResultStep = insertSetMoreStep.returning(idFields);
     Result<DynamicFieldRecord> result = insertResultStep.fetch();
     String objectIdF = String.valueOf(result.getValue(0, "id"));
-    if (field.getColumn() != null) {
+    if (field.getColumn() != null && !FieldType.MULTILINK.equals(field.getType()) && !FieldType.BACK_REFERENCE.equals(field.getType())) {
       dslContext.alterTable(field.getOwner().getTable()).add(field.getColumn(), jooqFieldFactory.getDataType(field.getType())).execute();
     }
     metaInitializer.init();

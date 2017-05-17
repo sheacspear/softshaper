@@ -6,7 +6,6 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.softshaper.bean.meta.MetaClassMutableBean;
 import ru.softshaper.bean.meta.MetaFieldMutableBean;
 import ru.softshaper.datasource.meta.ContentDataSource;
@@ -103,7 +102,7 @@ public class DynamicContentLoader implements MetaLoader {
 			MetaClassMutable metaClassById = clazzId.get(field.get(dfTable.DYNAMIC_CONTENT_ID).toString());
 			MetaFieldMutableBean dynamicFieldBean = new MetaFieldMutableBean(field.get(dfTable.ID).toString(),
 					metaClassById, field.get(dfTable.NAME), field.get(dfTable.CODE), field.get(dfTable.COLUMN_FIELD),
-					FieldType.getFieldType(field.get(dfTable.TYPE1)), linkedMetaClass, backReferenceField, null);
+					FieldType.getFieldType(field.get(dfTable.TYPE1)), linkedMetaClass, backReferenceField, field.get(dfTable.NX_M_TABLE_NAME));
 			result.add(dynamicFieldBean);
 			fieldById.put(Long.valueOf(dynamicFieldBean.getId()), dynamicFieldBean);
 		}

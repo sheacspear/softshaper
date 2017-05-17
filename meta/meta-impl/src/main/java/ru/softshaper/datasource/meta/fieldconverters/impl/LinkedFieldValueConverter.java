@@ -32,6 +32,9 @@ public class LinkedFieldValueConverter implements FieldConverter {
 
   @Override
   public <T> T convert(MetaField field, Object viewValue) {
+    if (viewValue == null) {
+      return null;
+    }
     String value;
     if (viewValue instanceof String) {
       value = (String) viewValue;
