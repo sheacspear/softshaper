@@ -50,6 +50,10 @@ public class FieldTypeView {
    */
   public static final FieldTypeView STRING_SINGLE = new FieldTypeView("STRING_SINGLE", "Одна строка");
   /**
+   * Строка - Облако тегов
+   */
+  public static final FieldTypeView STRING_TAGS = new FieldTypeView("STRING_TAGS", "Облако тегов");
+  /**
    * STRING_MULTILINE
    */
   public static final FieldTypeView STRING_MULTILINE = new FieldTypeView("STRING_MULTILINE", "Многострочный");

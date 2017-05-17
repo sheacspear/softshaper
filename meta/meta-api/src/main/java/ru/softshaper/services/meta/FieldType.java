@@ -53,7 +53,7 @@ public class FieldType {
   /**
    * Текст
    */
-  public static final FieldType STRING = new FieldType(7, "STRING", "Строка", Sets.newHashSet(FieldTypeView.STRING_SINGLE, FieldTypeView.STRING_CODE),
+  public static final FieldType STRING = new FieldType(7, "STRING", "Строка", Sets.newHashSet(FieldTypeView.STRING_SINGLE, FieldTypeView.STRING_CODE, FieldTypeView.STRING_TAGS),
       FieldTypeView.STRING_SINGLE);
 
 
