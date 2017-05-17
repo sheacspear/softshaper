@@ -54,6 +54,10 @@ public class FieldTypeView {
    */
   public static final FieldTypeView STRING_MULTILINE = new FieldTypeView("STRING_MULTILINE", "Многострочный");
   /**
+   * Строка - код
+   */
+  public static final FieldTypeView STRING_CODE = new FieldTypeView("STRING_CODE", "Код");
+  /**
    * Дата - только дата (без времени)
    */
   public static final FieldTypeView DATE_DATE_ONLY = new FieldTypeView("DATE_DATE_ONLY", "Только дата");
