@@ -1,6 +1,8 @@
 package ru.softshaper.datasource.events.listeners;
 
 import com.google.common.eventbus.Subscribe;
+import ru.softshaper.datasource.events.ObjectCreated;
+import ru.softshaper.datasource.events.ObjectDeleted;
 import ru.softshaper.datasource.events.ObjectUpdated;
 import ru.softshaper.services.event.UserSessionStorage;
 
@@ -20,7 +22,22 @@ public class WebSocketCUDListener {
 
   @Subscribe
   public void updateMessageListener(ObjectUpdated event) {
-    Session session = userSessionStorage.getSession(event.getUserLogin());
+    String userLogin = event.getUserLogin();
+    sendText(userLogin);
+  }
+  @Subscribe
+  public void createMessageListener(ObjectCreated event) {
+    String userLogin = event.getUserLogin();
+    sendText(userLogin);
+  }
+  @Subscribe
+  public void deleteMessageListener(ObjectDeleted event) {
+    String userLogin = event.getUserLogin();
+    sendText(userLogin);
+  }
+
+  private void sendText(String userLogin) {
+    Session session = userSessionStorage.getSession(userLogin);
     if (session != null) {
       try {
         session.getBasicRemote().sendText("Объект обновлён");

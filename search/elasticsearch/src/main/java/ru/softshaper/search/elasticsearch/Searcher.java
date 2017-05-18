@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -41,7 +42,7 @@ public class Searcher {
   public List<SearchResult> search(String text) {
     SearchRequestBuilder searchRequestBuilder = SearchAction.INSTANCE.newRequestBuilder(client);
     SearchRequest searchRequest = searchRequestBuilder
-        .setQuery(new SimpleQueryStringBuilder(text).analyzer("russian"))
+        .setQuery(new SimpleQueryStringBuilder(text).analyzer("russian").defaultOperator(Operator.AND))
         .suggest(new SuggestBuilder().setGlobalText(text))//new
         //.setSuggestText(text)
         .setIndices("softshaper")

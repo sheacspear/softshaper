@@ -1,5 +1,6 @@
 package ru.softshaper.conf.elasticsearch;
 
+import com.google.common.eventbus.EventBus;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -13,7 +14,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import ru.softshaper.listeners.IndexListener;
+import ru.softshaper.search.elasticsearch.Indexator;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -33,6 +37,16 @@ public class ElasticsearchConf {
    */
   @Autowired
   private Environment env;
+  @Autowired
+  private EventBus eventBus;
+  @Autowired
+  private Indexator indexator;
+
+  @PostConstruct
+  private void init() {
+    eventBus.register(new IndexListener(indexator));
+  }
+
 
   // public static final String HOST = "192.168.99.100";
   // public static final int PORT = 9200;
@@ -66,7 +80,7 @@ public class ElasticsearchConf {
   public TransportClient transportClient() {
     String host = env.getProperty(ELASTICSEARCH_HOST);
     String port = env.getProperty(ELASTICSEARCH_PORT);
-    TransportClient client = null;
+    TransportClient client;
     try {
       // settings().build()
 
