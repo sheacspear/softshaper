@@ -19,21 +19,18 @@ public class IndexListener {
 
   @Subscribe
   public void onObjectCreate(ObjectCreated event) {
-    Map<String, Object> values = event.getValues().entrySet()
-        .stream()
-        .collect(Collectors.toMap(key -> key.getKey().getCode(), Map.Entry::getValue));
+    Map<String, Object> values = event.getValues().entrySet().stream().collect(Collectors.toMap(key -> key.getKey().getCode(), Map.Entry::getValue));
     indexator.indexObject(event.getMetaClass().getCode(), event.getId(), values);
   }
+
   @Subscribe
   public void onObjectUpdate(ObjectUpdated event) {
-    Map<String, Object> values = event.getValues().entrySet()
-        .stream()
-        .collect(Collectors.toMap(key -> key.getKey().getCode(), Map.Entry::getValue));
+    Map<String, Object> values = event.getValues().entrySet().stream().collect(Collectors.toMap(key -> key.getKey().getCode(), Map.Entry::getValue));
     indexator.indexObject(event.getMetaClass().getCode(), event.getId(), values);
   }
+
   @Subscribe
   public void onObjectDelete(ObjectDeleted event) {
     indexator.deleteIndex(event.getMetaClass().getCode(), event.getId());
   }
-
 }
