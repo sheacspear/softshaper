@@ -34,6 +34,9 @@ public class MultilinkFieldValueConverter implements FieldConverter {
 
   @Override
   public <T> T convert(MetaField field, Object viewValue) {
+    if (viewValue == null) {
+      return null;
+    }
     final List<Object> ids = new ArrayList<>();
     if (viewValue instanceof Map) {
       Map multilinkMap = (Map) viewValue;
@@ -41,9 +44,7 @@ public class MultilinkFieldValueConverter implements FieldConverter {
       if (objectsViews != null) {
         Class<?> idType = dataSourceStorage.get(field.getLinkToMetaClass()).getIdType(field.getLinkToMetaClass().getCode());
         FieldValueConverterFunction function = fieldConverterFunctionFactory.getFunction(idType);
-        ids.addAll(objectsViews.stream()
-                               .map(obj -> function.convert(obj.get("id")))
-                               .collect(Collectors.toList()));
+        ids.addAll(objectsViews.stream().map(obj -> function.convert(obj.get("id"))).collect(Collectors.toList()));
       }
     } else {
       throw new NotImplementedException();
