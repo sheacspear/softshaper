@@ -1,6 +1,7 @@
 package ru.softshaper.search.elasticsearch;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -19,6 +20,7 @@ import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Sunchise on 26.09.2016.
@@ -28,6 +30,7 @@ public class Indexator {
 
 
   private static final Logger log = LoggerFactory.getLogger(Indexator.class);
+  public static final String INDEX_BASE = "softshaper";
 
   private final Client client;
 
@@ -74,14 +77,52 @@ public class Indexator {
             index.setSource(sourceBuilder);
             bulkRequest.add(index);
           } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
           }
         });
         bulkRequest.get();
       }
     }
     log.info("Full search index at " + (System.currentTimeMillis() - time) + "ms");
-    searcher.search("name");
+  }
+
+  public void indexObject(String metaClassCode, String id, Map<String, Object> values) {
+    XContentBuilder sourceBuilder;
+    try {
+      sourceBuilder = XContentFactory.jsonBuilder().startObject();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    for (Map.Entry<String, Object> entry : values.entrySet()) {
+      String fieldCode = entry.getKey();
+      Object value = entry.getValue();
+      if (!(value instanceof Collection)) {
+        try {
+          sourceBuilder.field(fieldCode, value == null ? null : value.toString());
+        } catch (IOException e) {
+          log.error(e.getMessage(), e);
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      }
+      try {
+        sourceBuilder = sourceBuilder.endObject();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+        throw new RuntimeException(e.getMessage(), e);
+      }
+      IndexRequestBuilder index = client.prepareIndex(INDEX_BASE, metaClassCode, id);
+      index.setSource(sourceBuilder);
+      BulkRequestBuilder bulkRequest = client.prepareBulk();
+      bulkRequest.add(index);
+      bulkRequest.get();
+    }
+  }
+
+  public void deleteIndex(String metaClassCode, String id) {
+    DeleteRequestBuilder deleteRequestBuilder = client.prepareDelete(INDEX_BASE, metaClassCode, id);
+    client.prepareBulk().add(deleteRequestBuilder).get();
   }
 
 }

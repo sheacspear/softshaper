@@ -1,6 +1,9 @@
 package ru.softshaper.view.controller.attr;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
@@ -15,6 +18,10 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class FileAttrController extends AttrControllerBase {
+
+  @Autowired
+  @Qualifier("file")
+  private FieldConverter fieldConverter;
 
   @PostConstruct
   void init() {
@@ -71,4 +78,11 @@ public class FileAttrController extends AttrControllerBase {
   public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     return null;
   }
+
+  @Override
+  protected FieldConverter getFieldConverter() {
+    return fieldConverter;
+  }
+
+
 }

@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ru.softshaper.services.meta.MetaField;
-import ru.softshaper.services.meta.MetaInitializer;
-import ru.softshaper.services.meta.ObjectComparator;
-import ru.softshaper.services.meta.ObjectExtractor;
+import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.CheckConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.meta.comparators.DefaultObjectComparator;
@@ -150,6 +147,11 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
     return new DefaultConditionChecker<T>(object, objectExtractor);
   }
 
+  @Override
+  public ObjectExtractor<T> getObjectExtractor() {
+    return objectExtractor;
+  }
+
   /**
    * Возвращает список объектов которые будут фильтроваться по условиям
    * вдальнейшем
@@ -158,4 +160,6 @@ public abstract class AbstractCustomDataSource<T> implements ContentDataSource<T
    * @return коллекция объектов
    */
   protected abstract Collection<T> getAllObjects(GetObjectsParams params);
+
+
 }

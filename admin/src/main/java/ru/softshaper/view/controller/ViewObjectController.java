@@ -333,4 +333,20 @@ public class ViewObjectController implements IViewObjectController {
     ContentDataSource<?> dataSource = dataSourceStorage.get(metaStorage.getMetaClass(contentCode));
     return new DataSourceFromViewImpl<>(this, dataSource);
   }
+
+  @Override
+  public Map<String, Object> parseAttrsFromView(MetaClass metaClass, Map<String, Object> viewAttrs) {
+    final Map<String, Object> resultMap = new HashMap<>();
+    for (Map.Entry<String, Object> entry : viewAttrs.entrySet()) {
+      MetaField metaField = metaClass.getField(entry.getKey());
+      Object value = entry.getValue();
+      IViewAttrController iViewAttrController = attrmapper.get(metaField.getType());
+      if (iViewAttrController == null) {
+        iViewAttrController = defaultViewAttrController;
+      }
+      Object objectValue = iViewAttrController.convertViewValueToObjectValue(value, metaField, viewSetting.getView(metaField));
+      resultMap.put(metaField.getCode(), objectValue);
+    }
+    return resultMap;
+  }
 }

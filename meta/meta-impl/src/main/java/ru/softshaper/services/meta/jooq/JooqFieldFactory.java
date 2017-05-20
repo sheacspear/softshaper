@@ -31,6 +31,7 @@ public class JooqFieldFactory {
     map.put(FieldType.STRING, SQLDataType.VARCHAR);
     map.put(FieldType.TEXT, SQLDataType.LONGVARCHAR);
     map.put(FieldType.FILE, SQLDataType.VARCHAR);
+    map.put(FieldType.UNIVERSAL_LINK, SQLDataType.VARCHAR);
   }
 
   public DataType<?> getDataType(FieldType fieldType) {

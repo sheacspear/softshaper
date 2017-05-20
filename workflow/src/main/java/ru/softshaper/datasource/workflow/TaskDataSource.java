@@ -128,16 +128,6 @@ public class TaskDataSource extends AbstractCustomDataSource<Task> {
     return taskQuery.active().list();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see ru.softshaper.datasource.meta.ContentDataSource#getObjectExtractor()
-   */
-  @Override
-  public ObjectExtractor<Task> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class TaskObjectExtractor extends AbstractObjectExtractor<Task> {
 
     private TaskObjectExtractor() {

@@ -50,5 +50,10 @@
 			<artifactId>file-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.softshaper</groupId>
+			<artifactId>event</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>

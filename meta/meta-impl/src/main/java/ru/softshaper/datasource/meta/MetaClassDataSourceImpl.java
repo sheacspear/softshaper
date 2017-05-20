@@ -53,7 +53,12 @@ import ru.softshaper.storage.jooq.tables.records.DynamicContentRecord;
 @Component
 @ThreadSafe
 @Qualifier("metaClass")
-public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
+public class MetaClassDataSourceImpl extends AbstractCustomDataSource<MetaClass> {
+
+  @Override
+  protected Collection<MetaClass> getAllObjects(GetObjectsParams params) {
+    return metaStorage.getAllMetaClasses();
+  }
 
   /**
    * DSLContext
@@ -83,6 +88,8 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
    */
   private final ContentSecurityManager dynamicContentSecurityManager;
 
+  private final static MetaClassObjectExtractor objectExtractor = new MetaClassObjectExtractor();
+
   /**
    * @param dslContext
    * @param dynamicContentRepository
@@ -93,6 +100,7 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   @Autowired
   public MetaClassDataSourceImpl(DSLContext dslContext, DynamicContentDao dynamicContentRepository, MetaStorage metaStorage, DynamicFieldDao dynamicFieldDao,
       ContentSecurityManager dynamicContentSecurityManager) {
+    super(objectExtractor);
     this.dslContext = dslContext;
     this.dynamicContentRepository = dynamicContentRepository;
     this.metaStorage = metaStorage;
@@ -101,12 +109,12 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   }
 
   /*
-   * (non-Javadoc)
-   *
-   * @see
-   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
-   * services.meta. MetaInitializer)
-   */
+     * (non-Javadoc)
+     *
+     * @see
+     * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+     * services.meta. MetaInitializer)
+     */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
     this.metaInitializer = metaInitializer;
@@ -346,63 +354,9 @@ public class MetaClassDataSourceImpl implements ContentDataSource<MetaClass> {
   }
 
   @Override
-  public MetaClass getObj(GetObjectsParams params) {
-    Collection<MetaClass> objects = getObjects(params);
-    return (objects == null||objects.isEmpty()) ? null : objects.iterator().next();
-  }
-
-  @Override
   @Cacheable("metaObjList")
   public Collection<MetaClass> getObjects(GetObjectsParams params) {
-    Collection<MetaClass> metaClasses = metaStorage.getAllMetaClasses();
-    if (params.getIds() != null && !params.getIds().isEmpty()) {
-      metaClasses = metaClasses.stream().filter(metaClass -> params.getIds().contains(metaClass.getId())).collect(Collectors.toSet());
-    }
-    LinkedHashMap<MetaField, ru.softshaper.services.meta.impl.SortOrder> orderFields = params.getOrderFields();
-    Stream<MetaClass> stream = metaClasses.stream();
-    ru.softshaper.services.meta.conditions.Condition condition = params.getCondition();
-    if (condition != null) {
-      stream = stream.filter(metaClass -> condition.check(new MetaClassConditionChecker(metaClass)));
-    }
-    if (orderFields != null) {
-      stream = stream.sorted((o1, o2) -> {
-        int compareResult = 0;
-        // todo: something
-        for (Map.Entry<MetaField, SortOrder> order : orderFields.entrySet()) {
-          switch (order.getKey().getCode()) {
-          case MetaClassStaticContent.Field.code:
-            compareResult = o1.getCode().compareTo(o2.getCode());
-            break;
-          case MetaClassStaticContent.Field.name:
-            compareResult = o1.getName().compareTo(o2.getName());
-            break;
-          case MetaClassStaticContent.Field.checkObjectSecurity:
-            compareResult = o1.isCheckObjectSecurity() == o2.isCheckObjectSecurity() ? 0 : o1.isCheckObjectSecurity() ? 1 : -1;
-            break;
-          case MetaClassStaticContent.Field.checkSecurity:
-            compareResult = o1.isCheckSecurity() == o2.isCheckSecurity() ? 0 : o1.isCheckSecurity() ? 1 : -1;
-            break;
-          case MetaClassStaticContent.Field.fixed:
-            compareResult = o1.isFixed() == o2.isFixed() ? 0 : o1.isFixed() ? 1 : -1;
-            break;
-          case MetaClassStaticContent.Field.table:
-            compareResult = o1.getTable().compareTo(o2.getTable());
-            break;
-          }
-          if (compareResult != 0) {
-            compareResult = SortOrder.DESC.equals(order.getValue()) ? compareResult * -1 : compareResult;
-            break;
-          }
-        }
-        return compareResult;
-      });
-    }
-    return stream.skip(params.getOffset()).limit(params.getLimit()).collect(Collectors.toList());
-  }
-
-  @Override
-  public ObjectExtractor<MetaClass> getObjectExtractor() {
-    return new MetaClassObjectExtractor();
+    return super.getObjects(params);
   }
 
   public static class MetaClassObjectExtractor extends AbstractObjectExtractor<MetaClass> {

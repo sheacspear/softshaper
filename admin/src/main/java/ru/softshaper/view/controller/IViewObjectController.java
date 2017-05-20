@@ -1,17 +1,17 @@
-package ru.softshaper.view.controller;
-
-import java.util.Collection;
-import java.util.Map;
+package ru.softshaper.web.admin.view.controller;
 
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.view.bean.obj.impl.FullObjectView;
-import ru.softshaper.view.bean.obj.impl.TitleObjectView;
-import ru.softshaper.view.bean.objlist.IColumnView;
-import ru.softshaper.view.bean.objlist.IListObjectsView;
-import ru.softshaper.view.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
+import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
+import ru.softshaper.web.admin.bean.objlist.IColumnView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Mapper Data to FormBean
@@ -81,4 +81,5 @@ public interface IViewObjectController {
 
   DataSourceFromView getDataSourceFromView(String contentCode);
 
+  Map<String, Object> parseAttrsFromView(MetaClass metaClass, Map<String, Object> viewAttrs);
 }

@@ -63,11 +63,6 @@ public class FieldTypeViewDataSource extends AbstractCustomDataSource<FieldTypeV
     return FieldTypeView.getAll();
   }
 
-  @Override
-  public ObjectExtractor<FieldTypeView> getObjectExtractor() {
-    return objectExtractor;
-  }
-
   public static class FieldTypeViewExtractor extends AbstractObjectExtractor<FieldTypeView> {
 
     private FieldTypeViewExtractor() {

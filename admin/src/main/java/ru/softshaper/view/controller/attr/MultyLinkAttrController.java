@@ -1,7 +1,10 @@
 package ru.softshaper.view.controller.attr;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.softshaper.bean.meta.FieldTypeView;
+import ru.softshaper.datasource.meta.fieldconverters.FieldConverter;
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
@@ -24,6 +27,10 @@ import java.util.Collections;
  */
 @Component
 public class MultyLinkAttrController extends AttrControllerBase {
+
+  @Autowired
+  @Qualifier("multilinkField")
+  private FieldConverter fieldConverter;
 
   @PostConstruct
   void init() {
@@ -116,5 +123,10 @@ public class MultyLinkAttrController extends AttrControllerBase {
   public <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  protected FieldConverter getFieldConverter() {
+    return fieldConverter;
   }
 }

@@ -24,18 +24,17 @@ import ru.softshaper.staticcontent.organizations.PositionStaticContent;
 import ru.softshaper.staticcontent.sec.SecRoleStaticContent;
 import ru.softshaper.staticcontent.sec.SecUserStaticContent;
 import ru.softshaper.storage.jooq.tables.Folder;
-import ru.softshaper.view.bean.nav.folder.FolderView;
-import ru.softshaper.view.bean.obj.IFullObjectView;
-import ru.softshaper.view.bean.obj.IObjectView;
-import ru.softshaper.view.bean.objlist.IListObjectsView;
-import ru.softshaper.view.bean.objlist.ITableObjectsView;
-import ru.softshaper.view.controller.DataSourceFromView;
-import ru.softshaper.view.controller.IViewObjectController;
 import ru.softshaper.view.params.FieldCollection;
 import ru.softshaper.view.params.ViewObjectParamsBuilder;
 import ru.softshaper.view.params.ViewObjectsParams;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
-
+import ru.softshaper.web.admin.bean.nav.folder.FolderView;
+import ru.softshaper.web.admin.bean.obj.IFullObjectView;
+import ru.softshaper.web.admin.bean.obj.IObjectView;
+import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
+import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.web.admin.view.controller.DataSourceFromView;
+import ru.softshaper.web.admin.view.controller.IViewObjectController;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
@@ -122,6 +121,7 @@ public class QueryServiceRest {
   @Produces(MediaType.APPLICATION_JSON)
   public IFullObjectView updateObject(@PathParam("contentCode") String contentCode, @PathParam("objectId") String objectId, Map<String, Object> attrs) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
+    attrs = viewObjectController.parseAttrsFromView(metaClass, attrs);
     dataSourceStorage.get(metaClass).updateObject(contentCode, objectId, attrs);
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
     return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
@@ -139,6 +139,7 @@ public class QueryServiceRest {
   @Produces(MediaType.APPLICATION_JSON)
   public IFullObjectView createObject(@PathParam("contentCode") String contentCode, Map<String, Object> attrs) {
     MetaClass metaClass = metaStorage.getMetaClass(contentCode);
+    attrs = viewObjectController.parseAttrsFromView(metaClass, attrs);
     String objectId = dataSourceStorage.get(metaClass).createObject(contentCode, attrs);
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
     return dataSourceFromView.getFullObject(ViewObjectsParams.newBuilder(metaClass).ids().add(objectId).build());
@@ -170,7 +171,7 @@ public class QueryServiceRest {
   @Path("/newObj/{contentCode}/{backLinkAttr}/{objId}")
   @Produces(MediaType.APPLICATION_JSON)
   public IFullObjectView getNewObject(@PathParam("contentCode") String contentCode, @PathParam("backLinkAttr") String backLinkAttr,
-                                      @PathParam("objId") String objId) {
+      @PathParam("objId") String objId) {
     DataSourceFromView dataSourceFromView = viewObjectController.getDataSourceFromView(contentCode);
     return dataSourceFromView.getNewObject(contentCode, backLinkAttr, objId);
   }
@@ -276,6 +277,28 @@ public class QueryServiceRest {
     folderView.setId(EmployeeStaticContent.META_CLASS + "/page/1");
     folderView.setName("Сотрудники");
     folders2.add(folderView);
+    // Классы
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("metaClass/page/1");
+    folderView.setName("Классы");
+    folders2.add(folderView);
+
+    // Все задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("task/page/1");
+    folderView.setName("Все задачи");
+    folders2.add(folderView);
+
+
+    // Мои задачи
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("myTask/page/1");
+    folderView.setName("Мои задачи");
+    folders2.add(folderView);
+
     // workflowdesign
     folderView = new FolderView();
     folderView.setType("workflowdesign");
@@ -348,11 +371,12 @@ public class QueryServiceRest {
    * "DESC".equals(sortDirection) ? SortOrder.DESC : SortOrder.ASC); } } return
    * dataSourceFromView.getTableObjects(paramsBuilder.build()); }
    */
+
   @GET
   @Path("/obj/{contentCode}/")
   @Produces(MediaType.APPLICATION_JSON)
   public ITableObjectsView getObjectList(@PathParam("contentCode") String metaClassCode, @QueryParam("limit") int limit, @QueryParam("offset") int offset,
-                                         @QueryParam("orderFieldCode") String orderFieldCode, @QueryParam("sortDirection") String sortDirection, @QueryParam("query") String query) {
+      @QueryParam("sortColumn") String sortColumn, @QueryParam("sortDirection") String sortDirection, @QueryParam("query") String query) {
     Preconditions.checkNotNull(metaClassCode);
     MetaClass metaClass = metaStorage.getMetaClass(metaClassCode);
     Preconditions.checkNotNull(metaClass);
@@ -406,8 +430,8 @@ public class QueryServiceRest {
 
     paramsBuilder.setLimit(limit);
     paramsBuilder.setOffset(offset);
-    if (orderFieldCode != null) {
-      MetaField orderField = metaClass.getField(orderFieldCode);
+    if (sortColumn != null) {
+      MetaField orderField = metaClass.getField(sortColumn);
       if (orderField != null) {
         paramsBuilder.orderFields().add(orderField, "DESC".equals(sortDirection) ? SortOrder.DESC : SortOrder.ASC);
       }

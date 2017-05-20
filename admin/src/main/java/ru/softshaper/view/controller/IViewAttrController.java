@@ -40,4 +40,5 @@ public interface IViewAttrController {
    */
   <T> IListObjectsView getVariants(MetaField metaField, ObjectExtractor<T> objectExtractor);
 
+  <T> Object convertViewValueToObjectValue(T viewValue, MetaField metaField, ViewSetting fieldView);
 }

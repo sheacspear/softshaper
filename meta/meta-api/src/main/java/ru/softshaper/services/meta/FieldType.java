@@ -2,7 +2,6 @@ package ru.softshaper.services.meta;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import ru.softshaper.bean.meta.FieldTypeView;
 
 import java.util.Collection;
@@ -54,7 +53,7 @@ public class FieldType {
   /**
    * Текст
    */
-  public static final FieldType STRING = new FieldType(7, "STRING", "Строка", Sets.newHashSet(FieldTypeView.STRING_SINGLE),
+  public static final FieldType STRING = new FieldType(7, "STRING", "Строка", Sets.newHashSet(FieldTypeView.STRING_SINGLE, FieldTypeView.STRING_CODE, FieldTypeView.STRING_TAGS),
       FieldTypeView.STRING_SINGLE);
 
 
