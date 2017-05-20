@@ -282,6 +282,12 @@ public class QueryServiceRest {
     folderView.setId("metaClass/page/1");
     folderView.setName("Классы");
     folders2.add(folderView);
+    // Аудит
+    folderView = new FolderView();
+    folderView.setType("objlist");
+    folderView.setId("audit/page/1");
+    folderView.setName("Аудит");
+    folders2.add(folderView);
 
     // Все задачи
     folderView = new FolderView();
