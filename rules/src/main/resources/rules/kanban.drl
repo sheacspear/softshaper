@@ -1,0 +1,20 @@
+package ru.softshaper.drools.service;
+import ru.softshaper.services.drools.bean.*;
+import ru.softshaper.services.drools.provider.*;
+import ru.softshaper.services.drools.contex.RuleContext;
+global DataProvider dataProvider
+rule "getDataByKanban"
+salience 10
+when 
+$ruleContext :  RuleContext( mode == "start" )
+then
+    Data data = dataProvider.getData(); 
+    if(data!=null){
+		$ruleContext.setData(data);
+		$ruleContext.setMode("parse");
+		System.out.println(data);
+		update($ruleContext);
+	}
+	System.out.println("end rule getDataByKanban");
+	
+end

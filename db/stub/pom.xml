@@ -40,7 +40,7 @@
 								<database>
 									<name>org.jooq.util.postgres.PostgresDatabase</name>
 									<inputSchema>public</inputSchema>
-									<excludes>acl.*|Act.*|Dc.*</excludes>
+									<excludes>acl.*|Act.*</excludes><!-- |Dc.* Убрано для показа  -->
 								</database>
 								<generate>
 									<instanceFields>true</instanceFields>
@@ -76,7 +76,7 @@
 											jooq-codegen-maven
 										</artifactId>
 										<versionRange>
-											[3.8.2,)
+											${jooq.version}
 										</versionRange>
 										<goals>
 											<goal>generate</goal>

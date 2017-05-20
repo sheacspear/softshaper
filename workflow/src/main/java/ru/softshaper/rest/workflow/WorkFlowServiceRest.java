@@ -24,7 +24,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.services.security.DynamicContentSecurityManager;
 
 /**
- * @author ashek
  *
  */
 @Path("/pr/workflowservice")

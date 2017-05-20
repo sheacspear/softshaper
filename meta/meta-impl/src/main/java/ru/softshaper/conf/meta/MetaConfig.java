@@ -18,6 +18,7 @@ import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.MetaInitializerImpl;
 import ru.softshaper.services.meta.impl.loader.DynamicContentLoader;
 import ru.softshaper.services.meta.impl.loader.StaticContentLoader;
+import ru.softshaper.storage.jooq.tables.daos.AuditDao;
 
 import javax.annotation.PostConstruct;
 
@@ -35,6 +36,13 @@ public class MetaConfig {
    */
   @Autowired
   private DSLContext dslContext;
+  
+  /**
+   * JOOQ
+   */
+  @Autowired
+  private AuditDao auditDao;  
+  
 
   /**
    * DataSource by Record
@@ -84,7 +92,7 @@ public class MetaConfig {
   @PostConstruct
   private void init() {
     eventBus.register(new WebSocketCUDListener(userSessionStorage));
-    eventBus.register(new AuditObjectChangeListener(dslContext));
+    eventBus.register(new AuditObjectChangeListener(auditDao));
   }
 
   /**

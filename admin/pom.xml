@@ -199,21 +199,28 @@
 			<artifactId>cache</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--<dependency>
+		<!--<dependency> <groupId>org.softshaper</groupId> <artifactId>report</artifactId> 
+			<version>${project.version}</version> </dependency> -->
+		<dependency>
 			<groupId>org.softshaper</groupId>
-			<artifactId>report</artifactId>
+			<artifactId>view-api</artifactId>
 			<version>${project.version}</version>
-		</dependency>-->
-    <dependency>
-      <groupId>org.softshaper</groupId>
-      <artifactId>view-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.softshaper</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+		</dependency>
+		<dependency>
+			<groupId>org.softshaper</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.softshaper</groupId>
+			<artifactId>util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.softshaper</groupId>
+			<artifactId>drools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
