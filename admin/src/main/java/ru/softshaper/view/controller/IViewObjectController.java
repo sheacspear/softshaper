@@ -1,14 +1,14 @@
-package ru.softshaper.web.admin.view.controller;
+package ru.softshaper.view.controller;
 
 import ru.softshaper.services.meta.FieldType;
 import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.ObjectExtractor;
-import ru.softshaper.web.admin.bean.obj.impl.FullObjectView;
-import ru.softshaper.web.admin.bean.obj.impl.TitleObjectView;
-import ru.softshaper.web.admin.bean.objlist.IColumnView;
-import ru.softshaper.web.admin.bean.objlist.IListObjectsView;
-import ru.softshaper.web.admin.bean.objlist.ITableObjectsView;
+import ru.softshaper.view.bean.obj.impl.FullObjectView;
+import ru.softshaper.view.bean.obj.impl.TitleObjectView;
+import ru.softshaper.view.bean.objlist.IColumnView;
+import ru.softshaper.view.bean.objlist.IListObjectsView;
+import ru.softshaper.view.bean.objlist.ITableObjectsView;
 
 import java.util.Collection;
 import java.util.Map;
