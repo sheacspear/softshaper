@@ -288,7 +288,6 @@ public class QueryServiceRest {
     folderView.setId("audit/page/1");
     folderView.setName("Аудит");
     folders2.add(folderView);
-
     // Все задачи
     folderView = new FolderView();
     folderView.setType("objlist");

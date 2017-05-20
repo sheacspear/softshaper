@@ -25,11 +25,13 @@ public class WebSocketCUDListener {
     String userLogin = event.getUserLogin();
     sendText(userLogin);
   }
+
   @Subscribe
   public void createMessageListener(ObjectCreated event) {
     String userLogin = event.getUserLogin();
     sendText(userLogin);
   }
+
   @Subscribe
   public void deleteMessageListener(ObjectDeleted event) {
     String userLogin = event.getUserLogin();
