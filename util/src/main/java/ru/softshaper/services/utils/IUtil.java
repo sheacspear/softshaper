@@ -10,6 +10,6 @@ public interface IUtil {
 
   StepUtil getNextStep(Map<String, Object> data);
 
-  ResultUtil execute(Map<String, Object> data);
+  IResultUtil execute(String metaClazz, String objId, Map<String, Object> data);
 
 }

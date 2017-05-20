@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 import ru.softshaper.bean.meta.FieldTypeView;
 import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
+import ru.softshaper.services.utils.IUtil;
+import ru.softshaper.services.utils.IUtilsEngine;
 import ru.softshaper.view.bean.obj.IObjectView;
 import ru.softshaper.view.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.view.bean.obj.impl.FullObjectView;
 import ru.softshaper.view.bean.obj.impl.TitleObjectView;
+import ru.softshaper.view.bean.obj.impl.UtilView;
 import ru.softshaper.view.bean.objlist.IColumnView;
 import ru.softshaper.view.bean.objlist.IListObjectsView;
 import ru.softshaper.view.bean.objlist.IObjectRowView;
@@ -49,6 +52,10 @@ public class ViewObjectController implements IViewObjectController {
 
   @Autowired
   private DataSourceStorage dataSourceStorage;
+  
+  @Autowired
+  private IUtilsEngine utilsEngine;
+  
   /**
    *
    */
@@ -147,7 +154,11 @@ public class ViewObjectController implements IViewObjectController {
       view.addField(metaField, fieldView, value, variants);
     }
     String title = constructTitle(titleFields);
-    view.setTitle(title);
+    view.setTitle(title);    
+    Collection<IUtil> utils = utilsEngine.getAvailableUtilsForObject(metaClassCode, objectExtractor.getId(obj, metaClass));
+    if (utils != null) {
+      view.setUtilViews(utils.stream().map(e -> new UtilView(e.getName(), e.getCode())).collect(Collectors.toList()));
+    }
     return view.build();
   }
 

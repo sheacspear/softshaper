@@ -35,15 +35,17 @@ public interface IUtilsEngine {
 
   /**
    * @param utilCode
+   * @param objId
+   * @param metaClazz
    * @param data
    * @return
    */
-  ResultUtil execute(String utilCode, Map<String, Object> data);
+  IResultUtil execute(String utilCode, String metaClazz, String objId, Map<String, Object> data);
 
   /**
    * @param util
    */
-  void registerObjectUtil(IUtil util);
+  void registerObjectUtil(IUtil util, String metaClazz);
 
   /**
    * @param util

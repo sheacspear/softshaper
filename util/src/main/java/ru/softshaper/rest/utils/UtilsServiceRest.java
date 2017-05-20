@@ -18,6 +18,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.softshaper.rest.utils.bean.UtilBean;
 import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
+import ru.softshaper.services.utils.IResultUtil;
 import ru.softshaper.services.utils.StepUtil;
 
 /**
@@ -41,7 +42,7 @@ public class UtilsServiceRest {
   }
 
   @GET
-  @Path("/utils/{metaClazz}/{objId}")
+  @Path("/{metaClazz}/{objId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<UtilBean> getUtilsByObject(@PathParam("metaClazz") String metaClazz, @PathParam("objId") String objId) {
     Collection<IUtil> utils = utilsEngine.getAvailableUtilsForObject(metaClazz, objId);
@@ -54,5 +55,13 @@ public class UtilsServiceRest {
   public StepUtil getNextStep(@PathParam("utilCode") String utilCode, Map<String, Object> data) {
     StepUtil step = utilsEngine.getNextStep(utilCode, data);
     return step;
+  }
+
+  @POST
+  @Path("/{utilCode}/{metaClazz}/{objId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public IResultUtil execute(@PathParam("utilCode") String utilCode, @PathParam("metaClazz") String metaClazz, @PathParam("objId") String objId,
+      Map<String, Object> data) {
+    return utilsEngine.execute(utilCode, metaClazz, objId, data);
   }
 }

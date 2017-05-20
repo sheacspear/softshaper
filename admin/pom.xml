@@ -216,6 +216,11 @@
 			<artifactId>util</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.softshaper</groupId>
+			<artifactId>drools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -3,6 +3,7 @@ package ru.softshaper.view.bean.obj.impl;
 import ru.softshaper.view.bean.obj.IFieldView;
 import ru.softshaper.view.bean.obj.IFullObjectView;
 import ru.softshaper.view.bean.obj.IObjectView;
+import ru.softshaper.view.bean.obj.IUtilView;
 import ru.softshaper.view.bean.obj.builder.FullObjectViewBuilder;
 import ru.softshaper.view.viewsettings.ViewSetting;
 
@@ -20,6 +21,8 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
    *
    */
   private final List<IFieldView> fields;
+
+  private final List<IUtilView> utilViews;
 
   /**
    *
@@ -45,13 +48,14 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
    * @param values
    * @param variants
    */
-  public FullObjectView(String contentCode, String id, String title, List<IFieldView> fields,
-                        Map<String, ViewSetting> viewSettig, Map<String, ?> values, Map<String, Collection<IObjectView>> variants) {
+  public FullObjectView(String contentCode, String id, String title, List<IFieldView> fields, Map<String, ViewSetting> viewSettig, Map<String, ?> values,
+      Map<String, Collection<IObjectView>> variants, List<IUtilView> utilViews) {
     super(contentCode, id, title);
     this.fields = fields;
     this.viewSettig = viewSettig;
     this.values = values;
     this.variants = variants;
+    this.utilViews = utilViews;
   }
 
   /*
@@ -102,5 +106,10 @@ public class FullObjectView extends TitleObjectView implements IFullObjectView {
    */
   public static FullObjectViewBuilder newBuilder(String contentCode, String key) {
     return new FullObjectViewBuilder(contentCode, key);
+  }
+
+  @Override
+  public List<IUtilView> getUtils() {
+    return utilViews;
   }
 }

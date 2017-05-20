@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
-import ru.softshaper.services.utils.ResultUtil;
+import ru.softshaper.services.utils.IResultUtil;
 import ru.softshaper.services.utils.StepUtil;
 
 /**
@@ -23,7 +23,7 @@ public class WorkFlowUtil implements IUtil {
 
   @PostConstruct
   public void init() {
-    utilsEngine.registerObjectUtil(this);
+    utilsEngine.registerObjectUtil(this, null);
   }
 
   /*
@@ -63,7 +63,7 @@ public class WorkFlowUtil implements IUtil {
    * @see ru.softshaper.services.utils.IUtil#execute(java.util.Map)
    */
   @Override
-  public ResultUtil execute(Map<String, Object> data) {
+  public IResultUtil execute(String metaClazz, String objId, Map<String, Object> data) {
     // TODO Auto-generated method stub
     return null;
   }

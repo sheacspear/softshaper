@@ -7,12 +7,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
-import ru.softshaper.services.utils.ResultUtil;
+import ru.softshaper.services.utils.IResultUtil;
 import ru.softshaper.services.utils.StepUtil;
 
 @Service
@@ -27,6 +29,11 @@ public class UtilsEngine implements IUtilsEngine {
    * Object utils
    */
   private final Map<String, IUtil> objectUtils = Maps.newHashMap();
+
+  /**
+   * Object utils
+   */
+  private final Multimap<String, IUtil> clazzUtils = ArrayListMultimap.create();
 
   /*
    * (non-Javadoc)
@@ -48,8 +55,9 @@ public class UtilsEngine implements IUtilsEngine {
    * services.utils.IUtil)
    */
   @Override
-  public synchronized void registerObjectUtil(IUtil util) {
+  public synchronized void registerObjectUtil(IUtil util, String metaClazz) {
     objectUtils.put(util.getCode(), util);
+    clazzUtils.put(metaClazz, util);
   }
 
   /*
@@ -103,10 +111,10 @@ public class UtilsEngine implements IUtilsEngine {
    * java.util.Map)
    */
   @Override
-  public ResultUtil execute(String utilCode, Map<String, Object> data) {
+  public IResultUtil execute(String utilCode, String metaClazz, String objId, Map<String, Object> data) {
     IUtil util = this.getUtilByCode(utilCode);
     Preconditions.checkNotNull(util);
-    return util.execute(data);
+    return util.execute(metaClazz, objId, data);
   }
 
   /**
@@ -116,6 +124,9 @@ public class UtilsEngine implements IUtilsEngine {
    * @return
    */
   private Collection<IUtil> checkCondition(Collection<IUtil> utils, String metaClazz, String objId) {
+    if (metaClazz != null) {
+      return clazzUtils.get(metaClazz);
+    }
     return utils;
   }
 

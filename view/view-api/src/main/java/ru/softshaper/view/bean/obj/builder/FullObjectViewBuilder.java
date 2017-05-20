@@ -6,6 +6,7 @@ import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.view.bean.obj.IFieldView;
 import ru.softshaper.view.bean.obj.IObjectView;
+import ru.softshaper.view.bean.obj.IUtilView;
 import ru.softshaper.view.bean.obj.impl.FieldView;
 import ru.softshaper.view.bean.obj.impl.FullObjectView;
 import ru.softshaper.view.bean.obj.impl.TitleObjectView;
@@ -39,6 +40,8 @@ public class FullObjectViewBuilder {
    */
   private List<IFieldView> fields = Lists.newArrayList();
 
+  private List<IUtilView> utilViews;
+
   /**
    *
    */
@@ -70,6 +73,11 @@ public class FullObjectViewBuilder {
     return this;
   }
 
+  public FullObjectViewBuilder setUtilViews(List<IUtilView> utilViews) {
+    this.utilViews = utilViews;
+    return this;
+  }
+
   public <T> FullObjectViewBuilder addField(FieldView field) {
     this.fields.add(field);
     return this;
@@ -79,22 +87,19 @@ public class FullObjectViewBuilder {
     MetaField backReferenceField = metaField.getBackReferenceField();
     MetaClass linkToMetaClass = metaField.getLinkToMetaClass();
     fields.add(new FieldView(metaField.getName(), metaField.getCode(), metaField.getType().getDefaultView(),
-        linkToMetaClass != null ? linkToMetaClass.getCode() : null,
-        backReferenceField != null ? backReferenceField.getCode() : null));
+        linkToMetaClass != null ? linkToMetaClass.getCode() : null, backReferenceField != null ? backReferenceField.getCode() : null));
     viewSettig.put(metaField.getCode(), fieldView);
     values.put(metaField.getCode(), value);
     return this;
   }
 
-  public <T> FullObjectViewBuilder addField(MetaField metaField, ViewSetting fieldView, T value,
-                                            IListObjectsView variants) {
+  public <T> FullObjectViewBuilder addField(MetaField metaField, ViewSetting fieldView, T value, IListObjectsView variants) {
     addField(metaField, fieldView, value);
     List<IObjectView> variantsLocal = new ArrayList<>();
     if (variants != null) {
       variantsLocal.add(new TitleObjectView("null", null, "---"));
       variantsLocal.addAll(variants.getObjects());
-      Collections.sort(variantsLocal,
-          (o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
+      Collections.sort(variantsLocal, (o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
       this.variants.put(metaField.getCode(), variantsLocal);
     }
     return this;
@@ -116,6 +121,6 @@ public class FullObjectViewBuilder {
       }
       return 0;
     });
-    return new FullObjectView(contentCode, id, title, fields, viewSettig, values, variants);
+    return new FullObjectView(contentCode, id, title, fields, viewSettig, values, variants, utilViews);
   }
 }

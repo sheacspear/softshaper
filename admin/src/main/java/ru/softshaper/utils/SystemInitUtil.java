@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
-import ru.softshaper.services.utils.ResultUtil;
+import ru.softshaper.services.utils.IResultUtil;
 import ru.softshaper.services.utils.StepUtil;
 import ru.softshaper.view.viewsettings.store.ViewSettingStore;
 
@@ -55,7 +55,7 @@ public class SystemInitUtil implements IUtil {
   }
 
   @Override
-  public ResultUtil execute(Map<String, Object> data) {
+  public IResultUtil execute(String metaClazz, String objId, Map<String, Object> data) {
     metaInitializer.init();
     viewSettingFactory.init();
     return null;

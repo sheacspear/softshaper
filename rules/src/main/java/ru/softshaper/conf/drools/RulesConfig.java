@@ -5,7 +5,7 @@ import org.kie.api.KieServices;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@ComponentScan({ "ru.softshaper.services.drools" })
+@ComponentScan(basePackages = { "ru.softshaper.services.drools", "ru.softshaper.utils.rules" })
 public class RulesConfig {
 
   @Bean
