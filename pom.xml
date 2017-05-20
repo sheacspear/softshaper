@@ -48,6 +48,7 @@
 		<module>view</module>
 		<module>admin</module>
 		<module>rules</module>				
+		<module>util</module>		
 	</modules>
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
