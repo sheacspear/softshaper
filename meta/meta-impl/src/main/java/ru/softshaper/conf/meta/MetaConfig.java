@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
 @Configuration
 @Import({ JooqConfig.class})
 @ComponentScan({"ru.softshaper.datasource.meta","ru.softshaper.staticcontent.meta","ru.softshaper.services.meta",
-                "ru.softshaper.audit.staticcontent"})
+                "ru.softshaper.audit.staticcontent", "ru.softshaper.audit.utils"})
 public class MetaConfig {
 
   /**

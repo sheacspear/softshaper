@@ -19,14 +19,16 @@ public class AuditStaticContent extends StaticContentBase {
     String type = "type";
     String description = "description";
     String user = "user";
+    String object = "object";
   }
 
   @Autowired
   public AuditStaticContent(@Qualifier("data") ContentDataSource<Record> dataSource) {
     super(META_CLASS, "Журнал изменений объектов", Audit.AUDIT.getName(), dataSource);
-    this.registerField(Audit.AUDIT.DATE, FieldType.STRING).setName("Дата").setCode(Field.date);
+    this.registerField(Audit.AUDIT.DATE, FieldType.DATE).setName("Дата").setCode(Field.date);
     this.registerField(Audit.AUDIT.TYPE, FieldType.STRING).setName("Тип").setCode(Field.type);
     this.registerField(Audit.AUDIT.DESCRIPTION, FieldType.STRING).setName("Описание").setCode(Field.description);
     this.registerField(Audit.AUDIT.USER, FieldType.STRING).setName("Пользователь").setCode(Field.user);
+    this.registerField(Audit.AUDIT.OBJECT_LINK, FieldType.UNIVERSAL_LINK).setName("Объект").setCode(Field.object);
   }
 }

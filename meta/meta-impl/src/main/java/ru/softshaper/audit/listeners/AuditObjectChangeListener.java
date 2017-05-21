@@ -1,15 +1,16 @@
 package ru.softshaper.audit.listeners;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-
 import com.google.common.eventbus.Subscribe;
-
 import ru.softshaper.datasource.events.ObjectCreated;
 import ru.softshaper.datasource.events.ObjectDeleted;
 import ru.softshaper.datasource.events.ObjectUpdated;
+import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.storage.jooq.tables.daos.AuditDao;
 import ru.softshaper.storage.jooq.tables.pojos.Audit;
+
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Created by Sunchise on 18.05.2017.
@@ -23,17 +24,35 @@ public class AuditObjectChangeListener {
   }
 
   private String constructDescription(ObjectCreated info) {
-    return String.format("Object of class %1$s was created with id %2$s. Values %3$s", info.getMetaClass().getCode(), info.getId(),
-        String.valueOf(info.getValues()));
+    return String.format("Объект класса %1$s был создан с идентификатором %2$s\n" +
+            "Состав полей:\n" +
+            "%3$s",
+        info.getMetaClass().getName(),
+        info.getId(),
+        constructFieldsDescription(info.getValues()));
   }
 
   private String constructDescription(ObjectUpdated info) {
-    return String.format("Object of class %1$s with id %2$s was updated. Values %3$s", info.getMetaClass().getCode(), info.getId(),
-        String.valueOf(info.getValues()));
+    return String.format("Объект класса %1$s с идентификатором %2$s был изменён\n" +
+            "Состав полей:\n" +
+            "%3$s",
+        info.getMetaClass().getName(),
+        info.getId(),
+        constructFieldsDescription(info.getValues()));
+  }
+
+  private String constructFieldsDescription(Map<MetaField, Object> values) {
+    return values.entrySet()
+        .stream()
+        .map(entry -> entry.getKey().getName() + ": " + entry.getValue())
+        .reduce((s, s2) -> s + "\n" + s2)
+        .orElse("");
   }
 
   private String constructDescription(ObjectDeleted info) {
-    return String.format("Object of class %1$s with id %2$s was deleted.", info.getMetaClass().getCode(), info.getId());
+    return String.format("Объект класса %1$s с идентификатором %2$s был удалён.",
+        info.getMetaClass().getName(),
+        info.getId());
   }
 
   @Subscribe
@@ -44,6 +63,7 @@ public class AuditObjectChangeListener {
     audit.setType("create object");
     audit.setDescription(constructDescription(objectCreated));
     audit.setUser(objectCreated.getUserLogin());
+    audit.setObjectLink(objectCreated.getId() + "@" + objectCreated.getMetaClass().getCode());
     auditDao.insert(audit);
   }
 
@@ -52,9 +72,10 @@ public class AuditObjectChangeListener {
     Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
     Audit audit = new Audit();
     audit.setDate(date);
-    audit.setType("update objectt");
+    audit.setType("update object");
     audit.setDescription(constructDescription(objectUpdated));
     audit.setUser(objectUpdated.getUserLogin());
+    audit.setObjectLink(objectUpdated.getId() + "@" + objectUpdated.getMetaClass().getCode());
     auditDao.insert(audit);
   }
 
@@ -63,7 +84,7 @@ public class AuditObjectChangeListener {
     Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
     Audit audit = new Audit();
     audit.setDate(date);
-    audit.setType("delete objectt");
+    audit.setType("delete object");
     audit.setDescription(constructDescription(objectDeleted));
     audit.setUser(objectDeleted.getUserLogin());
     auditDao.insert(audit);
