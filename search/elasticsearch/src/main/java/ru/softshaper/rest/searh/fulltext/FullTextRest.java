@@ -8,15 +8,14 @@ import ru.softshaper.search.elasticsearch.Indexator;
 import ru.softshaper.search.elasticsearch.Searcher;
 import ru.softshaper.view.SearchResult;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/pr/fulltext")
 public class FullTextRest {
@@ -42,12 +41,10 @@ public class FullTextRest {
   @Path("/search")
   @Produces(MediaType.APPLICATION_JSON)
   public List<SearchResult> search(@QueryParam("text") String text) {
-    return searcher.search(text);/*
-    List<SearchResult> result = new ArrayList<>();
-    result.add(new SearchResult("1","doc","Заголовок1",null));
-    result.add(new SearchResult("2","doc","Заголовок2",null));
-    return result;
-    */
+    return searcher.search(text)
+        .stream()
+        .filter(searchResult -> searchResult.getTitle() != null && !searchResult.getTitle().equals(""))
+        .collect(Collectors.toList());
   }
 
 
