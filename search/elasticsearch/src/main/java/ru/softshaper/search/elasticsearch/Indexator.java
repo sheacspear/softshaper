@@ -106,18 +106,18 @@ public class Indexator {
           throw new RuntimeException(e.getMessage(), e);
         }
       }
-      try {
-        sourceBuilder = sourceBuilder.endObject();
-      } catch (IOException e) {
-        log.error(e.getMessage(), e);
-        throw new RuntimeException(e.getMessage(), e);
-      }
-      IndexRequestBuilder index = client.prepareIndex(INDEX_BASE, metaClassCode, id);
-      index.setSource(sourceBuilder);
-      BulkRequestBuilder bulkRequest = client.prepareBulk();
-      bulkRequest.add(index);
-      bulkRequest.get();
     }
+    try {
+      sourceBuilder = sourceBuilder.endObject();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    IndexRequestBuilder index = client.prepareIndex(INDEX_BASE, metaClassCode, id);
+    index.setSource(sourceBuilder);
+    BulkRequestBuilder bulkRequest = client.prepareBulk();
+    bulkRequest.add(index);
+    bulkRequest.get();
   }
 
   public void deleteIndex(String metaClassCode, String id) {
