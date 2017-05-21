@@ -1,24 +1,24 @@
 package ru.softshaper.services.drools.bean;
 
+import java.util.Collection;
+
+import org.jooq.tools.StringUtils;
+
 public class MetaData {
+
+  private final Collection<String> tags;
+
+  public MetaData(Collection<String> tags) {
+    super();
+    this.tags = tags;
+  }
+
+  public Collection<String> getTags() {
+    return tags;
+  }
 
   @Override
   public String toString() {
-    return "MetaData [metaData=" + metaData + "]";
+    return StringUtils.join(tags, ",");
   }
-
-  private String metaData;
-
-  public MetaData(String metaData) {
-    this.metaData = metaData;
-  }
-
-  public String getMetaData() {
-    return metaData;
-  }
-
-  public void setMetaData(String metaData) {
-    this.metaData = metaData;
-  }
-
 }

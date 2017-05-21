@@ -13,9 +13,7 @@ then
         MetaData metaData = parser.parse(data);    
 		$ruleContext.setMetaData(metaData);
 		$ruleContext.setMode("save");
-		System.out.println(metaData);
+		$ruleContext.addMessage("Анализ файлов","Из файла:" + data.toString()+ " извлечены теги " + metaData.toString());
 		update($ruleContext);
-	}
-	System.out.println("end rule parseData");
-	
+	}	
 end

@@ -1,6 +1,9 @@
 package ru.softshaper.services.drools;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.core.SessionConfiguration;
@@ -11,6 +14,8 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.io.ResourceFactory;
+
+import com.google.common.collect.Multimap;
 
 import ru.softshaper.services.drools.contex.RuleContext;
 import ru.softshaper.services.drools.parser.Parser;
@@ -55,10 +60,16 @@ public class Run {
     kSession.insert(object);
     // kSession.getAgenda().activateRuleFlowGroup("Group1");
     kSession.fireAllRules();
+
+    Multimap<String, String> msgs = object.getMsgs();
+    for (Entry<String, String> entry : msgs.entries()) {
+      System.out.println("Правило " + entry.getKey() + " сообщение:" + entry.getValue());
+    }
+
     // kSession.setGlobal("topicLevel", "Beginner");
     // kSession.setGlobal("ruleContext", new RuleContext());
     // kSession.insert(new DroolsIntroduction("Drools"));
     // kSession.fireAllRules();
-    System.out.println(object);
+    // .args. .args.System.out.println(object);
   }
 }

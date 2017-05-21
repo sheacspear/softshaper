@@ -3,7 +3,9 @@ package ru.softshaper.utils.rules;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 import ru.softshaper.services.drools.IRuleDisigner;
 import ru.softshaper.services.drools.contex.RuleContext;
@@ -55,6 +58,17 @@ public class ExecuteRulesUtil implements IUtil {
 
   @Autowired
   private IUtilsEngine utilsEngine;
+  
+  
+  @Autowired
+  private Parser parser;
+  @Autowired
+  private DataProvider dataProvider;
+  @Autowired
+  private Saver saver;
+  
+  
+  
 
   @PostConstruct
   public void init() {
@@ -97,7 +111,7 @@ public class ExecuteRulesUtil implements IUtil {
       // получить правила
       Collection<DcRule> dcRules = dcRuleDao.fetchByRulessuit(suit.getId());
       for (DcRule e : dcRules) {
-        kfs.write("src/main/resources/" + e.getName() + ".drl", ResourceFactory.newByteArrayResource(e.getDescr().getBytes("UTF-8")));
+        kfs.write("src/main/resources/" + e.getName() + ".drl", ResourceFactory.newByteArrayResource(e.getDescr().getBytes()));
       }
       kfs.generateAndWritePomXML(releaseId);
 
@@ -112,13 +126,22 @@ public class ExecuteRulesUtil implements IUtil {
       KieContainer kieContainer = ks.newKieContainer(releaseId);
       KieSessionConfiguration conf = SessionConfiguration.getDefaultInstance();
       KieSession kSession = kieContainer.newKieSession(conf);
-      kSession.setGlobal("dataProvider", new DataProvider());
-      kSession.setGlobal("parser", new Parser());
-      kSession.setGlobal("saver", new Saver());
+      kSession.setGlobal("dataProvider", dataProvider);
+      kSession.setGlobal("parser", parser);
+      kSession.setGlobal("saver", saver);
       RuleContext object = new RuleContext();
       kSession.insert(object);
-      kSession.fireAllRules();
-      return new ResultUtil("Правила выполнены", false, null);
+      int resultCnt = kSession.fireAllRules();
+
+      Collection<String> msgsD = Lists.newArrayList();
+      msgsD.add("Выполнено правил: " + resultCnt);
+      Multimap<String, String> msgs = object.getMsgs();
+      for (Entry<String, String> entry : msgs.entries()) {
+        msgsD.add("Правило " + entry.getKey() + " сообщение:" + entry.getValue());
+        // System.out.println("Правило " + entry.getKey() + " сообщение:" +
+        // entry.getValue());
+      }
+      return new ResultUtil("Выполнено правил: " + resultCnt, true, msgsD);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       return new ResultUtil(null, true, Arrays.asList(e.getMessage()));

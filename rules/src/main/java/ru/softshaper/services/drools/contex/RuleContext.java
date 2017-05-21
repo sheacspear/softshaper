@@ -1,7 +1,12 @@
 package ru.softshaper.services.drools.contex;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+
 import ru.softshaper.services.drools.bean.Data;
 import ru.softshaper.services.drools.bean.MetaData;
+import ru.softshaper.services.utils.IUtil;
 
 public class RuleContext {
 
@@ -10,7 +15,13 @@ public class RuleContext {
   private Data data;
 
   private MetaData metaData;
-  
+
+  private final Multimap<String, String> msgs = LinkedListMultimap.create();
+
+  public Multimap<String, String> getMsgs() {
+    return msgs;
+  }
+
   public String getMode() {
     return mode;
   }
@@ -33,6 +44,10 @@ public class RuleContext {
 
   public void setMetaData(MetaData metaData) {
     this.metaData = metaData;
+  }
+
+  public void addMessage(String rule, String message) {
+    msgs.put(rule, message);
   }
 
   @Override

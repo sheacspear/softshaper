@@ -12,11 +12,16 @@ then
 	Data data = $ruleContext.getData();
 	MetaData metaData = $ruleContext.getMetaData();
     if(data!=null && metaData!=null){
-        saver.save(data,metaData);    
+        Doc doc = saver.save( data, metaData);    
         $ruleContext.setMode("end");
-		System.out.println($ruleContext);
+        
+        if(doc!=null){
+          $ruleContext.addMessage("Сохранение файла","Файла:" + data.toString()+ "сохранен в документ " + doc.toString());
+        }else{
+          $ruleContext.addMessage("Сохранение файла","Файла:" + data.toString()+ " сопостовимый документ не найден" );
+        }
+
 		insert($ruleContext);
 	}
-	System.out.println("end rule saveData");
 
 end

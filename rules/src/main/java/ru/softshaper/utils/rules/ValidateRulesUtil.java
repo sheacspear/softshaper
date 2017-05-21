@@ -89,7 +89,7 @@ public class ValidateRulesUtil implements IUtil {
       // получить правила
       Collection<DcRule> dcRules = dcRuleDao.fetchByRulessuit(suit.getId());
       for (DcRule e : dcRules) {
-        kfs.write("src/main/resources/" + e.getName() + ".drl", ResourceFactory.newByteArrayResource(e.getDescr().getBytes("UTF-8")));
+        kfs.write("src/main/resources/" + e.getName() + ".drl", ResourceFactory.newByteArrayResource(e.getDescr().getBytes()));
       }
       kfs.generateAndWritePomXML(releaseId);
       KieBuilder kieBuilder = ks.newKieBuilder(kfs).buildAll();

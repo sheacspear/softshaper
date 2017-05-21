@@ -12,9 +12,7 @@ then
     if(data!=null){
 		$ruleContext.setData(data);
 		$ruleContext.setMode("parse");
-		System.out.println(data);
+		$ruleContext.addMessage("Загрузка данных из Kanban","Получен файл:" + data.toString());
 		update($ruleContext);
-	}
-	System.out.println("end rule getDataByKanban");
-	
+	}	
 end
