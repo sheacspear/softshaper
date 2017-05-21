@@ -1,12 +1,16 @@
 package ru.softshaper.services.drools.parser;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.POIXMLPropertiesTextExtractor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Maps;
 
 import ru.softshaper.services.drools.bean.Data;
 import ru.softshaper.services.drools.bean.MetaData;
@@ -14,17 +18,30 @@ import ru.softshaper.services.drools.bean.MetaData;
 @Component
 public class Parser {
 
-  private static Map<String, Collection<String>> metaMap = Maps.newHashMap();
+  public MetaData parse(Data data) throws InvalidFormatException, IOException {
+    if (data == null) {
+      return null;
+    }
+    byte[] data2 = data.getData();
+    if (data2 == null) {
+      return null;
+    }
+    XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(new ByteArrayInputStream(data2)));
+    XWPFWordExtractor extractor = new XWPFWordExtractor(xdoc);
+    POIXMLPropertiesTextExtractor pOIXMLPropertiesTextExtractor = extractor.getMetadataTextExtractor();
+    pOIXMLPropertiesTextExtractor.getCorePropertiesText();
+    String keyWords = pOIXMLPropertiesTextExtractor.getCoreProperties().getKeywords();
+    if (keyWords == null) {
+      return null;
+    }
+    // xdoc.get
 
-  static {
-    metaMap.put("test1.docx", Arrays.asList("Test1", "Kanban"));
-    metaMap.put("test2.docx", Arrays.asList("Test2", "Bims"));
-    metaMap.put("test3.docx", Arrays.asList("Test3"));
-    metaMap.put("test4.docx", Arrays.asList("Test4"));
-    metaMap.put("test5.docx", Arrays.asList("Test5"));
+    return new MetaData(Arrays.asList(keyWords.split(",")));
   }
 
-  public MetaData parse(Data data) {
-    return new MetaData(metaMap.get(data.getFileName()));
+  public static void main(String... arg) throws IOException, InvalidFormatException {
+    URL website = new URL("https://www.dropbox.com/s/an5bhkz87aio061/test1.docx?dl=1");
+    byte[] data2 = IOUtils.toByteArray(website.openStream());
+    new Parser().parse(new Data("", data2));
   }
 }
