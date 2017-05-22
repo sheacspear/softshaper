@@ -58,6 +58,7 @@ public class ShowAuditHistory implements IUtil {
         .sorted(Comparator.comparing(Audit::getDate))
         .map(audit -> audit.getDate() + "\n" + "Пользователь: " + audit.getUser() + "\n" + audit.getDescription())
         .collect(Collectors.toList());
+    Collections.reverse(messages);
     return new ResultUtil("Result", true, messages);
   }
 }
