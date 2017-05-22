@@ -35,7 +35,7 @@ public class ShowAuditHistory implements IUtil {
 
   @Override
   public String getName() {
-    return "Показать историю изменения объекта";
+    return "Показать историю объекта";
   }
 
   @Override
@@ -52,7 +52,7 @@ public class ShowAuditHistory implements IUtil {
   public IResultUtil execute(String metaClazz, String objId, Map<String, Object> data) {
     List<Audit> audits = auditDao.fetchByObjectLink(objId + "@" + metaClazz);
     if (audits.isEmpty()) {
-      return new ResultUtil("Result", true, Collections.singletonList("Истории изменения объектов не найдено"));
+      return new ResultUtil("Result", true, Collections.singletonList("Истории объектов не найдено"));
     }
     List<String> messages = audits.stream()
         .sorted(Comparator.comparing(Audit::getDate))

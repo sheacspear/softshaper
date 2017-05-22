@@ -3,6 +3,7 @@ package ru.softshaper.audit.listeners;
 import com.google.common.eventbus.Subscribe;
 import ru.softshaper.datasource.events.ObjectCreated;
 import ru.softshaper.datasource.events.ObjectDeleted;
+import ru.softshaper.datasource.events.ObjectExecuted;
 import ru.softshaper.datasource.events.ObjectUpdated;
 import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.storage.jooq.tables.daos.AuditDao;
@@ -11,6 +12,8 @@ import ru.softshaper.storage.jooq.tables.pojos.Audit;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by Sunchise on 18.05.2017.
@@ -60,7 +63,7 @@ public class AuditObjectChangeListener {
     Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
     Audit audit = new Audit();
     audit.setDate(date);
-    audit.setType("create object");
+    audit.setType("Создание");
     audit.setDescription(constructDescription(objectCreated));
     audit.setUser(objectCreated.getUserLogin());
     audit.setObjectLink(objectCreated.getId() + "@" + objectCreated.getMetaClass().getCode());
@@ -72,7 +75,7 @@ public class AuditObjectChangeListener {
     Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
     Audit audit = new Audit();
     audit.setDate(date);
-    audit.setType("update object");
+    audit.setType("Обновление");
     audit.setDescription(constructDescription(objectUpdated));
     audit.setUser(objectUpdated.getUserLogin());
     audit.setObjectLink(objectUpdated.getId() + "@" + objectUpdated.getMetaClass().getCode());
@@ -84,9 +87,21 @@ public class AuditObjectChangeListener {
     Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
     Audit audit = new Audit();
     audit.setDate(date);
-    audit.setType("delete object");
+    audit.setType("Удаление");
     audit.setDescription(constructDescription(objectDeleted));
     audit.setUser(objectDeleted.getUserLogin());
+    auditDao.insert(audit);
+  }
+  
+  @Subscribe
+  public void onObjectExecuted(ObjectExecuted objectDeleted) {
+    Timestamp date = new Timestamp(Calendar.getInstance().getTimeInMillis());
+    Audit audit = new Audit();
+    audit.setDate(date);
+    audit.setType("Выполнение");
+    audit.setDescription(StringUtils.join(objectDeleted.getMsgs(), System.getProperty("line.separator")));
+    audit.setUser(objectDeleted.getUserLogin());
+    audit.setObjectLink(objectDeleted.getId() + "@" + objectDeleted.getMetaClass());
     auditDao.insert(audit);
   }
 }

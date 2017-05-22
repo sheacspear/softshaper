@@ -28,12 +28,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.eventbus.EventBus;
 
+import ru.softshaper.datasource.events.ObjectExecuted;
 import ru.softshaper.services.drools.IRuleDisigner;
 import ru.softshaper.services.drools.contex.RuleContext;
 import ru.softshaper.services.drools.parser.Parser;
 import ru.softshaper.services.drools.provider.DataProvider;
 import ru.softshaper.services.drools.saver.Saver;
+import ru.softshaper.services.security.ContentSecurityManager;
 import ru.softshaper.services.utils.IResultUtil;
 import ru.softshaper.services.utils.IUtil;
 import ru.softshaper.services.utils.IUtilsEngine;
@@ -58,17 +61,20 @@ public class ExecuteRulesUtil implements IUtil {
 
   @Autowired
   private IUtilsEngine utilsEngine;
-  
-  
+
   @Autowired
   private Parser parser;
   @Autowired
   private DataProvider dataProvider;
   @Autowired
   private Saver saver;
-  
-  
-  
+  @Autowired
+  private EventBus eventBus;
+  /**
+   * Менеджер безопасности
+   */
+  @Autowired
+  private ContentSecurityManager securityManager;
 
   @PostConstruct
   public void init() {
@@ -141,6 +147,9 @@ public class ExecuteRulesUtil implements IUtil {
         // System.out.println("Правило " + entry.getKey() + " сообщение:" +
         // entry.getValue());
       }
+
+      eventBus.post(new ObjectExecuted(metaClazz, objId, securityManager.getCurrentUserLogin(), msgsD));
+
       return new ResultUtil("Выполнено правил: " + resultCnt, true, msgsD);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
