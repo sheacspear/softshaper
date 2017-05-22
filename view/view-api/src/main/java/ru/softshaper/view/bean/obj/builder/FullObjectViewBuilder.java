@@ -13,7 +13,10 @@ import ru.softshaper.view.bean.obj.impl.TitleObjectView;
 import ru.softshaper.view.bean.objlist.IListObjectsView;
 import ru.softshaper.view.viewsettings.ViewSetting;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * FullObjectViewBuilder for create FullObjectView
@@ -99,7 +102,7 @@ public class FullObjectViewBuilder {
     if (variants != null) {
       variantsLocal.add(new TitleObjectView("null", null, "---"));
       variantsLocal.addAll(variants.getObjects());
-      Collections.sort(variantsLocal, (o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
+      variantsLocal.sort((o1, o2) -> (o1 != null && o1.getTitle() != null) ? o1.getTitle().compareTo(o2.getTitle()) : -1);
       this.variants.put(metaField.getCode(), variantsLocal);
     }
     return this;
@@ -109,9 +112,9 @@ public class FullObjectViewBuilder {
    * @return object View for bissness object
    */
   public FullObjectView build() {
-    Collections.sort(fields, (field1, field2) -> {
-      ViewSetting o1 = viewSettig.get(field1);
-      ViewSetting o2 = viewSettig.get(field2);
+    fields.sort((field1, field2) -> {
+      ViewSetting o1 = viewSettig.get(field1.getCode());
+      ViewSetting o2 = viewSettig.get(field2.getCode());
 
       if ((o1 == null && o2 != null) || (o2 != null && o1.getNumber() < o2.getNumber())) {
         return -1;
