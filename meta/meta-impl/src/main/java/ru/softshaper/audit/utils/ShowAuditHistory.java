@@ -28,6 +28,9 @@ public class ShowAuditHistory implements IUtil {
   @PostConstruct
   public void init() {
     utilsEngine.registerObjectUtil(this, "suitRules");
+    utilsEngine.registerObjectUtil(this, "project");
+    utilsEngine.registerObjectUtil(this, "doc");
+    utilsEngine.registerObjectUtil(this, "rule");
   }
 
   @Override
