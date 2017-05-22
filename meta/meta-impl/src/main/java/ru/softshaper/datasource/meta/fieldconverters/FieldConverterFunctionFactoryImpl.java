@@ -27,9 +27,14 @@ public class FieldConverterFunctionFactoryImpl implements FieldConverterFunction
           return new Date(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").parse(value).getTime());
         }
         return new Date(new SimpleDateFormat("yyyy.MM.dd").parse(value).getTime());
-      } catch (ParseException e) {
+      } catch (ParseException e) {        
         log.error(e.getMessage(), e);
-        throw new RuntimeException(e.getMessage(), e);
+        try {
+          return new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime());
+        } catch (ParseException e1) {
+          log.error(e.getMessage(), e);
+          throw new RuntimeException(e.getMessage(), e);
+        }
       }
     });
     converterMap.put(Boolean.class, "true"::equals);
