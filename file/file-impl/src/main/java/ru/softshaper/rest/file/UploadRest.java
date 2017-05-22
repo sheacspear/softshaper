@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import ru.softshaper.bean.file.FileObjectBean;
 import ru.softshaper.datasource.file.FileObjectDataSource;
 
@@ -14,9 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -39,7 +38,6 @@ public class UploadRest {
 
   /**
    * @param attachments
-   * @param request
    * @return
    */
   @POST
@@ -48,7 +46,7 @@ public class UploadRest {
   public String uploadFile(List<Attachment> attachments) {
     for (Attachment attachment : attachments) {
       DataHandler handler = attachment.getDataHandler();
-      String filename = handler.getName();
+      String filename = new String(handler.getName().getBytes(Charset.forName("ISO-8859-1")), Charset.forName("utf-8"));
       InputStream stream = null;
       try {
         stream = handler.getInputStream();
