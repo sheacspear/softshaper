@@ -220,103 +220,105 @@ public class QueryServiceRest {
       folderView2.setName(conf.getName());
       folders1.add(folderView2);
     });
-    // nav2
-    folderView = new FolderView();
-    navigatorView.setFolders(folders1);
-    result.add(navigatorView);
-    navigatorView = new FolderView();
-    navigatorView.setName("Настройки");
-    final List<FolderView> folders2 = new ArrayList<FolderView>();
-    // dynamicContents
-    /*
-     * folderView = new FolderView(); folderView.setType("objlist");
-     * folderView.setId("dynamicContent/page/1"); folderView.setName(
-     * "Список меты"); folders1.add(folderView);
-     */
+    if (false) {
+      // nav2
+      folderView = new FolderView();
+      navigatorView.setFolders(folders1);
+      result.add(navigatorView);
+      navigatorView = new FolderView();
+      navigatorView.setName("Настройки");
+      final List<FolderView> folders2 = new ArrayList<FolderView>();
+      // dynamicContents
+      /*
+       * folderView = new FolderView(); folderView.setType("objlist");
+       * folderView.setId("dynamicContent/page/1"); folderView.setName(
+       * "Список меты"); folders1.add(folderView);
+       */
 
-    // контент
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(MetaClassStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Контент");
-    folders2.add(folderView);
-    // Пользователи
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(SecUserStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Пользователи");
-    folders2.add(folderView);
-    // Роли
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(SecRoleStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Роли");
-    folders2.add(folderView);
-    // Папки
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(FolderStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Папки");
-    folders2.add(folderView);
-    // Организации
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(OrganizationStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Организации");
-    folders2.add(folderView);
-    // Должность
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(PositionStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Должность");
-    folders2.add(folderView);
-    // Сотрудники
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId(EmployeeStaticContent.META_CLASS + "/page/1");
-    folderView.setName("Сотрудники");
-    folders2.add(folderView);
-    // Классы
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId("metaClass/page/1");
-    folderView.setName("Классы");
-    folders2.add(folderView);
-    // Аудит
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId("audit/page/1");
-    folderView.setName("Аудит");
-    folders2.add(folderView);
-    // Все задачи
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId("task/page/1");
-    folderView.setName("Все задачи");
-    folders2.add(folderView);
+      // контент
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(MetaClassStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Контент");
+      folders2.add(folderView);
+      // Пользователи
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(SecUserStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Пользователи");
+      folders2.add(folderView);
+      // Роли
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(SecRoleStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Роли");
+      folders2.add(folderView);
+      // Папки
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(FolderStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Папки");
+      folders2.add(folderView);
+      // Организации
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(OrganizationStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Организации");
+      folders2.add(folderView);
+      // Должность
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(PositionStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Должность");
+      folders2.add(folderView);
+      // Сотрудники
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId(EmployeeStaticContent.META_CLASS + "/page/1");
+      folderView.setName("Сотрудники");
+      folders2.add(folderView);
+      // Классы
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId("metaClass/page/1");
+      folderView.setName("Классы");
+      folders2.add(folderView);
+      // Аудит
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId("audit/page/1");
+      folderView.setName("Аудит");
+      folders2.add(folderView);
+      // Все задачи
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId("task/page/1");
+      folderView.setName("Все задачи");
+      folders2.add(folderView);
 
+      // Мои задачи
+      folderView = new FolderView();
+      folderView.setType("objlist");
+      folderView.setId("myTask/page/1");
+      folderView.setName("Мои задачи");
+      folders2.add(folderView);
 
-    // Мои задачи
-    folderView = new FolderView();
-    folderView.setType("objlist");
-    folderView.setId("myTask/page/1");
-    folderView.setName("Мои задачи");
-    folders2.add(folderView);
+      // workflowdesign
+      folderView = new FolderView();
+      folderView.setType("workflowdesign");
+      folderView.setName("Настройки БП");
+      folderView.setId(null);
+      folders2.add(folderView);
+      // workflowlist
+      folderView = new FolderView();
+      folderView.setType("workflowlist");
+      folderView.setName("Список БП");
+      folderView.setId(null);
+      folders2.add(folderView);
+      navigatorView.setFolders(folders2);
 
-    // workflowdesign
-    folderView = new FolderView();
-    folderView.setType("workflowdesign");
-    folderView.setName("Настройки БП");
-    folderView.setId(null);
-    folders2.add(folderView);
-    // workflowlist
-    folderView = new FolderView();
-    folderView.setType("workflowlist");
-    folderView.setName("Список БП");
-    folderView.setId(null);
-    folders2.add(folderView);
+    }
 
-    navigatorView.setFolders(folders2);
     result.add(navigatorView);
     return result;
   }
