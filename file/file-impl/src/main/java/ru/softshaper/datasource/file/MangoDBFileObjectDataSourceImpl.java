@@ -17,11 +17,14 @@ import org.springframework.stereotype.Component;
 import ru.softshaper.bean.file.FileObject;
 import ru.softshaper.bean.file.FileObjectBean;
 import ru.softshaper.datasource.file.FileObjectDataSource;
+import ru.softshaper.datasource.meta.AbstractObjectExtractor;
+import ru.softshaper.services.meta.MetaClass;
 import ru.softshaper.services.meta.MetaInitializer;
 import ru.softshaper.services.meta.MetaStorage;
+import ru.softshaper.services.meta.ObjectExtractor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.staticcontent.file.FileObjectStaticContent;
-
+import javax.annotation.PostConstruct;
 import javax.ws.rs.NotSupportedException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -31,7 +34,7 @@ import java.util.Map;
  * Хранлилище для файлов в MongoDB GridFS
  */
 @Component
-//@Qualifier("mongoDbFileObject")
+// @Qualifier("mongoDbFileObject")
 @Qualifier("fileObjectDataSource")
 public class MangoDBFileObjectDataSourceImpl implements FileObjectDataSource {
 
@@ -43,16 +46,15 @@ public class MangoDBFileObjectDataSourceImpl implements FileObjectDataSource {
 
   private boolean mangoOffline = false;
 
-
   @Override
   public FileObject getObj(GetObjectsParams params) {
 
-    if(mangoOffline){
+    if (mangoOffline) {
       return null;
     }
 
     if (params.getIds() != null && !params.getIds().isEmpty()) {
-      GridFSDBFile file =null;
+      GridFSDBFile file = null;
       try {
         file = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("_id").is(params.getIds().iterator().next())));
       } catch (Exception e) {
@@ -84,7 +86,8 @@ public class MangoDBFileObjectDataSourceImpl implements FileObjectDataSource {
   }
 
   private FileObject map(GridFSDBFile mongoFile) {
-    return new FileObjectBean(mongoFile.getId().toString(), mongoFile.getFilename(), mongoFile.getLength(), mongoFile.getUploadDate(), mongoFile.getContentType());
+    return new FileObjectBean(mongoFile.getId().toString(), mongoFile.getFilename(), mongoFile.getLength(), mongoFile.getUploadDate(),
+        mongoFile.getContentType());
   }
 
   @Override
@@ -133,5 +136,31 @@ public class MangoDBFileObjectDataSourceImpl implements FileObjectDataSource {
   public InputStream getFileData(String id) {
     GridFSDBFile file = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("_id").is(id)));
     return file == null ? null : file.getInputStream();
+  }
+
+  @Override
+  public ObjectExtractor<FileObject> getObjectExtractor() {
+    return new FileObjectExtractor();
+  }
+
+  public static class FileObjectExtractor extends AbstractObjectExtractor<FileObject> {
+
+    private FileObjectExtractor() {
+      registerFieldExtractor(FileObjectStaticContent.Field.mimeType, FileObject::getMimeType);
+      registerFieldExtractor(FileObjectStaticContent.Field.name, FileObject::getName);
+      registerFieldExtractor(FileObjectStaticContent.Field.modificationDate, FileObject::getModificationDate);
+      registerFieldExtractor(FileObjectStaticContent.Field.size, FileObject::getSize);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(FileObject obj, MetaClass metaClass) {
+      return obj.getId();
+    }
   }
 }

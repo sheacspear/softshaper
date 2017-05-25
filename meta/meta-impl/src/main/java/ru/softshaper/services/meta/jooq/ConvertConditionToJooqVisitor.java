@@ -6,9 +6,11 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.services.meta.*;
+import ru.softshaper.services.meta.DataSourceStorage;
+import ru.softshaper.services.meta.FieldType;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaField;
 import ru.softshaper.services.meta.conditions.ConvertConditionVisitor;
 import ru.softshaper.services.meta.conditions.impl.*;
 
@@ -46,13 +48,7 @@ public class ConvertConditionToJooqVisitor implements ConvertConditionVisitor<Co
         Class<?> idType = linkedDataSource.getIdType(linkToMetaClass.getCode());
         if (value != null) {
           if (!idType.equals(value.getClass())) {
-            if (idType.equals(Long.class)) {
-              value = Long.valueOf(value.toString());
-            } else if (idType.equals(Integer.class)) {
-              value = Integer.valueOf(value.toString());
-            } else if (idType.equals(String.class)) {
-              value = value.toString();
-            }
+            value = convertValue(value, idType);
           }
         } else {
           value = DSL.castNull(idType);
@@ -80,14 +76,29 @@ public class ConvertConditionToJooqVisitor implements ConvertConditionVisitor<Co
         case IN:
           return jooqField.in(value);
         case LIKE:
-          return jooqField.like("%" + value + "%");
+          return jooqField.likeIgnoreCase("%" + value + "%");
         case END_WITH:
-          return jooqField.like("%" + value);
+          return jooqField.likeIgnoreCase("%" + value);
         case START_WITH:
-          return jooqField.like(value + "%");
+          return jooqField.likeIgnoreCase(value + "%");
       }
     }
     throw new RuntimeException("Undefined compare operation " + compareOperation);
+  }
+
+  private Object convertValue(Object value, Class<?> idType) {
+    if (value instanceof Collection) {
+      value = ((Collection<Object>) value).stream().map(o -> convertValue(o, idType)).collect(Collectors.toSet());
+    } else {
+      if (idType.equals(Long.class)) {
+        value = Long.valueOf(value.toString());
+      } else if (idType.equals(Integer.class)) {
+        value = Integer.valueOf(value.toString());
+      } else if (idType.equals(String.class)) {
+        value = value.toString();
+      }
+    }
+    return value;
   }
 
   @Override

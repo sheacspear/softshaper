@@ -2,21 +2,21 @@ package ru.softshaper.datasource.meta;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.TableImpl;
-import org.jooq.util.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
+import ru.softshaper.datasource.events.ObjectCreated;
+import ru.softshaper.datasource.events.ObjectDeleted;
+import ru.softshaper.datasource.events.ObjectUpdated;
 import ru.softshaper.datasource.file.FileObjectDataSource;
-import ru.softshaper.datasource.meta.ContentDataSource;
-import ru.softshaper.datasource.meta.POJOContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.conditions.ConvertConditionVisitor;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
@@ -25,12 +25,11 @@ import ru.softshaper.services.security.ContentSecurityManager;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+//import org.jooq.util.Database;
 
 /**
  * Dao для работы с динамическими объектами
@@ -54,9 +53,6 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Autowired
   private DSLContext dsl;
 
-  @Autowired
-  private Database database;
-
   /**
    * Менеджер безопасности
    */
@@ -74,12 +70,17 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   @Qualifier("jooq")
   private ConvertConditionVisitor<Condition> conditionConverter;
 
-  @Autowired DataSourceStorage dataSourceStorage;
+
+  @Autowired
+  private EventBus eventBus;
+
   // @Override
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.impl.datasource.Test#getObjects(org.jooq.impl.TableImpl, java.lang.Class, java.util.Collection)
+   * @see
+   * ru.softshaper.services.meta.impl.datasource.Test#getObjects(org.jooq.impl.
+   * TableImpl, java.lang.Class, java.util.Collection)
    */
   @Override
   @SuppressWarnings("unchecked")
@@ -87,9 +88,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     RecordMapperProvider recordMapperProvider = defaultConfiguration.recordMapperProvider();
     RecordMapper<R, E> recordMapper = recordMapperProvider.provide(table.recordType(), type);
     MetaClass metaClass = metaStorage.getMetaClassByTable(table.getName());
-    GetObjectsParams params = GetObjectsParams.newBuilder(metaClass)
-        .addIds(ids)
-        .build();
+    GetObjectsParams params = GetObjectsParams.newBuilder(metaClass).addIds(ids).build();
     Collection<Record> ress = getObjects(params);
     Collection<E> result = new ArrayList<E>();
     for (Record res : ress) {
@@ -101,7 +100,9 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.services.meta.MetaInitializer)
+   * @see
+   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+   * services.meta.MetaInitializer)
    */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
@@ -136,7 +137,7 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   /**
    * Добавление фильтра безопасности
    *
-   * @param content мета класс
+   * @param content      мета класс
    * @param queryBuilder билдер запроса
    * @return билдер запроса
    */
@@ -163,7 +164,6 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     queryBuilder.where(where);
     return queryBuilder;
   }
-
 
   @Override
   public Collection<Record> getObjects(final GetObjectsParams params) {
@@ -211,12 +211,10 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
       queryBuilder.where(where);
     }
     if (params.getOrderFields() != null) {
-      List<SortField<Object>> sortFields = params.getOrderFields().entrySet().stream()
-          .map(orderField -> {
-            Field<Object> field = DSL.field(orderField.getKey().getColumn());
-            return orderField.getValue().equals(SortOrder.ASC) ? field.asc() : field.desc();
-          })
-          .collect(Collectors.toList());
+      List<SortField<Object>> sortFields = params.getOrderFields().entrySet().stream().map(orderField -> {
+        Field<Object> field = DSL.field(orderField.getKey().getColumn());
+        return orderField.getValue().equals(SortOrder.ASC) ? field.asc() : field.desc();
+      }).collect(Collectors.toList());
       queryBuilder.orderBy(sortFields);
     }
     queryBuilder.offset(params.getOffset());
@@ -249,62 +247,51 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
   }
 
   /*
-     * (non-Javadoc)
-     *
-     * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#createObject(java .util.Map)
-     */
+   * (non-Javadoc)
+   *
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#createObject(
+   * java .util.Map)
+   */
   @Transactional
   @Override
   public String createObject(String contentCode, Map<String, Object> values) {
     Preconditions.checkNotNull(values);
     Preconditions.checkArgument(!values.isEmpty());
-    MetaClass content = getMetaClass(contentCode);
-    if (content.isCheckSecurity() && !securityManager.canCreate(content.getId())) {
-      log.error("Access denied for object of content " + content.getCode());
-      throw new RuntimeException("Access denied for object of content " + content.getCode());
+    MetaClass metaClass = getMetaClass(contentCode);
+    if (metaClass.isCheckSecurity() && !securityManager.canCreate(metaClass.getId())) {
+      log.error("Access denied for object of metaClass " + metaClass.getCode());
+      throw new RuntimeException("Access denied for object of metaClass " + metaClass.getCode());
     }
-    Table<Record> table = DSL.table(content.getTable());
     Map<Field<?>, Object> fieldValues = Maps.newHashMap();
-    Map<String, MetaField> fieldsByCode = Maps.newHashMap();
-
-    content.getFields().forEach(dynamicField -> fieldsByCode.put(dynamicField.getCode(), dynamicField));
-    values.forEach((String fieldCode, Object value) -> {
-      if (value != null) {
-        MetaField field = content.getField(fieldCode);
-        FieldType type = field.getType();
-        //todo: type == null???? what???
-        Object realValue;
-        if (FieldType.LINK.equals(type)) {
-          MetaClass linkedClass = field.getLinkToMetaClass();
-          realValue = castLinkedClassId(value, linkedClass);
-        } else if (FieldType.FILE.equals(type)) {
-          if (value instanceof Map) {
-            realValue = fileDataSource.createObject("fileObject", (Map<String, Object>) value);//FileObjectStaticContent.META_CLASS
-          } else {
-            log.error("Undefined file data " + value);
-            realValue = value;
-          }
-        } else {
-          realValue = value;
-        }
-        fieldValues.put(DSL.field(fieldsByCode.get(fieldCode).getColumn(), realValue.getClass()), realValue);
+    Map<MetaField, Object> valuesMap = constructValuesMap(values, metaClass);
+    valuesMap.forEach((MetaField field, Object value) -> {
+      if (value != null && field.getColumn() != null) {
+        fieldValues.put(DSL.field(field.getColumn(), value.getClass()), value);
       }
     });
+    Table<Record> table = DSL.table(metaClass.getTable());
     InsertSetStep<Record> recordInsertSetStep = dsl.insertInto(table);
     InsertSetMoreStep<Record> insertSetMoreStep = recordInsertSetStep.set(fieldValues);
-    Field<BigInteger> filed = DSL.sequence(content.getIdSequence()).nextval();
-    final Field<Object> idFields = DSL.field(content.getIdColumn());
+    Field<BigInteger> filed = DSL.sequence(metaClass.getIdSequence()).nextval();
+    final Field<Object> idFields = DSL.field(metaClass.getIdColumn());
     insertSetMoreStep.set(idFields, filed);
-    // insertSetMoreStep.execute();
     InsertResultStep<Record> insertResultStep = insertSetMoreStep.returning(idFields);
     Result<Record> result = insertResultStep.fetch();
-    return result.getValue(0, idFields).toString();
+    String id = result.getValue(0, idFields).toString();
+    valuesMap.entrySet().stream()
+        .filter(entry -> FieldType.MULTILINK.equals(entry.getKey().getType()))
+        .forEach(entry -> updateMultilink(id, entry.getKey(), entry.getValue()));
+    eventBus.post(new ObjectCreated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
+    return id;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#updateObject(java .lang.String, java.util.Map)
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#updateObject(
+   * java .lang.String, java.util.Map)
    */
   @Transactional
   @Override
@@ -316,99 +303,75 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     if (metaClass.isCheckSecurity() && !securityManager.canUpdate(metaClass.getId())) {
       throw new RuntimeException("Access denied for object of metaClass " + metaClass.getCode());
     }
-    Table<Record> table = DSL.table(metaClass.getTable());
     Map<Field<?>, Object> fieldValues = Maps.newHashMap();
-    Map<String, MetaField> fieldsByCode = Maps.newHashMap();
-    metaClass.getFields().forEach(dynamicField -> fieldsByCode.put(dynamicField.getCode(), dynamicField));
-
-    for (Entry<String, Object> entry : values.entrySet()) {
-      String fieldCode = entry.getKey();
+    final Map<MetaField, Object> valuesMap = constructValuesMap(values, metaClass);
+    for (Entry<MetaField, Object> entry : valuesMap.entrySet()) {
+      MetaField field = entry.getKey();
       Object value = entry.getValue();
-      if ("null".equals(value)) {
-        value = null;
-      }
-      if (value != null) {
-        MetaField field = metaClass.getField(fieldCode);
-        FieldType type = field.getType();
-        if (FieldType.DATE.equals(type)) {
-          try {
-            value = new Timestamp(new SimpleDateFormat("dd.MM.yyy HH:mm:ss").parse(value.toString()).getTime());
-          } catch (ParseException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-          }
+      if (field.getColumn() != null) {
+        if (value != null) {
+          fieldValues.put(DSL.field(field.getColumn()), value);
+        } else {
+          // todo: вообщем то работает, но какой то лайвхак
+          fieldValues.put(DSL.field(field.getColumn()), DSL.castNull(Long.class));
         }
-        Object realValue;
-        if (FieldType.LINK.equals(type)) {
-          MetaClass linkToMetaClass = fieldsByCode.get(fieldCode).getLinkToMetaClass();
-          realValue = castLinkedClassId(value, linkToMetaClass);
-        } else if (FieldType.FILE.equals(type)) {
-          if (value instanceof Map) {
-            realValue = ((Map<String, Object>) value).get("id");
-            //todo: Подумать, стоит ли удалять сарый файл?
-          } else {
-            log.error("Undefined file data " + value);
-            realValue = value;
-          }
-        } if (FieldType.NUMERIC_INTEGER.equals(type)) {
-          realValue = Integer.valueOf(value.toString());
-        } else if (FieldType.BACK_REFERENCE.equals(type) || FieldType.MULTILINK.equals(type)) {
-          //todo:
-          if (value instanceof Collection) {
-            MetaClass linkToMetaClass = field.getLinkToMetaClass();
-            Collection linkedValues = (Collection) value;
-            realValue = null;
-          } else {
-            throw new RuntimeException("Атрибут ожидает список, но пришло что то другое " + value.getClass());
-          }
-        } else  {
-          realValue = value;
-        }
-        Table<?> jooqTable = dsl.meta().getTables().stream().filter(table1 -> table1.getName().equals(metaClass.getTable())).findFirst().get();
-        Field<?> jooqField = jooqTable.field(field.getColumn());
-        Class<?> columnType = jooqField.getType();
-        realValue = castValue(realValue, columnType);
-        fieldValues.put(DSL.field(fieldsByCode.get(fieldCode).getColumn()), realValue);
       } else {
-        MetaField metaField = fieldsByCode.get(fieldCode);
-        //TableDefinition dbTable = database.getTable(database.getSchema("public"), metaField.getOwner().getTable());
-        //todo: вообщем то работает, но какой то лайвхак
-        fieldValues.put(DSL.field(metaField.getColumn()), DSL.castNull(Long.class));
+        if (FieldType.MULTILINK.equals(field.getType())) {
+          updateMultilink(id, field, value);
+        }
       }
     }
+    Table<Record> table = DSL.table(metaClass.getTable());
     dsl.update(table).set(fieldValues).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
+    eventBus.post(new ObjectUpdated(metaClass, id, valuesMap, securityManager.getCurrentUserLogin()));
   }
 
-  private Object castLinkedClassId(Object linkedObjectId, MetaClass linkedMetaClass) {
-    Object realValue;
-    Class<?> idType = dataSourceStorage.get(linkedMetaClass).getIdType(linkedMetaClass.getCode());
-    realValue = castValue(linkedObjectId, idType);
-    return realValue;
-  }
-
-  private Object castValue(Object value, Class<?> castToClass) {
-    Object realValue;
-    if (value.getClass().isAssignableFrom(castToClass)) {
-      realValue = value;
-    } else if (castToClass.isAssignableFrom(Long.class)) {
-      realValue = Long.valueOf(value.toString());
-    } else {
-      realValue = value.toString();
+  private void updateMultilink(String id, MetaField field, Object value) {
+    if (value instanceof Collection) {
+      deleteMultilink(id, field);
+      Table<Record> linkTable = DSL.table(field.getNxMTableName());
+      InsertValuesStep3<Record, Object, Object, Object> query = dsl.insertInto(linkTable).columns(DSL.field("id"), DSL.field("from_id"), DSL.field("to_id"));
+      for (Object linkValueId : ((Collection<Object>) value)) {
+        Field<BigInteger> filed = DSL.sequence("seq_" + field.getNxMTableName() + "_id").nextval();
+        query.values(filed, Long.valueOf(id), linkValueId);
+      }
+      query.execute();
     }
-    return realValue;
+  }
+
+  private void deleteMultilink(String id, MetaField field) {
+    Table<Record> linkTable = DSL.table(field.getNxMTableName());
+    dsl.delete(linkTable).where(DSL.field("from_id").eq(Long.valueOf(id))).execute();
+  }
+
+  private Map<MetaField, Object> constructValuesMap(Map<String, Object> values, MetaClass metaClass) {
+    final Map<MetaField, Object> valuesMap = new HashMap<>();
+    values.forEach((fieldCode, value) -> {
+      MetaField metaField = metaClass.getField(fieldCode);
+      valuesMap.put(metaField, value);
+    });
+    return valuesMap;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#deleteObject(java .lang.String)
+   * @see
+   * ru.softshaper.services.dynamiccontent.ObjectDynamicContentDAO#deleteObject(
+   * java .lang.String)
    */
   @Transactional
   @Override
   public void deleteObject(String contentCode, String id) {
-    MetaClass content = getMetaClass(contentCode);
-    Table<Record> table = DSL.table(content.getTable());
-    dsl.delete(table).where(DSL.field(content.getIdColumn()).equal(Long.valueOf(id))).execute();
+    MetaClass metaClass = getMetaClass(contentCode);
+    Table<Record> table = DSL.table(metaClass.getTable());
+    metaClass.getFields().stream().forEach(field -> {
+        if (FieldType.MULTILINK.equals(field.getType())) {
+          deleteMultilink(id, field);
+        }
+    });
+    dsl.delete(table).where(DSL.field(metaClass.getIdColumn()).equal(Long.valueOf(id))).execute();
+    eventBus.post(new ObjectDeleted(metaClass, id, securityManager.getCurrentUserLogin()));
   }
 
   private MetaClass getMetaClass(String contentCode) {
@@ -418,9 +381,35 @@ public class ObjectDataSourceImpl implements ContentDataSource<Record>, POJOCont
     return content;
   }
 
+  @Override
+  public ObjectExtractor<Record> getObjectExtractor() {
+    return new ObjectMetaExtractor();
+  }
 
+  public static class ObjectMetaExtractor implements ObjectExtractor<Record> {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(Record obj, MetaClass metaClass) {
+      return obj.get(metaClass.getIdColumn(), Long.class).toString();
+    }
 
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ru.softshaper.services.meta.ObjectExtractor#getValue(java.lang.Object,
+     * ru.softshaper.services.meta.MetaField)
+     */
+    @Override
+    public Object getValue(Record obj, MetaField field) {
+      return obj.get(field.getColumn());
+    }
+  }
 
 }

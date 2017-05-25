@@ -26,6 +26,7 @@ public class MetaFieldStaticContent extends StaticContentBase {
     String owner = "owner";
     String linkToMetaClass = "linkToMetaClass";
     String backReferenceField = "backReferenceField";
+    String viewField = "viewField";
   }
 
   @Autowired
@@ -39,5 +40,6 @@ public class MetaFieldStaticContent extends StaticContentBase {
     this.registerField(dfTable.DYNAMIC_CONTENT_ID,FieldType.LINK).setCode(Field.owner).setName("Владелец").setLinkToMetaClass(MetaClassStaticContent.META_CLASS);
     this.registerField(dfTable.LINK_TO_DYNAMIC_CONTENT,FieldType.LINK).setCode(Field.linkToMetaClass).setName("Ссылка на класс").setLinkToMetaClass(MetaClassStaticContent.META_CLASS);
     this.registerField(dfTable.BACK_REFERENCE_FIELD,FieldType.LINK).setCode(Field.backReferenceField).setName("Поле обратной ссылки").setLinkToMetaClass(MetaFieldStaticContent.META_CLASS);
+    this.registerField(null, FieldType.BACK_REFERENCE).setCode(Field.viewField).setName("Представление атрибута").setBackReferenceField(FieldViewStaticContent.Field.field).setLinkToMetaClass(FieldViewStaticContent.META_CLASS);
   }
 }

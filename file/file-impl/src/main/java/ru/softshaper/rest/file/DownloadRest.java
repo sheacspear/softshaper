@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 @Path("/pr/download")
 public class DownloadRest {
@@ -42,7 +43,7 @@ public class DownloadRest {
 	@GET
 	@Path("/{fileId}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public Response uploadFile(@PathParam("fileId") String fileId) {
+	public Response downloadFile(@PathParam("fileId") String fileId) {
 		FileObject fileObject = fileObjectDataSource.getFileInfo(fileId);
 		if (fileObject != null) {
 			InputStream io = null;
@@ -51,7 +52,9 @@ public class DownloadRest {
 				if (io != null) {
 					byte[] data = IOUtils.readBytesFromStream(io);
 					ResponseBuilder response = Response.ok((Object) data);
-					response.header("Content-Disposition", "attachment; filename=" + fileObject.getName());
+					String name = fileObject.getName();					
+		      name = new String(name.getBytes(Charset.forName("utf-8")), Charset.forName("ISO-8859-1"));
+		      response.header("Content-Disposition", "attachment; filename=" + name);
 					return response.build();
 				}
 			} catch (IOException e) {

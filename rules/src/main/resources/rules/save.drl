@@ -1,0 +1,27 @@
+package ru.softshaper.drools.service;
+import ru.softshaper.services.drools.bean.*;
+import ru.softshaper.services.drools.saver.*;
+import ru.softshaper.services.drools.contex.RuleContext;
+
+global Saver saver
+rule "saveData"
+salience 20
+when 
+$ruleContext :  RuleContext( mode == "save" )
+then
+	Data data = $ruleContext.getData();
+	MetaData metaData = $ruleContext.getMetaData();
+    if(data!=null && metaData!=null){
+        Doc doc = saver.save( data, metaData);    
+        $ruleContext.setMode("end");
+        
+        if(doc!=null){
+          $ruleContext.addMessage("Сохранение файла","Файла:" + data.toString()+ "сохранен в документ " + doc.toString());
+        }else{
+          $ruleContext.addMessage("Сохранение файла","Файла:" + data.toString()+ " сопостовимый документ не найден" );
+        }
+
+		insert($ruleContext);
+	}
+
+end

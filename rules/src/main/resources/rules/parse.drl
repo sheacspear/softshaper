@@ -1,0 +1,19 @@
+package ru.softshaper.drools.service;
+import ru.softshaper.services.drools.bean.*;
+import ru.softshaper.services.drools.parser.*;
+import ru.softshaper.services.drools.contex.RuleContext;
+global Parser parser
+rule "parseData"
+salience 10
+when 
+$ruleContext :  RuleContext( mode == "parse" )
+then
+	Data data = $ruleContext.getData();
+    if(data!=null){
+        MetaData metaData = parser.parse(data);    
+		$ruleContext.setMetaData(metaData);
+		$ruleContext.setMode("save");
+		$ruleContext.addMessage("Анализ файлов","Из файла:" + data.toString()+ " извлечены теги " + metaData.toString());
+		update($ruleContext);
+	}	
+end

@@ -1,20 +1,19 @@
 package ru.softshaper.bean.meta;
 
+import java.util.Map;
+
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.TableField;
-import ru.softshaper.services.meta.*;
-import ru.softshaper.services.meta.jooq.JooqFieldFactory;
+
+import ru.softshaper.services.meta.FieldType;
+import ru.softshaper.services.meta.MetaClass;
+import ru.softshaper.services.meta.MetaClassMutable;
+import ru.softshaper.services.meta.MetaField;
+import ru.softshaper.services.meta.MetaFieldMutable;
 import ru.softshaper.storage.jooq.tables.records.DynamicFieldRecord;
 
-import java.util.Map;
-
 public class FieldBuilder<T extends Record, K> implements Cloneable {
-
-  /**
-   * Мапер, который преобразует тип поля зорба в SQL тип
-   */
-  private static final JooqFieldFactory jooqFieldFactory = JooqFieldFactory.getInstance();
 
   private MetaClassMutable metaClass;
   private Map<String, MetaClassMutable> clazzCode;

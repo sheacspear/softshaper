@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.softshaper</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>security</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>./../</relativePath>
     </parent>
@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>org.softshaper</groupId>
-            <artifactId>db</artifactId>
+            <artifactId>db-main</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

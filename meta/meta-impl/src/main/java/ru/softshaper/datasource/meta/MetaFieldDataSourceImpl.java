@@ -9,13 +9,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.softshaper.bean.meta.MetaFieldBean;
-import ru.softshaper.datasource.meta.ContentDataSource;
 import ru.softshaper.services.meta.*;
 import ru.softshaper.services.meta.impl.GetObjectsParams;
 import ru.softshaper.services.meta.jooq.JooqFieldFactory;
-import ru.softshaper.staticcontent.meta.MetaFieldConditionChecker;
 import ru.softshaper.staticcontent.meta.meta.MetaFieldStaticContent;
 import ru.softshaper.storage.jooq.tables.FieldView;
 import ru.softshaper.storage.jooq.tables.daos.DynamicFieldDao;
@@ -23,10 +20,7 @@ import ru.softshaper.storage.jooq.tables.records.DynamicFieldRecord;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Sunchise on 16.08.2016.
@@ -34,7 +28,7 @@ import java.util.stream.Stream;
 @Component
 @ThreadSafe
 @Qualifier("metaField")
-public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
+public class MetaFieldDataSourceImpl extends AbstractCustomDataSource<MetaField> {
 
   /**
    * DSLContext
@@ -58,6 +52,8 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
    */
   private final MetaStorage metaStorage;
 
+  private final static ObjectExtractor<MetaField> objectExtractor = new   MetaFieldObjectExtractor();
+
   /**
    * @param dslContext
    * @param dynamicFieldDao
@@ -65,6 +61,7 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
    */
   @Autowired
   public MetaFieldDataSourceImpl(DSLContext dslContext, DynamicFieldDao dynamicFieldDao, MetaStorage metaStorage) {
+    super(objectExtractor);
     this.dslContext = dslContext;
     this.dynamicFieldDao = dynamicFieldDao;
     this.metaStorage = metaStorage;
@@ -73,7 +70,9 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.services.meta.MetaInitializer)
+   * @see
+   * ru.softshaper.services.meta.DataSource#setMetaInitializer(ru.softshaper.
+   * services.meta.MetaInitializer)
    */
   @Override
   public void setMetaInitializer(MetaInitializer metaInitializer) {
@@ -83,49 +82,59 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#createObject(java.lang.String,
+   * java.util.Map)
    */
   @Override
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
-  @Transactional
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
+  @Transactional(rollbackFor = Throwable.class)
   public String createObject(String contentCode, Map<String, Object> values) {
     MetaField field = constructMetaField(null, values);
     return createField(field.getOwner().getId(), field);
   }
 
-  /**
+  /**seq_dc_magic_id
    * Конструирование объекта
    *
-   * @param id     ид
+   * @param id ид
    * @param values параметры
    * @return MetaField
    */
   private MetaField constructMetaField(String id, Map<String, Object> values) {
-    String ownerStr = (String) values.get("owner");
-    String objectId = String.valueOf(ownerStr);
-    MetaClass owner = metaStorage.getMetaClassById(objectId);
+    Object objectId = values.get("owner");
+    Preconditions.checkNotNull(objectId);
+    MetaClass owner = metaStorage.getMetaClassById(objectId.toString());
     String code = (String) values.get("code");
     String name = (String) values.get("name");
-    String column = (String) values.get("column");
-    Long type = Long.valueOf(values.get("type").toString());
-    String linkToMetaClassStr = (String) values.get("linkToMetaClass");
-    String backReferenceFieldStr = (String) values.get("backReferenceField");
+    Long type = (Long) values.get("type");
+    FieldType fieldType = FieldType.getFieldType(type);
+    String column = null;
+    if (!FieldType.MULTILINK.equals(fieldType) && !FieldType.BACK_REFERENCE.equals(fieldType)) {
+      column = (String) values.get("column");
+    }
+    Object linkToMetaClassId = values.get("linkToMetaClass");
+    Object backReferenceFieldId = values.get("backReferenceField");
     MetaClass linkToMetaClass = null;
     MetaField backReferenceField = null;
-    if (linkToMetaClassStr != null) {
-      linkToMetaClass = metaStorage.getMetaClassById(String.valueOf(linkToMetaClassStr));
-      if (backReferenceFieldStr != null) {
-        backReferenceField = linkToMetaClass.getFields().stream().filter(field -> field.getId().equals(backReferenceFieldStr)).findFirst().orElse(null);
+    if (linkToMetaClassId != null) {
+      linkToMetaClass = metaStorage.getMetaClassById(String.valueOf(linkToMetaClassId));
+      if (backReferenceFieldId != null) {
+        backReferenceField = linkToMetaClass.getFields()
+            .stream()
+            .filter(field -> field.getId().equals(String.valueOf(backReferenceFieldId)))
+            .findFirst()
+            .orElse(null);
       }
     }
-    return new MetaFieldBean(id, owner, name, code, column, FieldType.getFieldType(type), linkToMetaClass, backReferenceField, null);
+    return new MetaFieldBean(id, owner, name, code, column, fieldType, linkToMetaClass, backReferenceField, null);
   }
 
   /**
    * Запись строки о нового поля в таблицу
    *
    * @param metaClassId динамический контент, с которым связано это поле
-   * @param field       описание поля
+   * @param field описание поля
    */
   private String createField(String metaClassId, MetaField field) {
     DynamicFieldRecord df = new DynamicFieldRecord();
@@ -151,7 +160,7 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
     InsertResultStep<DynamicFieldRecord> insertResultStep = insertSetMoreStep.returning(idFields);
     Result<DynamicFieldRecord> result = insertResultStep.fetch();
     String objectIdF = String.valueOf(result.getValue(0, "id"));
-    if (field.getColumn() != null) {
+    if (field.getColumn() != null && !FieldType.MULTILINK.equals(field.getType()) && !FieldType.BACK_REFERENCE.equals(field.getType())) {
       dslContext.alterTable(field.getOwner().getTable()).add(field.getColumn(), jooqFieldFactory.getDataType(field.getType())).execute();
     }
     metaInitializer.init();
@@ -184,29 +193,25 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String, java.lang.String, java.util.Map)
+   * @see ru.softshaper.services.meta.DataSource#updateObject(java.lang.String,
+   * java.lang.String, java.util.Map)
    */
   @Override
   @Transactional
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void updateObject(String contentCode, String id, Map<String, Object> values) {
     MetaField field = constructMetaField(id, values);
     ru.softshaper.storage.jooq.tables.DynamicField fieldTable = ru.softshaper.storage.jooq.tables.DynamicField.DYNAMIC_FIELD;
     dslContext.update(fieldTable).set(fieldTable.NAME, field.getName()).where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
 
-
     dslContext.update(fieldTable)
         .set(fieldTable.LINK_TO_DYNAMIC_CONTENT, field.getLinkToMetaClass() != null ? Long.valueOf(field.getLinkToMetaClass().getId()) : null)
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
+        .where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
     dslContext.update(fieldTable)
         .set(fieldTable.BACK_REFERENCE_FIELD, field.getBackReferenceField() != null ? Long.valueOf(field.getBackReferenceField().getId()) : null)
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
-    dslContext.update(fieldTable)
-        .set(fieldTable.TYPE_FIELD, field.getType().getId())
-        .where(fieldTable.ID.eq(Long.valueOf(field.getId())))
-        .execute();
+        .where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
+    dslContext.update(fieldTable).set(fieldTable.TYPE_FIELD, field.getType().getId()).where(fieldTable.ID.eq(Long.valueOf(field.getId()))).execute();
 
     if (field.getColumn() != null) {
       dslContext.alterTable(field.getOwner().getTable()).alter(field.getColumn()).set(jooqFieldFactory.getDataType(field.getType())).execute();
@@ -218,11 +223,13 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   /*
    * (non-Javadoc)
    *
-   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String, java.lang.String)
+   * @see ru.softshaper.services.meta.DataSource#deleteObject(java.lang.String,
+   * java.lang.String)
    */
   @Override
   @Transactional
-  @CacheEvict(cacheNames = {"metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond", "fieldObjCnt"}, allEntries = true)
+  @CacheEvict(cacheNames = { "metaObjList", "metaObj", "metaObjListCond", "metaObjCnt", "fieldObjList", "fieldObj", "fieldObjListCond",
+      "fieldObjCnt" }, allEntries = true)
   public void deleteObject(String contentCode, String id) {
     ru.softshaper.storage.jooq.tables.pojos.DynamicField fieldsPojo = dynamicFieldDao.fetchOneById(Long.valueOf(id));
     MetaClass dc = metaStorage.getMetaClassById(fieldsPojo.getDynamicContentId().toString());
@@ -231,20 +238,12 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
     // todo: тут проблемка в том, что представление не совсем является частью
     // меты,
     // todo: т.ч. и удаление должно вызываться событием, а никак не напрямую
-    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.COLUMN_CONTENT.eq(field.getCode())).and(FieldView.FIELD_VIEW.TABLE_CONTENT.eq(dc.getCode()))
-        .execute();
+    dslContext.delete(FieldView.FIELD_VIEW.asTable()).where(FieldView.FIELD_VIEW.FIELD_ID.eq(Long.valueOf(field.getId()))).execute();
   }
-
 
   @Override
   public Collection<String> getObjectsIdsByMultifield(String contentCode, String multyfieldCode, String id, boolean reverse) {
     throw new RuntimeException("Not implemented yet!");
-  }
-
-  @Override
-  public MetaField getObj(GetObjectsParams params) {
-    Collection<MetaField> objects = getObjects(params);
-    return objects == null || objects.isEmpty() ? null : objects.iterator().next();
   }
 
   @Override
@@ -258,69 +257,33 @@ public class MetaFieldDataSourceImpl implements ContentDataSource<MetaField> {
   }
 
   @Override
-  public Collection<MetaField> getObjects(GetObjectsParams params) {
-    Collection<MetaField> metaFields = metaStorage.getMetaFields();
-    if (params.getIds() != null && !params.getIds().isEmpty()) {
-      metaFields = metaFields.stream()
-          .filter(metaField -> params.getIds().contains(metaField.getId()))
-          .collect(Collectors.toSet());
-    }
-    LinkedHashMap<MetaField, ru.softshaper.services.meta.impl.SortOrder> orderFields = params.getOrderFields();
-    Stream<MetaField> stream = metaFields.stream();
-    ru.softshaper.services.meta.conditions.Condition condition = params.getCondition();
-    if (condition != null) {
-      stream = stream.filter(metaField -> condition.check(new MetaFieldConditionChecker(metaField)));
-    }
-    if (orderFields != null) {
-      stream = stream.sorted((o1, o2) -> {
-        int compareResult;
-        if (o1 == null) {
-          compareResult = -1;
-        } else if (o2 == null) {
-          compareResult = 1;
-        } else {
-          compareResult = 0;
-          //todo: something
-          for (Map.Entry<MetaField, ru.softshaper.services.meta.impl.SortOrder> order : orderFields.entrySet()) {
-            switch (order.getKey().getCode()) {
-              case MetaFieldStaticContent.Field.code:
-                compareResult = o1.getCode().compareTo(o2.getCode());
-                break;
-              case MetaFieldStaticContent.Field.name:
-                compareResult = o1.getName().compareTo(o2.getName());
-                break;
-              case MetaFieldStaticContent.Field.column:
-                compareResult = compareStrings(o1.getColumn(), o2.getColumn());
-                break;
-              case MetaFieldStaticContent.Field.type:
-                compareResult = o1.getType().getName().compareTo(o2.getType().getName());
-                break;
-              case MetaFieldStaticContent.Field.owner:
-                compareResult = o1.getOwner().getName().compareTo(o2.getOwner().getName());
-                break;
-              case MetaFieldStaticContent.Field.linkToMetaClass:
-                compareResult = o1.getLinkToMetaClass() == null ? o2.getLinkToMetaClass() == null ? 0 : -1 : o2.getLinkToMetaClass() == null ? 1 : o1.getLinkToMetaClass().getName().compareTo(o2.getLinkToMetaClass().getName());
-                break;
-              case MetaFieldStaticContent.Field.backReferenceField:
-                compareResult = o1.getBackReferenceField() == null ?  o2.getBackReferenceField() == null ? 0 : -1 : o2.getBackReferenceField() == null ? 1 : o1.getBackReferenceField().getName().compareTo(o2.getBackReferenceField().getName());
-                break;
-            }
-
-            if (compareResult != 0) {
-              compareResult = ru.softshaper.services.meta.impl.SortOrder.DESC.equals(order.getValue()) ? compareResult * -1 : compareResult;
-              break;
-            }
-          }
-        }
-        return compareResult;
-      });
-    }
-    return stream.skip(params.getOffset())
-      .limit(params.getLimit())
-      .collect(Collectors.toList());
+  protected Collection<MetaField> getAllObjects(GetObjectsParams params) {
+    return metaStorage.getMetaFields();
   }
 
-  private int compareStrings(String s1, String s2) {
-    return s1 == null ? s2 == null ? 0 : -1 : s2 == null ? 1 : s1.compareTo(s2);
+  public static class MetaFieldObjectExtractor extends AbstractObjectExtractor<MetaField> {
+
+    private MetaFieldObjectExtractor() {
+      registerFieldExtractor(MetaFieldStaticContent.Field.code, MetaField::getCode);
+      registerFieldExtractor(MetaFieldStaticContent.Field.name, MetaField::getName);
+      registerFieldExtractor(MetaFieldStaticContent.Field.column, MetaField::getColumn);
+      registerFieldExtractor(MetaFieldStaticContent.Field.owner, field -> field.getOwner().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.type, field -> field.getType().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.linkToMetaClass,
+          field -> field.getLinkToMetaClass() == null ? null : field.getLinkToMetaClass().getId());
+      registerFieldExtractor(MetaFieldStaticContent.Field.backReferenceField,
+          field -> field.getBackReferenceField() == null ? null : field.getBackReferenceField().getId());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ru.softshaper.services.meta.ObjectExtractor#getId(java.lang.Object,
+     * ru.softshaper.services.meta.MetaClass)
+     */
+    @Override
+    public String getId(MetaField obj, MetaClass metaClass) {
+      return obj.getId();
+    }
   }
 }

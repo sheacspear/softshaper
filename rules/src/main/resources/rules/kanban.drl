@@ -1,0 +1,18 @@
+package ru.softshaper.drools.service;
+import ru.softshaper.services.drools.bean.*;
+import ru.softshaper.services.drools.provider.*;
+import ru.softshaper.services.drools.contex.RuleContext;
+global DataProvider dataProvider
+rule "getDataByKanban"
+salience 10
+when 
+$ruleContext :  RuleContext( mode == "start" )
+then
+    Data data = dataProvider.getData(); 
+    if(data!=null){
+		$ruleContext.setData(data);
+		$ruleContext.setMode("parse");
+		$ruleContext.addMessage("Загрузка данных из Kanban","Получен файл:" + data.toString());
+		update($ruleContext);
+	}	
+end
