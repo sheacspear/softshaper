@@ -199,28 +199,28 @@ public class QueryServiceRest {
       folderView.setType(record.get(Folder.FOLDER.TYPE, String.class));
       result.add(folderView);
     });
-
-    FolderView navigatorView = new FolderView();
-    navigatorView.setName("Контент");
-    final List<FolderView> folders1 = new ArrayList<FolderView>();
-    FolderView folderView = null;
-    // obj
-    // folderView = new FolderView();
-    // folderView.setType("obj");
-    // folderView.setName("Объект obj id = 1");
-    // folderView.setId("1");
-    // folders.add(folderView);
-    // objlist
-    MetaClass metaClassClass = metaStorage.getMetaClass(MetaClassStaticContent.META_CLASS);
-    params = GetObjectsParams.newBuilder(metaClassClass).orderFields().add(metaClassClass.getField(MetaClassStaticContent.Field.name), SortOrder.ASC).build();
-    metaClassDataSource.getObjects(params).forEach(conf -> {
-      FolderView folderView2 = new FolderView();
-      folderView2.setType("objlist");
-      folderView2.setId(conf.getCode() + "/page/1");
-      folderView2.setName(conf.getName());
-      folders1.add(folderView2);
-    });
     if (false) {
+      FolderView navigatorView = new FolderView();
+      navigatorView.setName("Контент");
+      final List<FolderView> folders1 = new ArrayList<FolderView>();
+      FolderView folderView = null;
+      // obj
+      // folderView = new FolderView();
+      // folderView.setType("obj");
+      // folderView.setName("Объект obj id = 1");
+      // folderView.setId("1");
+      // folders.add(folderView);
+      // objlist
+      MetaClass metaClassClass = metaStorage.getMetaClass(MetaClassStaticContent.META_CLASS);
+      params = GetObjectsParams.newBuilder(metaClassClass).orderFields().add(metaClassClass.getField(MetaClassStaticContent.Field.name), SortOrder.ASC).build();
+      metaClassDataSource.getObjects(params).forEach(conf -> {
+        FolderView folderView2 = new FolderView();
+        folderView2.setType("objlist");
+        folderView2.setId(conf.getCode() + "/page/1");
+        folderView2.setName(conf.getName());
+        folders1.add(folderView2);
+      });
+
       // nav2
       folderView = new FolderView();
       navigatorView.setFolders(folders1);
@@ -316,10 +316,8 @@ public class QueryServiceRest {
       folderView.setId(null);
       folders2.add(folderView);
       navigatorView.setFolders(folders2);
-
+      result.add(navigatorView);
     }
-
-    result.add(navigatorView);
     return result;
   }
 
@@ -404,7 +402,7 @@ public class QueryServiceRest {
         for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
           String fieldKey = valueEntry.getKey();
           if (fieldKey.equals("id")) {
-            paramsBuilder.addIds(Arrays.asList((String)valueEntry.getValue()));
+            paramsBuilder.addIds(Arrays.asList((String) valueEntry.getValue()));
           } else {
 
             MetaField field = metaClass.getField(fieldKey);

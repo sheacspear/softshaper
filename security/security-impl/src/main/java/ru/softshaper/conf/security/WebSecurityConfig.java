@@ -1,6 +1,7 @@
 package ru.softshaper.conf.security;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -204,23 +205,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().logout().deleteCookies(RestTokenAuthenticationFilter.HEADER_SECURITY_TOKEN).permitAll();		
 		
 		 //createBaseUser("ashek","ashek","alexander","lopos","alex","admin","test");
+		// createBaseUser("test_user","A123456b");
 	}
 
-	private void createBaseUser(String ...users) {
-		if(users!=null){
-			for(String user:users){
-		List<Users> admins = usersRepository.fetchByUsername(user);
-		 if (admins == null || admins.isEmpty()) {
-		 Roles role = new Roles(null, "ROLE_ADMIN");
-		 roleRepository.insert(role);
-		 final Users entity = new Users(null, passwordEncoder().encode(user),
+  private void createBaseUser(String user, String passs) {
+    // if(users!=null){
+    // for(String user:users){
+    List<Users> admins = usersRepository.fetchByUsername(user);
+    if (admins != null) {
+      usersRepository.delete(admins);
+      List<ru.softshaper.storage.jooq.tables.pojos.UsersRoles> userRoles = usersRolesDao
+          .fetchByFromId(admins.stream().map(e -> e.getId()).collect(Collectors.toList()).toArray(new Long[0]));
+      if (userRoles != null) {
+        usersRolesDao.delete(userRoles);
+      }
+    }
+
+    if (admins == null || admins.isEmpty()) {
+      // Roles role = new Roles(null, "ROLE_ADMIN");
+		 //roleRepository.insert(role);
+		   List<ru.softshaper.storage.jooq.tables.pojos.Roles> roles = roleRepository.fetchByRole("ROLE_ADMIN");
+		 final Users entity = new Users(null, passwordEncoder().encode(passs),
 				 user);
 		 usersRepository.insert(entity);
 		 UsersRoles usersRoles = new UsersRoles(null, entity.getId(),
-		 role.getId());
+		     roles.get(0).getId());
 		 usersRolesDao.insert(usersRoles);
-		 }}
-		}
+		 }
+		 //}
+		//}
 	}
 
 	/*

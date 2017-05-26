@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=600, user-scalable=no"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>SoftShaper</title>
+    <title></title>
     <!-- <link href="css/bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="css/bootstrap-theme.css" rel="stylesheet" type="text/css"/>
     <link href="css/react-bootstrap-treeview.css" rel="stylesheet" type="text/css"/>-->
