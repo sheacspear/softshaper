@@ -220,7 +220,7 @@ public class QueryServiceRest {
       folderView2.setName(conf.getName());
       folders1.add(folderView2);
     });
-    if (false) {
+    if (true) {
       // nav2
       folderView = new FolderView();
       navigatorView.setFolders(folders1);
