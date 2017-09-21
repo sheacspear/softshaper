@@ -1,1 +1,3 @@
 *.rb linguist-language=Java
+special-vendored-path/* admin/src/main/webapp/app 
+special-vendored-path/* admin/src/main/webapp/workflow 
